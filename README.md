@@ -10,8 +10,8 @@
 
 - **Chrono Engine** - 时间宇宙引擎（干支、节气、农历、真太阳时）
 - **多术数引擎** - 梅花易数、六爻、奇门遁甲、八字、紫微斗数等
-- **AI Orchestrator** - AI 总控与多模型推演
-- **Knowledge System** - 古籍检索与知识图谱
+- **AI Orchestrator** - AI 总控与多模型推演（Phase 2）
+- **Knowledge System** - 古籍检索与知识图谱（Phase 3）
 - **Universe UI** - 东方宇宙风格沉浸式界面
 
 ## 项目结构
@@ -19,18 +19,30 @@
 ```
 tianwen/
 ├── apps/
-│   └── web/                    # Next.js 前端应用
+│   └── web/                    # Next.js 前端应用 (src/app 结构)
 │
 ├── packages/
 │   ├── chrono-engine/         # 时间宇宙引擎
+│   ├── metaphysics-types/     # 术数类型系统
+│   ├── ui/                    # UI 组件库（东方宇宙风）
 │   ├── meihua/                # 梅花易数
-│   ├── liuyao/                # 六爻纳甲
-│   ├── qimen/                 # 奇门遁甲
-│   └── shared/                # 共享类型与工具
+│   ├── liuyao/                # 六爻纳甲（结构预留）
+│   ├── qimen/                 # 奇门遁甲（结构预留）
+│   └── prompts/               # Prompt Engine（结构预留）
 │
 ├── knowledge/                 # 知识宇宙
+│   ├── classics/              # 古籍（滴天髓、三命通会等）
+│   ├── modern/                # 现代研究
+│   ├── cases/                 # 实战案例
+│   └── rules/                 # 规则库
+│
 ├── docs/                      # 文档
-└── ...config files
+├── .trae/                     # Trae AI 配置
+├── docker-compose.yml
+├── turbo.json
+├── pnpm-workspace.yaml
+├── tsconfig.json
+└── README.md
 ```
 
 ## 技术栈
@@ -43,15 +55,19 @@ tianwen/
 ## 开发阶段
 
 ### Phase 1（当前）
+- ✅ Monorepo 项目初始化
 - ✅ Chrono Engine 基础实现
 - ✅ 梅花易数核心模块
-- 🔄 前端应用骨架
-- ⏳ 六爻 / 奇门 基础结构
+- ✅ 术数类型系统 (metaphysics-types)
+- ✅ UI 组件库结构
+- ✅ 前端应用骨架 (src/app)
+- ✅ 首页（天问殿）UI 实现
+- ⏳ 六爻 / 奇门基础结构
 
 ### Phase 2
 - AI Agent 系统
 - Prompt Engine
-- 概率分析
+- 概率分析与共振分析
 
 ### Phase 3
 - RAG 系统
@@ -61,7 +77,7 @@ tianwen/
 ### Phase 4
 - 宇宙 UI 系统
 - 命运时间轴
-- 高级动画
+- 高级动画与可视化
 
 ## 快速开始
 
@@ -81,10 +97,7 @@ pnpm install
 ### 启动开发服务
 
 ```bash
-# 启动所有应用
-pnpm dev
-
-# 仅启动前端
+# 启动前端
 cd apps/web && pnpm dev
 ```
 

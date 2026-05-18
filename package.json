@@ -2,7 +2,7 @@
   "name": "tianwen",
   "version": "1.0.0",
   "private": true,
-  "description": "天问 - AI华夏术数推演操作系统",
+  "description": "天问 - AI华夏术数推演操作系统（东方时空认知基础设施）",
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",

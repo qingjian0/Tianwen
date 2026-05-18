@@ -1,0 +1,14 @@
+{
+  "name": "@tianwen/prompts",
+  "version": "1.0.0",
+  "description": "天问 · Prompt Engine（动态提示词生成系统）",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "echo 'Prompt Engine 开发中'",
+    "build": "echo 'Prompt Engine 构建中'"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  }
+}

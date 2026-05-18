@@ -1,0 +1,27 @@
+{
+  "name": "@tianwen/ui",
+  "version": "1.0.0",
+  "description": "天问 · UI组件库（东方宇宙风）",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.tsx",
+    "./button": "./src/components/button.tsx",
+    "./card": "./src/components/card.tsx"
+  },
+  "scripts": {
+    "dev": "echo 'UI包开发中',
+    "build": "echo 'UI包构建中'
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwindcss": "^3.4.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.5.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}
