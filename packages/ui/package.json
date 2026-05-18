@@ -5,12 +5,13 @@
   "type": "module",
   "exports": {
     ".": "./src/index.tsx",
-    "./button": "./src/components/button.tsx",
-    "./card": "./src/components/card.tsx"
+    "./design-system": "./src/design-system/index.ts",
+    "./theme": "./src/theme/index.ts"
   },
   "scripts": {
-    "dev": "echo 'UI包开发中',
-    "build": "echo 'UI包构建中'
+    "dev": "echo 'UI包开发中'",
+    "build": "echo 'UI包构建中'",
+    "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
     "react": "^19.0.0",

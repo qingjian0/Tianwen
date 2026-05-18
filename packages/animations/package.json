@@ -1,0 +1,17 @@
+{
+  "name": "@tianwen/animations",
+  "version": "1.0.0",
+  "description": "天问 - Animation System",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "dev": "echo 'Animation System'",
+    "build": "echo 'Build animations'"
+  },
+  "peerDependencies": {
+    "framer-motion": ">=11.0.0",
+    "react": ">=18.0.0"
+  }
+}

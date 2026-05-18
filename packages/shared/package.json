@@ -1,0 +1,26 @@
+{
+  "name": "@tianwen/shared",
+  "version": "1.0.0",
+  "description": "天问 - 共享核心基础设施",
+  "main": "src/index.ts",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./prediction-schema": "./src/prediction-schema/index.ts",
+    "./engine-interface": "./src/engine-interface/index.ts",
+    "./errors": "./src/errors/index.ts",
+    "./logger": "./src/logger/index.ts"
+  },
+  "scripts": {
+    "dev": "echo 'Shared package development'",
+    "build": "echo 'Shared package build'",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "zod": "^3.23.0"
+  },
+  "dependencies": {
+    "zod": "^3.23.0"
+  }
+}

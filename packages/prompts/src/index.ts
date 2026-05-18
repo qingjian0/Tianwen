@@ -1,8 +1,7 @@
 /**
- * 天问 · Prompt Engine
- * Phase 1: 结构预留
+ * 天问 - Prompt Engine
+ * Phase 2: Prompt DSL & Template System
  */
 
-export { PromptEngine } from './engine';
 export * from './dsl';
 export * from './templates';
