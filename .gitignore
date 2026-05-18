@@ -1,12 +1,14 @@
 # Dependencies
 node_modules/
 .pnpm-store/
-.virtualenv/
+.venv/
+env/
 
 # Build outputs
 .next/
 dist/
 build/
+.cache/
 
 # Environment files
 .env
@@ -18,6 +20,7 @@ build/
 .idea/
 *.swp
 *.swo
+*~
 
 # OS
 .DS_Store
@@ -26,7 +29,10 @@ Thumbs.db
 # Logs
 *.log
 npm-debug.log*
+pnpm-debug.log*
 
-# Cache
+# Turbo
+.turbo/
+
+# Trae
 .trae/cache/
-.cache/
