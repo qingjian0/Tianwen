@@ -1,0 +1,13 @@
+{
+  "name": "@tianwen/signal-extractor",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@tianwen/meihua": "workspace:*",
+    "@tianwen/liuyao": "workspace:*",
+    "@tianwen/bazi-engine": "workspace:*",
+    "@tianwen/signal-system": "workspace:*"
+  }
+}
