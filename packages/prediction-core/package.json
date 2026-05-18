@@ -1,0 +1,24 @@
+{
+  "name": "@tianwen/prediction-core",
+  "version": "1.0.0",
+  "description": "天问 - 推演核心模块（Prediction Core）",
+  "type": "module",
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "dev": "echo 'Prediction Core development'",
+    "build": "echo 'Prediction Core build'",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@tianwen/signal-system": "workspace:*",
+    "@tianwen/weight-system": "workspace:*",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "zod": "^3.23.0"
+  }
+}

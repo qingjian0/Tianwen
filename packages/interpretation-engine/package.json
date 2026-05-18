@@ -1,0 +1,25 @@
+{
+  "name": "@tianwen/interpretation-engine",
+  "version": "1.0.0",
+  "description": "天问 - 解释引擎（Interpretation Engine）",
+  "type": "module",
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "dev": "echo 'Interpretation Engine development'",
+    "build": "echo 'Interpretation Engine build'",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@tianwen/signal-system": "workspace:*",
+    "@tianwen/probability-engine": "workspace:*",
+    "@tianwen/fortune-engine": "workspace:*",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "zod": "^3.23.0"
+  }
+}

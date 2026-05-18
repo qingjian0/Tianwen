@@ -1,0 +1,22 @@
+{
+  "name": "@tianwen/weight-system",
+  "version": "1.0.0",
+  "description": "天问 - 统一权重系统（Weight System）",
+  "type": "module",
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "dev": "echo 'Weight System development'",
+    "build": "echo 'Weight System build'",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "zod": "^3.23.0"
+  }
+}

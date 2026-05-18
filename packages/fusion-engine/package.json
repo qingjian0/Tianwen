@@ -1,0 +1,26 @@
+{
+  "name": "@tianwen/fusion-engine",
+  "version": "1.0.0",
+  "description": "天问 - 多术数融合引擎（Fusion Engine）",
+  "type": "module",
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "dev": "echo 'Fusion Engine development'",
+    "build": "echo 'Fusion Engine build'",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@tianwen/signal-system": "workspace:*",
+    "@tianwen/weight-system": "workspace:*",
+    "@tianwen/probability-engine": "workspace:*",
+    "@tianwen/resonance-engine": "workspace:*",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "zod": "^3.23.0"
+  }
+}
