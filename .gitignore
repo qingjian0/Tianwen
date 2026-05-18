@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+.virtualenv/
+
+# Build outputs
+.next/
+dist/
+build/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Cache
+.trae/cache/
+.cache/
