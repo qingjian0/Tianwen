@@ -2,6 +2,8 @@
  * 九宫系统类型定义
  */
 
+import type { Star, Deity } from './star';
+
 export const NINE_PALACES = ['坎', '坤', '震', '巽', '中', '乾', '兑', '艮', '离'] as const;
 export type NinePalace = typeof NINE_PALACES[number];
 
