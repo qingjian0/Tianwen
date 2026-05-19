@@ -1,9 +1,6 @@
 /**
- * 天问 - 共振引擎（Resonance Engine）
- * Phase 3: 多系统信号共振与冲突分析
+ * Resonance Engine 包入口
  */
 
 export * from './types';
-export * from './constants';
-export * from './resonance-calculator';
-export * from './conflict-analyzer';
+export { MultiSystemResonanceEngine } from './resonance-engine-v2';
