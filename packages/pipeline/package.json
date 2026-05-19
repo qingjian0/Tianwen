@@ -1,0 +1,21 @@
+{
+  "name": "@tianwen/pipeline",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@tianwen/chrono-engine": "workspace:*",
+    "@tianwen/meihua": "workspace:*",
+    "@tianwen/liuyao": "workspace:*",
+    "@tianwen/bazi-engine": "workspace:*",
+    "@tianwen/signal-system": "workspace:*",
+    "@tianwen/signal-extractor": "workspace:*",
+    "@tianwen/rule-engine-core": "workspace:*",
+    "@tianwen/probability-engine": "workspace:*",
+    "@tianwen/probability-mapping": "workspace:*",
+    "@tianwen/fortune-engine": "workspace:*",
+    "@tianwen/timing-engine": "workspace:*",
+    "@tianwen/interpretation-engine": "workspace:*"
+  }
+}
