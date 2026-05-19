@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>天问 API 文档</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', 'Noto Serif SC', serif; }
+    .bg-gradient-chinese { background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%); }
+    .code-block { background: rgba(0, 0, 0, 0.3); border-radius: 8px; padding: 1rem; font-family: 'Courier New', monospace; }
+    .method-get { background: #48bb78; }
+    .method-post { background: #4299e1; }
+    .method-put { background: #ed8936; }
+    .method-delete { background: #f56565; }
+    .api-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.3s; }
+    .api-card:hover { border-color: rgba(251, 191, 36, 0.5); transform: translateY(-2px); }
+  </style>
+</head>
+<body class="bg-gradient-chinese min-h-screen text-white p-4 md:p-8">
+  <div class="max-w-6xl mx-auto">
+    <!-- Header -->
+    <header class="text-center mb-12">
+      <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-200 bg-clip-text text-transparent mb-4">
+        天问 API 文档
+      </h1>
+      <p class="text-gray-400 text-lg">RESTful + WebSocket 完整 API 接口</p>
+    </header>
+
+    <!-- Base URL -->
+    <div class="api-card rounded-xl p-6 mb-8">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="text-2xl">🔗</span>
+        <h2 class="text-xl font-semibold">基础信息</h2>
+      </div>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div>
+          <div class="text-gray-400 text-sm mb-1">Base URL</div>
+          <div class="code-block text-sm">http://localhost:3000/api</div>
+        </div>
+        <div>
+          <div class="text-gray-400 text-sm mb-1">WebSocket</div>
+          <div class="code-block text-sm">ws://localhost:3000/ws</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESTful API -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-6 flex items-center gap-2">
+        <span class="w-1 h-6 bg-amber-400 rounded-full"></span>
+        RESTful API
+      </h2>
+
+      <!-- Health Check -->
+      <div class="api-card rounded-xl p-6 mb-4">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="px-2 py-1 rounded text-xs font-bold text-white method-get">GET</span>
+          <h3 class="text-lg font-semibold">健康检查</h3>
+        </div>
+        <div class="code-block text-sm mb-4">/health</div>
+        <div class="text-gray-400 text-sm">检查服务健康状态</div>
+      </div>
+
+      <!-- Create Prediction -->
+      <div class="api-card rounded-xl p-6 mb-4">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="px-2 py-1 rounded text-xs font-bold text-white method-post">POST</span>
+          <h3 class="text-lg font-semibold">创建预测</h3>
+        </div>
+        <div class="code-block text-sm mb-4">/predictions</div>
+        <div class="text-gray-400 text-sm mb-4">提交新的推演预测请求</div>
+        <div class="text-gray-300 text-sm font-semibold mb-2">请求体:</div>
+        <div class="code-block text-sm mb-2">
+<pre>{
+  "question": "今日财运如何？",
+  "category": "wealth",
+  "system": "meihua",
+  "mode": "single",
+  "timestamp": "2026-05-19T10:00:00Z",
+  "birthInfo": {
+    "year": 1990,
+    "month": 1,
+    "day": 1,
+    "hour": 12,
+    "gender": "male",
+    "calendar": "solar"
+  }
+}</pre>
+        </div>
+      </div>
+
+      <!-- Get Prediction -->
+      <div class="api-card rounded-xl p-6 mb-4">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="px-2 py-1 rounded text-xs font-bold text-white method-get">GET</span>
+          <h3 class="text-lg font-semibold">获取预测结果</h3>
+        </div>
+        <div class="code-block text-sm mb-4">/predictions/:id</div>
+        <div class="text-gray-400 text-sm">根据 ID 获取预测详情</div>
+      </div>
+
+      <!-- Get History -->
+      <div class="api-card rounded-xl p-6 mb-4">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="px-2 py-1 rounded text-xs font-bold text-white method-get">GET</span>
+          <h3 class="text-lg font-semibold">获取预测历史</h3>
+        </div>
+        <div class="code-block text-sm mb-4">/predictions?page=1&limit=20</div>
+        <div class="text-gray-400 text-sm">分页获取历史预测记录</div>
+      </div>
+
+      <!-- Get Rules -->
+      <div class="api-card rounded-xl p-6 mb-4">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="px-2 py-1 rounded text-xs font-bold text-white method-get">GET</span>
+          <h3 class="text-lg font-semibold">获取规则列表</h3>
+        </div>
+        <div class="code-block text-sm mb-4">/rules?category=bazi&page=1&limit=20</div>
+        <div class="text-gray-400 text-sm">支持按分类、优先级、关键词筛选</div>
+      </div>
+
+      <!-- Get Rule By ID -->
+      <div class="api-card rounded-xl p-6 mb-4">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="px-2 py-1 rounded text-xs font-bold text-white method-get">GET</span>
+          <h3 class="text-lg font-semibold">获取规则详情</h3>
+        </div>
+        <div class="code-block text-sm mb-4">/rules/:id</div>
+        <div class="text-gray-400 text-sm">获取单条规则的完整信息</div>
+      </div>
+
+      <!-- Get Categories -->
+      <div class="api-card rounded-xl p-6 mb-4">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="px-2 py-1 rounded text-xs font-bold text-white method-get">GET</span>
+          <h3 class="text-lg font-semibold">获取规则分类</h3>
+        </div>
+        <div class="code-block text-sm mb-4">/rules/categories/list</div>
+        <div class="text-gray-400 text-sm">获取所有规则分类及数量</div>
+      </div>
+    </section>
+
+    <!-- WebSocket API -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-6 flex items-center gap-2">
+        <span class="w-1 h-6 bg-purple-400 rounded-full"></span>
+        WebSocket API
+      </h2>
+
+      <div class="api-card rounded-xl p-6 mb-4">
+        <h3 class="text-lg font-semibold mb-4">消息格式</h3>
+        <div class="code-block text-sm mb-4">
+<pre>{
+  "type": "prediction" | "progress" | "error" | "notification",
+  "payload": { ... },
+  "timestamp": "2026-05-19T10:00:00Z",
+  "requestId": "pred_xxx"
+}</pre>
+        </div>
+
+        <h3 class="text-lg font-semibold mb-4">订阅频道</h3>
+        <div class="grid md:grid-cols-3 gap-4">
+          <div class="bg-white/5 rounded-lg p-4">
+            <div class="font-semibold text-amber-400 mb-2">predictions</div>
+            <div class="text-gray-400 text-sm">预测相关消息</div>
+          </div>
+          <div class="bg-white/5 rounded-lg p-4">
+            <div class="font-semibold text-blue-400 mb-2">rules</div>
+            <div class="text-gray-400 text-sm">规则相关消息</div>
+          </div>
+          <div class="bg-white/5 rounded-lg p-4">
+            <div class="font-semibold text-green-400 mb-2">system</div>
+            <div class="text-gray-400 text-sm">系统通知</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Response Format -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-6 flex items-center gap-2">
+        <span class="w-1 h-6 bg-blue-400 rounded-full"></span>
+        响应格式
+      </h2>
+
+      <div class="api-card rounded-xl p-6">
+        <h3 class="text-lg font-semibold mb-4">统一响应结构</h3>
+        <div class="code-block text-sm">
+<pre>{
+  "success": true,
+  "data": { ... },
+  "error": null,
+  "message": "操作成功",
+  "timestamp": "2026-05-19T10:00:00Z",
+  "requestId": "req_xxx"
+}</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Code Examples -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-6 flex items-center gap-2">
+        <span class="w-1 h-6 bg-green-400 rounded-full"></span>
+        代码示例
+      </h2>
+
+      <div class="api-card rounded-xl p-6 mb-4">
+        <h3 class="text-lg font-semibold mb-4">JavaScript/TypeScript</h3>
+        <div class="code-block text-sm">
+<pre>import { PredictionService, RuleService } from '@tianwen/api';
+
+const predictionService = new PredictionService();
+
+// 创建预测
+const result = await predictionService.predict({
+  question: '今日财运如何？',
+  category: 'wealth',
+  system: 'meihua',
+  mode: 'single'
+});
+
+if (result.success) {
+  console.log('预测结果:', result.data.summary);
+}
+
+// 获取规则
+const ruleService = new RuleService();
+const rules = await ruleService.getRulesByCategory('bazi');
+console.log('八字规则:', rules.data.length);</pre>
+        </div>
+      </div>
+
+      <div class="api-card rounded-xl p-6 mb-4">
+        <h3 class="text-lg font-semibold mb-4">WebSocket 客户端</h3>
+        <div class="code-block text-sm">
+<pre>const ws = new WebSocket('ws://localhost:3000/ws');
+
+ws.onopen = () => {
+  console.log('Connected to Tianwen WebSocket');
+  ws.send(JSON.stringify({
+    action: 'subscribe',
+    channel: 'predictions'
+  }));
+};
+
+ws.onmessage = (event) => {
+  const message = JSON.parse(event.data);
+  console.log('收到消息:', message);
+  
+  if (message.type === 'prediction') {
+    console.log('预测结果:', message.payload);
+  } else if (message.type === 'progress') {
+    console.log('进度:', message.payload);
+  }
+};</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center text-gray-500 text-sm">
+      <p>天问系统 API v1.0 | 东方术数推演文明操作系统</p>
+      <p class="mt-2">基于 Phase 5 规则引擎 + Phase 6 Pipeline 构建</p>
+    </footer>
+  </div>
+</body>
+</html>

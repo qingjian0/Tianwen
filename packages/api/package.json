@@ -1,0 +1,16 @@
+{
+  "name": "@tianwen/api",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@tianwen/pipeline": "workspace:*",
+    "@tianwen/rule-engine-core": "workspace:*"
+  },
+  "scripts": {
+    "dev": "ts-node src/server.ts",
+    "start": "node dist/server.js",
+    "build": "tsc"
+  }
+}
