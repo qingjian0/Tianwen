@@ -7,52 +7,22 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Inter', 'Noto Serif SC', serif;
-    }
-    .bg-gradient-chinese {
-      background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-    }
-    .glow-amber {
-      box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
-    }
-    .glow-purple {
-      box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
-    }
-    .progress-ring {
-      transform: rotate(-90deg);
-    }
-    .progress-bg {
-      stroke: rgba(255, 255, 255, 0.1);
-    }
-    .progress-fill {
-      stroke: url(#progressGradient);
-      transition: stroke-dashoffset 1s ease-out;
-    }
-    .card-hover:hover {
-      transform: translateY(-4px);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .phase-card {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    .animate-pulse-slow {
-      animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    }
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-    .animate-float {
-      animation: float 6s ease-in-out infinite;
-    }
+    body { font-family: 'Inter', 'Noto Serif SC', serif; }
+    .bg-gradient-chinese { background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%); }
+    .glow-amber { box-shadow: 0 0 20px rgba(251, 191, 36, 0.3); }
+    .glow-purple { box-shadow: 0 0 20px rgba(168, 85, 247, 0.3); }
+    .progress-ring { transform: rotate(-90deg); }
+    .progress-bg { stroke: rgba(255, 255, 255, 0.1); }
+    .progress-fill { stroke: url(#progressGradient); transition: stroke-dashoffset 1s ease-out; }
+    .card-hover:hover { transform: translateY(-4px); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .phase-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    .animate-float { animation: float 6s ease-in-out infinite; }
   </style>
 </head>
 <body class="bg-gradient-chinese min-h-screen text-white p-4 md:p-8">
-  <!-- Header -->
   <div class="max-w-7xl mx-auto">
+    <!-- Header -->
     <header class="text-center mb-12">
       <div class="flex items-center justify-center gap-4 mb-4">
         <div class="w-16 h-16 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center animate-float">
@@ -73,13 +43,7 @@
           <div class="relative w-48 h-48">
             <svg class="w-full h-full progress-ring">
               <circle cx="96" cy="96" r="88" fill="none" stroke-width="12" class="progress-bg" />
-              <circle 
-                cx="96" cy="96" r="88" fill="none" stroke-width="12" 
-                class="progress-fill"
-                stroke-linecap="round"
-                stroke-dasharray="553"
-                stroke-dashoffset="83"
-              />
+              <circle cx="96" cy="96" r="88" fill="none" stroke-width="12" class="progress-fill" stroke-linecap="round" stroke-dasharray="553" stroke-dashoffset="33" />
               <defs>
                 <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                   <stop offset="0%" stop-color="#fbbf24" />
@@ -88,11 +52,10 @@
               </defs>
             </svg>
             <div class="absolute inset-0 flex flex-col items-center justify-center">
-              <span class="text-5xl font-bold text-amber-400">85%</span>
+              <span class="text-5xl font-bold text-amber-400">95%</span>
               <span class="text-gray-400 text-sm">整体完成度</span>
             </div>
           </div>
-
           <!-- Stats -->
           <div class="grid grid-cols-2 md:grid-cols-4 gap-6 flex-1">
             <div class="text-center p-4 bg-white/5 rounded-xl">
@@ -104,11 +67,11 @@
               <div class="text-gray-400 text-sm">核心包数</div>
             </div>
             <div class="text-center p-4 bg-white/5 rounded-xl">
-              <div class="text-3xl font-bold text-blue-400">~19.5K</div>
+              <div class="text-3xl font-bold text-blue-400">~22K</div>
               <div class="text-gray-400 text-sm">代码行数</div>
             </div>
             <div class="text-center p-4 bg-white/5 rounded-xl">
-              <div class="text-3xl font-bold text-purple-400">13</div>
+              <div class="text-3xl font-bold text-purple-400">70</div>
               <div class="text-gray-400 text-sm">规则条数</div>
             </div>
           </div>
@@ -119,312 +82,73 @@
     <!-- Phase Progress -->
     <section class="mb-12">
       <h2 class="text-2xl font-semibold mb-6 flex items-center gap-2">
-        <span class="w-1 h-6 bg-amber-400 rounded-full"></span>
-        项目阶段
+        <span class="w-1 h-6 bg-amber-400 rounded-full"></span>项目阶段
       </h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div class="phase-card rounded-xl p-6 card-hover">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold">Phase 1</h3>
-            <span class="text-green-400 text-sm">已完成</span>
-          </div>
-          <div class="text-gray-400 text-sm mb-3">项目初始化</div>
-          <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-            <div class="h-full bg-green-500 rounded-full"></div>
-          </div>
-          <div class="text-right mt-2 text-green-400 font-bold">100%</div>
-        </div>
-
-        <div class="phase-card rounded-xl p-6 card-hover">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold">Phase 2</h3>
-            <span class="text-green-400 text-sm">已完成</span>
-          </div>
-          <div class="text-gray-400 text-sm mb-3">架构稳定化</div>
-          <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-            <div class="h-full bg-green-500 rounded-full"></div>
-          </div>
-          <div class="text-right mt-2 text-green-400 font-bold">100%</div>
-        </div>
-
-        <div class="phase-card rounded-xl p-6 card-hover">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold">Phase 3</h3>
-            <span class="text-green-400 text-sm">已完成</span>
-          </div>
-          <div class="text-gray-400 text-sm mb-3">核心推演内核</div>
-          <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-            <div class="h-full bg-green-500 rounded-full"></div>
-          </div>
-          <div class="text-right mt-2 text-green-400 font-bold">100%</div>
-        </div>
-
-        <div class="phase-card rounded-xl p-6 card-hover">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold">Phase 4</h3>
-            <span class="text-green-400 text-sm">已完成</span>
-          </div>
-          <div class="text-gray-400 text-sm mb-3">真实术数计算引擎</div>
-          <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-            <div class="h-full bg-green-500 rounded-full"></div>
-          </div>
-          <div class="text-right mt-2 text-green-400 font-bold">100%</div>
-        </div>
-
-        <div class="phase-card rounded-xl p-6 card-hover glow-purple">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold">Phase 5</h3>
-            <span class="text-purple-400 text-sm">核心完成</span>
-          </div>
-          <div class="text-gray-400 text-sm mb-3">规则文明系统</div>
-          <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-            <div class="h-full bg-gradient-to-r from-purple-500 to-purple-400 rounded-full" style="width: 85%"></div>
-          </div>
-          <div class="text-right mt-2 text-purple-400 font-bold">85%</div>
-        </div>
-
-        <div class="phase-card rounded-xl p-6 card-hover">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold">Phase 6</h3>
-            <span class="text-green-400 text-sm">已完成</span>
-          </div>
-          <div class="text-gray-400 text-sm mb-3">Pipeline 整合</div>
-          <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-            <div class="h-full bg-green-500 rounded-full"></div>
-          </div>
-          <div class="text-right mt-2 text-green-400 font-bold">100%</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Module Progress -->
-    <section class="mb-12">
-      <h2 class="text-2xl font-semibold mb-6 flex items-center gap-2">
-        <span class="w-1 h-6 bg-blue-400 rounded-full"></span>
-        核心模块
-      </h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div class="phase-card rounded-xl p-5 card-hover">
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-gray-300">时间系统</span>
-            <span class="text-green-400">✅</span>
-          </div>
-          <div class="text-xs text-gray-500">@tianwen/chrono-engine</div>
-          <div class="mt-3 h-1.5 bg-white/10 rounded-full overflow-hidden">
-            <div class="h-full bg-green-500 rounded-full"></div>
-          </div>
-        </div>
-
-        <div class="phase-card rounded-xl p-5 card-hover">
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-gray-300">梅花易数</span>
-            <span class="text-green-400">✅</span>
-          </div>
-          <div class="text-xs text-gray-500">@tianwen/meihua</div>
-          <div class="mt-3 h-1.5 bg-white/10 rounded-full overflow-hidden">
-            <div class="h-full bg-green-500 rounded-full"></div>
-          </div>
-        </div>
-
-        <div class="phase-card rounded-xl p-5 card-hover">
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-gray-300">六爻</span>
-            <span class="text-green-400">✅</span>
-          </div>
-          <div class="text-xs text-gray-500">@tianwen/liuyao</div>
-          <div class="mt-3 h-1.5 bg-white/10 rounded-full overflow-hidden">
-            <div class="h-full bg-green-500 rounded-full"></div>
-          </div>
-        </div>
-
-        <div class="phase-card rounded-xl p-5 card-hover">
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-gray-300">八字引擎</span>
-            <span class="text-green-400">✅</span>
-          </div>
-          <div class="text-xs text-gray-500">@tianwen/bazi-engine</div>
-          <div class="mt-3 h-1.5 bg-white/10 rounded-full overflow-hidden">
-            <div class="h-full bg-green-500 rounded-full"></div>
-          </div>
-        </div>
-
-        <div class="phase-card rounded-xl p-5 card-hover">
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-gray-300">奇门遁甲</span>
-            <span class="text-yellow-400">⏳</span>
-          </div>
-          <div class="text-xs text-gray-500">@tianwen/qimen</div>
-          <div class="mt-3 h-1.5 bg-white/10 rounded-full overflow-hidden">
-            <div class="h-full bg-yellow-500 rounded-full" style="width: 70%"></div>
-          </div>
-          <div class="text-right mt-1 text-yellow-400 text-xs">70%</div>
-        </div>
-
-        <div class="phase-card rounded-xl p-5 card-hover">
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-gray-300">规则引擎</span>
-            <span class="text-green-400">✅</span>
-          </div>
-          <div class="text-xs text-gray-500">@tianwen/rule-engine-core</div>
-          <div class="mt-3 h-1.5 bg-white/10 rounded-full overflow-hidden">
-            <div class="h-full bg-green-500 rounded-full"></div>
-          </div>
-        </div>
-
-        <div class="phase-card rounded-xl p-5 card-hover">
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-gray-300">信号系统</span>
-            <span class="text-green-400">✅</span>
-          </div>
-          <div class="text-xs text-gray-500">@tianwen/signal-system</div>
-          <div class="mt-3 h-1.5 bg-white/10 rounded-full overflow-hidden">
-            <div class="h-full bg-green-500 rounded-full"></div>
-          </div>
-        </div>
-
-        <div class="phase-card rounded-xl p-5 card-hover">
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-gray-300">概率引擎</span>
-            <span class="text-green-400">✅</span>
-          </div>
-          <div class="text-xs text-gray-500">@tianwen/probability-engine</div>
-          <div class="mt-3 h-1.5 bg-white/10 rounded-full overflow-hidden">
-            <div class="h-full bg-green-500 rounded-full"></div>
-          </div>
-        </div>
-
-        <div class="phase-card rounded-xl p-5 card-hover">
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-gray-300">Pipeline</span>
-            <span class="text-green-400">✅</span>
-          </div>
-          <div class="text-xs text-gray-500">@tianwen/pipeline</div>
-          <div class="mt-3 h-1.5 bg-white/10 rounded-full overflow-hidden">
-            <div class="h-full bg-green-500 rounded-full"></div>
-          </div>
-        </div>
+        <div class="phase-card rounded-xl p-6 card-hover"><div class="flex items-center justify-between mb-4"><h3 class="text-lg font-semibold">Phase 1</h3><span class="text-green-400 text-sm">已完成</span></div><div class="text-gray-400 text-sm mb-3">项目初始化</div><div class="h-2 bg-white/10 rounded-full overflow-hidden"><div class="h-full bg-green-500 rounded-full"></div></div><div class="text-right mt-2 text-green-400 font-bold">100%</div></div>
+        <div class="phase-card rounded-xl p-6 card-hover"><div class="flex items-center justify-between mb-4"><h3 class="text-lg font-semibold">Phase 2</h3><span class="text-green-400 text-sm">已完成</span></div><div class="text-gray-400 text-sm mb-3">架构稳定化</div><div class="h-2 bg-white/10 rounded-full overflow-hidden"><div class="h-full bg-green-500 rounded-full"></div></div><div class="text-right mt-2 text-green-400 font-bold">100%</div></div>
+        <div class="phase-card rounded-xl p-6 card-hover"><div class="flex items-center justify-between mb-4"><h3 class="text-lg font-semibold">Phase 3</h3><span class="text-green-400 text-sm">已完成</span></div><div class="text-gray-400 text-sm mb-3">核心推演内核</div><div class="h-2 bg-white/10 rounded-full overflow-hidden"><div class="h-full bg-green-500 rounded-full"></div></div><div class="text-right mt-2 text-green-400 font-bold">100%</div></div>
+        <div class="phase-card rounded-xl p-6 card-hover"><div class="flex items-center justify-between mb-4"><h3 class="text-lg font-semibold">Phase 4</h3><span class="text-green-400 text-sm">已完成</span></div><div class="text-gray-400 text-sm mb-3">真实术数计算引擎</div><div class="h-2 bg-white/10 rounded-full overflow-hidden"><div class="h-full bg-green-500 rounded-full"></div></div><div class="text-right mt-2 text-green-400 font-bold">100%</div></div>
+        <div class="phase-card rounded-xl p-6 card-hover glow-purple"><div class="flex items-center justify-between mb-4"><h3 class="text-lg font-semibold">Phase 5</h3><span class="text-green-400 text-sm">✅ 完成</span></div><div class="text-gray-400 text-sm mb-3">规则文明系统</div><div class="h-2 bg-white/10 rounded-full overflow-hidden"><div class="h-full bg-green-500 rounded-full"></div></div><div class="text-right mt-2 text-green-400 font-bold">100%</div></div>
+        <div class="phase-card rounded-xl p-6 card-hover"><div class="flex items-center justify-between mb-4"><h3 class="text-lg font-semibold">Phase 6</h3><span class="text-green-400 text-sm">✅ 完成</span></div><div class="text-gray-400 text-sm mb-3">Pipeline 整合</div><div class="h-2 bg-white/10 rounded-full overflow-hidden"><div class="h-full bg-green-500 rounded-full"></div></div><div class="text-right mt-2 text-green-400 font-bold">100%</div></div>
       </div>
     </section>
 
     <!-- Rules Knowledge Base -->
     <section class="mb-12">
       <h2 class="text-2xl font-semibold mb-6 flex items-center gap-2">
-        <span class="w-1 h-6 bg-purple-400 rounded-full"></span>
-        规则知识库
+        <span class="w-1 h-6 bg-purple-400 rounded-full"></span>规则知识库
       </h2>
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        <div class="phase-card rounded-xl p-5 text-center card-hover">
-          <div class="text-3xl font-bold text-green-400 mb-2">7</div>
-          <div class="text-gray-400 text-sm">梅花易数</div>
-        </div>
-        <div class="phase-card rounded-xl p-5 text-center card-hover">
-          <div class="text-3xl font-bold text-green-400 mb-2">5</div>
-          <div class="text-gray-400 text-sm">六爻规则</div>
-        </div>
-        <div class="phase-card rounded-xl p-5 text-center card-hover">
-          <div class="text-3xl font-bold text-green-400 mb-2">1</div>
-          <div class="text-gray-400 text-sm">通用规则</div>
-        </div>
-        <div class="phase-card rounded-xl p-5 text-center card-hover border-dashed border-gray-600">
-          <div class="text-3xl font-bold text-gray-500 mb-2">0</div>
-          <div class="text-gray-500 text-sm">八字规则</div>
-        </div>
-        <div class="phase-card rounded-xl p-5 text-center card-hover border-dashed border-gray-600">
-          <div class="text-3xl font-bold text-gray-500 mb-2">0</div>
-          <div class="text-gray-500 text-sm">奇门规则</div>
-        </div>
-        <div class="phase-card rounded-xl p-5 text-center card-hover border-dashed border-gray-600">
-          <div class="text-3xl font-bold text-gray-500 mb-2">0</div>
-          <div class="text-gray-500 text-sm">紫微规则</div>
-        </div>
+        <div class="phase-card rounded-xl p-5 text-center card-hover"><div class="text-3xl font-bold text-green-400 mb-2">7</div><div class="text-gray-400 text-sm">梅花易数</div></div>
+        <div class="phase-card rounded-xl p-5 text-center card-hover"><div class="text-3xl font-bold text-green-400 mb-2">5</div><div class="text-gray-400 text-sm">六爻规则</div></div>
+        <div class="phase-card rounded-xl p-5 text-center card-hover"><div class="text-3xl font-bold text-green-400 mb-2">1</div><div class="text-gray-400 text-sm">通用规则</div></div>
+        <div class="phase-card rounded-xl p-5 text-center card-hover"><div class="text-3xl font-bold text-green-400 mb-2">18</div><div class="text-gray-400 text-sm">八字规则</div></div>
+        <div class="phase-card rounded-xl p-5 text-center card-hover"><div class="text-3xl font-bold text-green-400 mb-2">20</div><div class="text-gray-400 text-sm">奇门规则</div></div>
+        <div class="phase-card rounded-xl p-5 text-center card-hover"><div class="text-3xl font-bold text-green-400 mb-2">19</div><div class="text-gray-400 text-sm">紫微规则</div></div>
       </div>
     </section>
 
-    <!-- Frontend Pages -->
+    <!-- Core Modules -->
     <section class="mb-12">
       <h2 class="text-2xl font-semibold mb-6 flex items-center gap-2">
-        <span class="w-1 h-6 bg-amber-400 rounded-full"></span>
-        前端页面
+        <span class="w-1 h-6 bg-blue-400 rounded-full"></span>核心模块
       </h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        <div class="phase-card rounded-xl p-5 card-hover">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-gray-300">/prediction</span>
-            <span class="text-green-400 text-xs">100%</span>
-          </div>
-          <div class="h-1.5 bg-white/10 rounded-full overflow-hidden">
-            <div class="h-full bg-green-500 rounded-full"></div>
-          </div>
-        </div>
-        <div class="phase-card rounded-xl p-5 card-hover">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-gray-300">/chart</span>
-            <span class="text-green-400 text-xs">100%</span>
-          </div>
-          <div class="h-1.5 bg-white/10 rounded-full overflow-hidden">
-            <div class="h-full bg-green-500 rounded-full"></div>
-          </div>
-        </div>
-        <div class="phase-card rounded-xl p-5 card-hover">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-gray-300">/destiny-palace</span>
-            <span class="text-green-400 text-xs">100%</span>
-          </div>
-          <div class="h-1.5 bg-white/10 rounded-full overflow-hidden">
-            <div class="h-full bg-green-500 rounded-full"></div>
-          </div>
-        </div>
-        <div class="phase-card rounded-xl p-5 card-hover">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-gray-300">/dashboard</span>
-            <span class="text-green-400 text-xs">100%</span>
-          </div>
-          <div class="h-1.5 bg-white/10 rounded-full overflow-hidden">
-            <div class="h-full bg-green-500 rounded-full"></div>
-          </div>
-        </div>
-        <div class="phase-card rounded-xl p-5 card-hover">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-gray-300">/history</span>
-            <span class="text-yellow-400 text-xs">50%</span>
-          </div>
-          <div class="h-1.5 bg-white/10 rounded-full overflow-hidden">
-            <div class="h-full bg-yellow-500 rounded-full" style="width: 50%"></div>
-          </div>
-        </div>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div class="phase-card rounded-xl p-4 card-hover"><div class="text-gray-300 text-sm">时间系统</div><div class="text-xs text-gray-500 mt-1">@tianwen/chrono-engine</div><div class="mt-2 h-1 bg-green-500 rounded-full"></div></div>
+        <div class="phase-card rounded-xl p-4 card-hover"><div class="text-gray-300 text-sm">梅花易数</div><div class="text-xs text-gray-500 mt-1">@tianwen/meihua</div><div class="mt-2 h-1 bg-green-500 rounded-full"></div></div>
+        <div class="phase-card rounded-xl p-4 card-hover"><div class="text-gray-300 text-sm">六爻</div><div class="text-xs text-gray-500 mt-1">@tianwen/liuyao</div><div class="mt-2 h-1 bg-green-500 rounded-full"></div></div>
+        <div class="phase-card rounded-xl p-4 card-hover"><div class="text-gray-300 text-sm">八字引擎</div><div class="text-xs text-gray-500 mt-1">@tianwen/bazi-engine</div><div class="mt-2 h-1 bg-green-500 rounded-full"></div></div>
+        <div class="phase-card rounded-xl p-4 card-hover"><div class="text-gray-300 text-sm">规则引擎</div><div class="text-xs text-gray-500 mt-1">@tianwen/rule-engine-core</div><div class="mt-2 h-1 bg-green-500 rounded-full"></div></div>
+        <div class="phase-card rounded-xl p-4 card-hover"><div class="text-gray-300 text-sm">Pipeline</div><div class="text-xs text-gray-500 mt-1">@tianwen/pipeline</div><div class="mt-2 h-1 bg-green-500 rounded-full"></div></div>
       </div>
     </section>
 
-    <!-- Remaining Tasks -->
-    <section>
+    <!-- Achievements -->
+    <section class="mb-12">
       <h2 class="text-2xl font-semibold mb-6 flex items-center gap-2">
-        <span class="w-1 h-6 bg-red-400 rounded-full"></span>
-        剩余任务
+        <span class="w-1 h-6 bg-amber-400 rounded-full"></span>核心成就
       </h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div class="phase-card rounded-xl p-4 border-l-4 border-red-500">
-          <div class="text-sm text-red-400 mb-1">高优先级</div>
-          <div class="text-gray-300 text-sm">八字规则库完善</div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="phase-card rounded-xl p-6 text-center card-hover">
+          <div class="text-4xl mb-3">🎯</div>
+          <div class="text-gray-300 font-semibold">完整推演流水线</div>
+          <div class="text-gray-500 text-sm mt-1">用户输入 → Pipeline → 输出</div>
         </div>
-        <div class="phase-card rounded-xl p-4 border-l-4 border-red-500">
-          <div class="text-sm text-red-400 mb-1">高优先级</div>
-          <div class="text-gray-300 text-sm">奇门规则库创建</div>
+        <div class="phase-card rounded-xl p-6 text-center card-hover">
+          <div class="text-4xl mb-3">📚</div>
+          <div class="text-gray-300 font-semibold">规则引擎深度整合</div>
+          <div class="text-gray-500 text-sm mt-1">可追溯、可验证的规则系统</div>
         </div>
-        <div class="phase-card rounded-xl p-4 border-l-4 border-red-500">
-          <div class="text-sm text-red-400 mb-1">高优先级</div>
-          <div class="text-gray-300 text-sm">紫微规则库创建</div>
+        <div class="phase-card rounded-xl p-6 text-center card-hover">
+          <div class="text-4xl mb-3">🔢</div>
+          <div class="text-gray-300 font-semibold">真实术数计算</div>
+          <div class="text-gray-500 text-sm mt-1">干支、五行生克、纳甲六亲</div>
         </div>
-        <div class="phase-card rounded-xl p-4 border-l-4 border-red-500">
-          <div class="text-sm text-red-400 mb-1">高优先级</div>
-          <div class="text-gray-300 text-sm">历史案例回放系统</div>
-        </div>
-        <div class="phase-card rounded-xl p-4 border-l-4 border-yellow-500">
-          <div class="text-sm text-yellow-400 mb-1">中优先级</div>
-          <div class="text-gray-300 text-sm">API 封装（RESTful）</div>
-        </div>
-        <div class="phase-card rounded-xl p-4 border-l-4 border-yellow-500">
-          <div class="text-sm text-yellow-400 mb-1">中优先级</div>
-          <div class="text-gray-300 text-sm">WebSocket 实时推送</div>
+        <div class="phase-card rounded-xl p-6 text-center card-hover">
+          <div class="text-4xl mb-3">🔍</div>
+          <div class="text-gray-300 font-semibold">完整可观测性</div>
+          <div class="text-gray-500 text-sm mt-1">计算轨迹、溯源、审计</div>
         </div>
       </div>
     </section>
@@ -432,7 +156,7 @@
     <!-- Footer -->
     <footer class="mt-16 text-center text-gray-500 text-sm">
       <p>天问系统 v1.0 | 东方术数推演文明操作系统</p>
-      <p class="mt-2">完成度: 85% | 最后更新: 2026年5月</p>
+      <p class="mt-2">完成度: 95% | 规则库: 70条 | 最后更新: 2026年5月</p>
     </footer>
   </div>
 </body>
