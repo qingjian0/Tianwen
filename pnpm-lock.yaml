@@ -88,6 +88,34 @@ importers:
         specifier: '>=18.0.0'
         version: 19.2.6
 
+  packages/api:
+    dependencies:
+      '@tianwen/pipeline':
+        specifier: workspace:*
+        version: link:../pipeline
+      '@tianwen/rule-engine-core':
+        specifier: workspace:*
+        version: link:../rule-engine-core
+
+  packages/bazi-engine:
+    dependencies:
+      '@tianwen/chrono-engine':
+        specifier: workspace:*
+        version: link:../chrono-engine
+      '@tianwen/metaphysics-types':
+        specifier: workspace:*
+        version: link:../metaphysics-types
+
+  packages/calibration: {}
+
+  packages/calibration-engine: {}
+
+  packages/case-replay:
+    dependencies:
+      uuid:
+        specifier: ^9.0.0
+        version: 9.0.1
+
   packages/chrono-engine:
     dependencies:
       date-fns:
@@ -97,6 +125,71 @@ importers:
       tsup:
         specifier: ^8.0.0
         version: 8.5.1(jiti@1.21.7)(postcss@8.5.14)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.5.0
+        version: 5.9.3
+      zod:
+        specifier: ^3.23.0
+        version: 3.25.76
+
+  packages/classics: {}
+
+  packages/cognitive-engine: {}
+
+  packages/event-bus: {}
+
+  packages/execution-graph: {}
+
+  packages/fortune-engine:
+    dependencies:
+      '@tianwen/probability-engine':
+        specifier: workspace:*
+        version: link:../probability-engine
+      '@tianwen/signal-system':
+        specifier: workspace:*
+        version: link:../signal-system
+    devDependencies:
+      typescript:
+        specifier: ^5.5.0
+        version: 5.9.3
+      zod:
+        specifier: ^3.23.0
+        version: 3.25.76
+
+  packages/fusion-engine:
+    dependencies:
+      '@tianwen/probability-engine':
+        specifier: workspace:*
+        version: link:../probability-engine
+      '@tianwen/resonance-engine':
+        specifier: workspace:*
+        version: link:../resonance-engine
+      '@tianwen/signal-system':
+        specifier: workspace:*
+        version: link:../signal-system
+      '@tianwen/weight-system':
+        specifier: workspace:*
+        version: link:../weight-system
+    devDependencies:
+      typescript:
+        specifier: ^5.5.0
+        version: 5.9.3
+      zod:
+        specifier: ^3.23.0
+        version: 3.25.76
+
+  packages/interpretation-engine:
+    dependencies:
+      '@tianwen/fortune-engine':
+        specifier: workspace:*
+        version: link:../fortune-engine
+      '@tianwen/probability-engine':
+        specifier: workspace:*
+        version: link:../probability-engine
+      '@tianwen/signal-system':
+        specifier: workspace:*
+        version: link:../signal-system
+    devDependencies:
       typescript:
         specifier: ^5.5.0
         version: 5.9.3
@@ -116,6 +209,12 @@ importers:
       typescript:
         specifier: ^5.5.0
         version: 5.9.3
+
+  packages/manual-divination:
+    dependencies:
+      '@tianwen/meihua':
+        specifier: workspace:*
+        version: link:../meihua
 
   packages/meihua:
     dependencies:
@@ -139,6 +238,105 @@ importers:
         specifier: ^5.5.0
         version: 5.9.3
 
+  packages/pipeline:
+    dependencies:
+      '@tianwen/bazi-engine':
+        specifier: workspace:*
+        version: link:../bazi-engine
+      '@tianwen/chrono-engine':
+        specifier: workspace:*
+        version: link:../chrono-engine
+      '@tianwen/fortune-engine':
+        specifier: workspace:*
+        version: link:../fortune-engine
+      '@tianwen/interpretation-engine':
+        specifier: workspace:*
+        version: link:../interpretation-engine
+      '@tianwen/liuyao':
+        specifier: workspace:*
+        version: link:../liuyao
+      '@tianwen/meihua':
+        specifier: workspace:*
+        version: link:../meihua
+      '@tianwen/probability-engine':
+        specifier: workspace:*
+        version: link:../probability-engine
+      '@tianwen/probability-mapping':
+        specifier: workspace:*
+        version: link:../probability-mapping
+      '@tianwen/rule-engine-core':
+        specifier: workspace:*
+        version: link:../rule-engine-core
+      '@tianwen/signal-extractor':
+        specifier: workspace:*
+        version: link:../signal-extractor
+      '@tianwen/signal-system':
+        specifier: workspace:*
+        version: link:../signal-system
+      '@tianwen/timing-engine':
+        specifier: workspace:*
+        version: link:../timing-engine
+
+  packages/prediction-core:
+    dependencies:
+      '@tianwen/signal-system':
+        specifier: workspace:*
+        version: link:../signal-system
+      '@tianwen/weight-system':
+        specifier: workspace:*
+        version: link:../weight-system
+    devDependencies:
+      typescript:
+        specifier: ^5.5.0
+        version: 5.9.3
+      zod:
+        specifier: ^3.23.0
+        version: 3.25.76
+
+  packages/probability-engine:
+    dependencies:
+      '@tianwen/signal-system':
+        specifier: workspace:*
+        version: link:../signal-system
+      '@tianwen/weight-system':
+        specifier: workspace:*
+        version: link:../weight-system
+    devDependencies:
+      typescript:
+        specifier: ^5.5.0
+        version: 5.9.3
+      zod:
+        specifier: ^3.23.0
+        version: 3.25.76
+
+  packages/probability-mapping:
+    dependencies:
+      '@tianwen/probability-engine':
+        specifier: workspace:*
+        version: link:../probability-engine
+      '@tianwen/signal-system':
+        specifier: workspace:*
+        version: link:../signal-system
+
+  packages/prompt-orchestrator:
+    dependencies:
+      '@tianwen/fusion-engine':
+        specifier: workspace:*
+        version: link:../fusion-engine
+      '@tianwen/prediction-core':
+        specifier: workspace:*
+        version: link:../prediction-core
+      '@tianwen/probability-engine':
+        specifier: workspace:*
+        version: link:../probability-engine
+    devDependencies:
+      typescript:
+        specifier: ^5.5.0
+        version: 5.9.3
+      zod:
+        specifier: ^3.23.0
+        version: 3.25.76
+
   packages/prompts:
     devDependencies:
       typescript:
@@ -158,6 +356,43 @@ importers:
         specifier: ^5.5.0
         version: 5.9.3
 
+  packages/replay-system: {}
+
+  packages/resonance-engine:
+    dependencies:
+      '@tianwen/signal-system':
+        specifier: workspace:*
+        version: link:../signal-system
+    devDependencies:
+      typescript:
+        specifier: ^5.5.0
+        version: 5.9.3
+      zod:
+        specifier: ^3.23.0
+        version: 3.25.76
+
+  packages/rule-compiler:
+    dependencies:
+      '@tianwen/rule-dsl':
+        specifier: workspace:*
+        version: link:../rule-dsl
+
+  packages/rule-dsl: {}
+
+  packages/rule-engine-core:
+    dependencies:
+      '@tianwen/metaphysics-types':
+        specifier: workspace:*
+        version: link:../metaphysics-types
+
+  packages/rule-knowledge-graph: {}
+
+  packages/runtime-observability: {}
+
+  packages/runtime-sandbox: {}
+
+  packages/runtime-state: {}
+
   packages/shared:
     dependencies:
       zod:
@@ -167,6 +402,45 @@ importers:
       typescript:
         specifier: ^5.5.0
         version: 5.9.3
+
+  packages/signal-extractor:
+    dependencies:
+      '@tianwen/bazi-engine':
+        specifier: workspace:*
+        version: link:../bazi-engine
+      '@tianwen/liuyao':
+        specifier: workspace:*
+        version: link:../liuyao
+      '@tianwen/meihua':
+        specifier: workspace:*
+        version: link:../meihua
+      '@tianwen/signal-system':
+        specifier: workspace:*
+        version: link:../signal-system
+
+  packages/signal-system:
+    devDependencies:
+      typescript:
+        specifier: ^5.5.0
+        version: 5.9.3
+      zod:
+        specifier: ^3.23.0
+        version: 3.25.76
+
+  packages/temporal-memory: {}
+
+  packages/timing-engine:
+    dependencies:
+      '@tianwen/signal-system':
+        specifier: workspace:*
+        version: link:../signal-system
+    devDependencies:
+      typescript:
+        specifier: ^5.5.0
+        version: 5.9.3
+      zod:
+        specifier: ^3.23.0
+        version: 3.25.76
 
   packages/ui:
     dependencies:
@@ -189,6 +463,17 @@ importers:
       typescript:
         specifier: ^5.5.0
         version: 5.9.3
+
+  packages/weight-system:
+    devDependencies:
+      typescript:
+        specifier: ^5.5.0
+        version: 5.9.3
+      zod:
+        specifier: ^3.23.0
+        version: 3.25.76
+
+  packages/ziwei: {}
 
 packages:
 
@@ -1282,6 +1567,11 @@ packages:
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
+  uuid@9.0.1:
+    resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
+    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
+    hasBin: true
+
   zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
@@ -2210,6 +2500,8 @@ snapshots:
       react: 19.2.6
 
   util-deprecate@1.0.2: {}
+
+  uuid@9.0.1: {}
 
   zod@3.25.76: {}
 
