@@ -2,6 +2,8 @@
  * 八卦系统类型定义
  */
 
+import type { FiveElement } from './five-element';
+
 export const EIGHT_TRIGRAMS = ['乾', '兑', '离', '震', '巽', '坎', '艮', '坤'] as const;
 export type EightTrigram = typeof EIGHT_TRIGRAMS[number];
 
