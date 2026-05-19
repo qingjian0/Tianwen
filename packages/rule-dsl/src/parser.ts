@@ -1,143 +1,157 @@
 /**
- * Rule DSL - 语法解析器
- * Phase 8: Runtime Engine
+ * Rule DSL 语法解析器
  */
 
 import {
   Token,
-  TokenType,
+  ProgramNode,
+  RuleDefinitionNode,
+  PropertyNode,
+  IfStatementNode,
+  ThenStatementNode,
   ExpressionNode,
-  LiteralNode,
+  BinaryExpressionNode,
+  UnaryExpressionNode,
   IdentifierNode,
-  MemberAccessNode,
-  BinaryOpNode,
-  UnaryOpNode,
+  MemberExpressionNode,
   CallExpressionNode,
-  ConditionNode,
-  EffectNode,
-  RuleNode,
-  ProgramNode
+  NumberLiteralNode,
+  StringLiteralNode,
+  BooleanLiteralNode,
+  NullLiteralNode,
 } from './types';
-
-export class ParseError extends Error {
-  constructor(message: string, public token: Token) {
-    super(`${message} at line ${token.line}, column ${token.column}`);
-    this.name = 'ParseError';
-  }
-}
+import { Lexer } from './lexer';
 
 export class Parser {
-  private tokens: Token[];
-  private current: number = 0;
+  private tokens: Token[] = [];
+  private position: number = 0;
 
-  constructor(tokens: Token[]) {
-    this.tokens = tokens;
+  constructor(source: string) {
+    const lexer = new Lexer(source);
+    this.tokens = lexer.tokenize().filter(t => t.type !== 'NEWLINE');
   }
 
   parse(): ProgramNode {
-    const rules: RuleNode[] = [];
+    const program: ProgramNode = {
+      type: 'Program',
+      rules: []
+    };
 
     while (!this.isAtEnd()) {
-      rules.push(this.parseRule());
-    }
-
-    return {
-      type: 'program',
-      rules
-    };
-  }
-
-  private parseRule(): RuleNode {
-    this.consume(TokenType.Rule, "Expect 'rule' keyword");
-    
-    const name = this.parseQuotedString() || this.consume(TokenType.Identifier, "Expect rule name").value;
-    this.consume(TokenType.Lbrace, "Expect '{' before rule body");
-
-    let description = '';
-    let category = '';
-    let priority = 'medium' as any;
-    const conditions: ConditionNode[] = [];
-    const effects: EffectNode[] = [];
-    const metadata: Record<string, any> = {};
-
-    while (!this.check(TokenType.Rbrace) && !this.isAtEnd()) {
-      if (this.match(TokenType.Description)) {
-        this.consume(TokenType.Colon, "Expect ':' after 'description'");
-        description = this.parseQuotedString() || '';
-        this.consumeOptional(TokenType.Semicolon);
-      } else if (this.match(TokenType.Category)) {
-        this.consume(TokenType.Colon, "Expect ':' after 'category'");
-        category = this.parseQuotedString() || this.consume(TokenType.Identifier, "Expect category").value;
-        this.consumeOptional(TokenType.Semicolon);
-      } else if (this.match(TokenType.Priority)) {
-        this.consume(TokenType.Colon, "Expect ':' after 'priority'");
-        priority = this.consume(TokenType.Identifier, "Expect priority (critical, high, medium, low, informational)").value as any;
-        this.consumeOptional(TokenType.Semicolon);
-      } else if (this.match(TokenType.If)) {
-        conditions.push(this.parseCondition());
-      } else if (this.match(TokenType.Then)) {
-        effects.push(this.parseEffect());
+      if (this.check('RULE')) {
+        program.rules.push(this.parseRule());
       } else {
-        // Metadata
-        const keyToken = this.consume(TokenType.Identifier, "Expect property name");
-        this.consume(TokenType.Colon, "Expect ':' after property");
-        metadata[keyToken.value] = this.parseLiteral().value;
-        this.consumeOptional(TokenType.Semicolon);
+        this.advance();
       }
     }
 
-    this.consume(TokenType.Rbrace, "Expect '}' after rule body");
+    return program;
+  }
+
+  private parseRule(): RuleDefinitionNode {
+    this.consume('RULE', "Expected 'rule' keyword");
+    const nameToken = this.consume('IDENTIFIER', "Expected rule name");
+    
+    this.consume('LBRACE', "Expected '{' after rule name");
+
+    const properties: PropertyNode[] = [];
+    const conditions: IfStatementNode[] = [];
+    const effects: ThenStatementNode[] = [];
+
+    while (!this.check('RBRACE') && !this.isAtEnd()) {
+      if (this.check('IF')) {
+        conditions.push(this.parseIf());
+      } else if (this.check('THEN')) {
+        effects.push(this.parseThen());
+      } else if (
+        this.check('CATEGORY') || 
+        this.check('DESCRIPTION') || 
+        this.check('PRIORITY')
+      ) {
+        properties.push(this.parseProperty());
+      } else {
+        this.advance();
+      }
+    }
+
+    this.consume('RBRACE', "Expected '}' after rule body");
 
     return {
-      type: 'rule',
-      name,
-      description,
-      category,
-      priority,
-      metadata,
+      type: 'RuleDefinition',
+      name: nameToken.value,
+      properties,
       conditions,
       effects
     };
   }
 
-  private parseCondition(): ConditionNode {
-    const expression = this.parseExpression();
-    this.consumeOptional(TokenType.Semicolon);
+  private parseProperty(): PropertyNode {
+    const key = this.advance();
+    this.consume('COLON', "Expected ':' after property key");
+    const value = this.parseExpression();
+    if (this.check('SEMICOLON')) {
+      this.advance();
+    }
 
     return {
-      type: 'condition',
-      expression
+      type: 'Property',
+      key: key.value,
+      value
     };
   }
 
-  private parseEffect(): EffectNode {
-    const effectType = this.consume(TokenType.Identifier, "Expect effect type (signal, probability, fortune, timing, confidence)").value as any;
-    
-    let action = 'set';
-    if (this.match(TokenType.Plus, TokenType.Minus, TokenType.Star, TokenType.Div)) {
-      if (this.previous().value === '+') {
-        action = 'add';
-      } else if (this.previous().value === '-') {
-        action = 'subtract';
-      } else if (this.previous().value === '*') {
-        action = 'multiply';
-      } else {
-        action = 'divide';
-      }
-      this.consume(TokenType.Assign, "Expect '=' after operator");
-    } else {
-      this.consume(TokenType.Assign, "Expect '=' for effect assignment");
+  private parseIf(): IfStatementNode {
+    this.consume('IF', "Expected 'if' keyword");
+    const condition = this.parseExpression();
+    if (this.check('SEMICOLON')) {
+      this.advance();
     }
-    
-    const value = this.parseExpression();
-    this.consumeOptional(TokenType.Semicolon);
 
     return {
-      type: 'effect',
-      effectType,
-      action,
-      value
+      type: 'IfStatement',
+      condition
     };
+  }
+
+  private parseThen(): ThenStatementNode {
+    this.consume('THEN', "Expected 'then' keyword");
+    const effect = this.parseEffect();
+    if (this.check('SEMICOLON')) {
+      this.advance();
+    }
+
+    return {
+      type: 'ThenStatement',
+      effect
+    };
+  }
+
+  private parseEffect(): ExpressionNode {
+    // 支持 assignment 和 compound assignment
+    const left = this.parsePrimary();
+    
+    if (
+      this.check('ASSIGN') || 
+      this.check('PLUS_ASSIGN') || 
+      this.check('MINUS_ASSIGN') || 
+      this.check('MULTIPLY_ASSIGN') || 
+      this.check('DIVIDE_ASSIGN')
+    ) {
+      const operator = this.advance();
+      const right = this.parseExpression();
+      
+      return {
+        type: 'BinaryExpression',
+        operator: operator.type === 'ASSIGN' ? '=' : 
+                  operator.type === 'PLUS_ASSIGN' ? '+=' :
+                  operator.type === 'MINUS_ASSIGN' ? '-=' :
+                  operator.type === 'MULTIPLY_ASSIGN' ? '*=' : '/=',
+        left,
+        right
+      } as unknown as BinaryExpressionNode;
+    }
+
+    return left;
   }
 
   private parseExpression(): ExpressionNode {
@@ -145,270 +159,260 @@ export class Parser {
   }
 
   private parseOr(): ExpressionNode {
-    let expr = this.parseAnd();
+    let left = this.parseAnd();
 
-    while (this.match(TokenType.Or)) {
-      const operator = '||';
+    while (this.check('OR')) {
+      const operator = this.advance();
       const right = this.parseAnd();
-      expr = {
-        type: 'binaryOp',
-        operator,
-        left: expr,
+      left = {
+        type: 'BinaryExpression',
+        operator: '||',
+        left,
         right
       };
     }
 
-    return expr;
+    return left;
   }
 
   private parseAnd(): ExpressionNode {
-    let expr = this.parseEquality();
+    let left = this.parseEquality();
 
-    while (this.match(TokenType.And)) {
-      const operator = '&&';
+    while (this.check('AND')) {
+      const operator = this.advance();
       const right = this.parseEquality();
-      expr = {
-        type: 'binaryOp',
-        operator,
-        left: expr,
+      left = {
+        type: 'BinaryExpression',
+        operator: '&&',
+        left,
         right
       };
     }
 
-    return expr;
+    return left;
   }
 
   private parseEquality(): ExpressionNode {
-    let expr = this.parseComparison();
+    let left = this.parseComparison();
 
-    while (this.match(TokenType.Eq, TokenType.Neq)) {
-      const operator = this.previous().value as any;
+    while (this.check('EQ') || this.check('NEQ')) {
+      const operator = this.advance();
       const right = this.parseComparison();
-      expr = {
-        type: 'binaryOp',
-        operator,
-        left: expr,
+      left = {
+        type: 'BinaryExpression',
+        operator: operator.type === 'EQ' ? '==' : '!=',
+        left,
         right
       };
     }
 
-    return expr;
+    return left;
   }
 
   private parseComparison(): ExpressionNode {
-    let expr = this.parseTerm();
+    let left = this.parseTerm();
 
-    while (this.match(TokenType.Gt, TokenType.Gte, TokenType.Lt, TokenType.Lte)) {
-      const operator = this.previous().value as any;
+    while (
+      this.check('LT') || 
+      this.check('GT') || 
+      this.check('LTE') || 
+      this.check('GTE')
+    ) {
+      const operator = this.advance();
       const right = this.parseTerm();
-      expr = {
-        type: 'binaryOp',
-        operator,
-        left: expr,
+      left = {
+        type: 'BinaryExpression',
+        operator: operator.type === 'LT' ? '<' : 
+                  operator.type === 'GT' ? '>' :
+                  operator.type === 'LTE' ? '<=' : '>=',
+        left,
         right
       };
     }
 
-    return expr;
+    return left;
   }
 
   private parseTerm(): ExpressionNode {
-    let expr = this.parseFactor();
+    let left = this.parseFactor();
 
-    while (this.match(TokenType.Plus, TokenType.Minus)) {
-      const operator = this.previous().value as any;
+    while (this.check('PLUS') || this.check('MINUS')) {
+      const operator = this.advance();
       const right = this.parseFactor();
-      expr = {
-        type: 'binaryOp',
-        operator,
-        left: expr,
+      left = {
+        type: 'BinaryExpression',
+        operator: operator.type === 'PLUS' ? '+' : '-',
+        left,
         right
       };
     }
 
-    return expr;
+    return left;
   }
 
   private parseFactor(): ExpressionNode {
-    let expr = this.parseUnary();
+    let left = this.parseUnary();
 
-    while (this.match(TokenType.Mul, TokenType.Div)) {
-      const operator = this.previous().value as any;
+    while (
+      this.check('MULTIPLY') || 
+      this.check('DIVIDE') || 
+      this.check('MODULO')
+    ) {
+      const operator = this.advance();
       const right = this.parseUnary();
-      expr = {
-        type: 'binaryOp',
-        operator,
-        left: expr,
+      left = {
+        type: 'BinaryExpression',
+        operator: operator.type === 'MULTIPLY' ? '*' : 
+                  operator.type === 'DIVIDE' ? '/' : '%',
+        left,
         right
       };
     }
 
-    return expr;
+    return left;
   }
 
   private parseUnary(): ExpressionNode {
-    if (this.match(TokenType.Not, TokenType.Minus)) {
-      const operator = this.previous().value as any;
+    if (this.check('NOT') || this.check('MINUS') || this.check('PLUS')) {
+      const operator = this.advance();
       const operand = this.parseUnary();
       return {
-        type: 'unaryOp',
-        operator,
+        type: 'UnaryExpression',
+        operator: operator.type === 'NOT' ? '!' : 
+                  operator.type === 'MINUS' ? '-' : '+',
         operand
       };
     }
 
-    return this.parseCall();
+    return this.parseCallMember();
   }
 
-  private parseCall(): ExpressionNode {
+  private parseCallMember(): ExpressionNode {
     let expr = this.parsePrimary();
 
-    while (this.match(TokenType.Lparen)) {
-      const args = this.parseArguments();
-      this.consume(TokenType.Rparen, "Expect ')' after function arguments");
-      expr = {
-        type: 'call',
-        callee: expr as IdentifierNode,
-        arguments: args
-      };
-    }
-
-    while (this.match(TokenType.Dot)) {
-      const property = this.consume(TokenType.Identifier, "Expect property name after '.'").value;
-      expr = {
-        type: 'memberAccess',
-        object: expr as IdentifierNode,
-        property
-      };
+    while (true) {
+      if (this.check('LPAREN')) {
+        expr = this.parseCall(expr);
+      } else if (this.check('DOT')) {
+        this.advance();
+        const property = this.consume('IDENTIFIER', "Expected property name after '.'");
+        expr = {
+          type: 'MemberExpression',
+          object: expr,
+          property: {
+            type: 'Identifier',
+            name: property.value
+          }
+        };
+      } else {
+        break;
+      }
     }
 
     return expr;
   }
 
-  private parseArguments(): ExpressionNode[] {
+  private parseCall(callee: ExpressionNode): ExpressionNode {
+    this.consume('LPAREN', "Expected '(' after function name");
     const args: ExpressionNode[] = [];
 
-    if (!this.check(TokenType.Rparen)) {
+    if (!this.check('RPAREN')) {
       do {
         args.push(this.parseExpression());
-      } while (this.match(TokenType.Comma));
+      } while (this.check('COMMA') && this.advance());
     }
 
-    return args;
+    this.consume('RPAREN', "Expected ')' after function arguments");
+
+    return {
+      type: 'CallExpression',
+      callee,
+      arguments: args
+    };
   }
 
   private parsePrimary(): ExpressionNode {
-    if (this.match(TokenType.Boolean)) {
-      return this.parseLiteral();
-    }
-
-    if (this.match(TokenType.Number)) {
-      return this.parseLiteral();
-    }
-
-    if (this.match(TokenType.String)) {
-      return this.parseLiteral();
-    }
-
-    if (this.match(TokenType.Null)) {
-      return this.parseLiteral();
-    }
-
-    if (this.match(TokenType.Identifier)) {
+    if (this.check('BOOLEAN')) {
+      const token = this.advance();
       return {
-        type: 'identifier',
-        name: this.previous().value
-      };
-    }
-
-    if (this.match(TokenType.Lparen)) {
-      const expr = this.parseExpression();
-      this.consume(TokenType.Rparen, "Expect ')' after grouping");
-      return expr;
-    }
-
-    throw new ParseError("Expect expression", this.peek());
-  }
-
-  private parseLiteral(): LiteralNode {
-    const token = this.previous();
-
-    if (token.type === TokenType.Number) {
-      return {
-        type: 'literal',
-        value: parseFloat(token.value)
-      };
-    }
-
-    if (token.type === TokenType.Boolean) {
-      return {
-        type: 'literal',
+        type: 'BooleanLiteral',
         value: token.value === 'true'
       };
     }
 
-    if (token.type === TokenType.Null) {
+    if (this.check('NULL')) {
+      this.advance();
       return {
-        type: 'literal',
+        type: 'NullLiteral',
         value: null
       };
     }
 
-    return {
-      type: 'literal',
-      value: token.value
-    };
-  }
-
-  private parseQuotedString(): string | null {
-    if (this.match(TokenType.String)) {
-      return this.previous().value;
+    if (this.check('NUMBER')) {
+      const token = this.advance();
+      return {
+        type: 'NumberLiteral',
+        value: parseFloat(token.value)
+      };
     }
-    return null;
-  }
 
-  private match(...types: TokenType[]): boolean {
-    for (const type of types) {
-      if (this.check(type)) {
-        this.advance();
-        return true;
-      }
+    if (this.check('STRING')) {
+      const token = this.advance();
+      return {
+        type: 'StringLiteral',
+        value: token.value
+      };
     }
-    return false;
+
+    if (this.check('IDENTIFIER')) {
+      const token = this.advance();
+      return {
+        type: 'Identifier',
+        name: token.value
+      };
+    }
+
+    if (this.check('LPAREN')) {
+      this.advance();
+      const expr = this.parseExpression();
+      this.consume('RPAREN', "Expected ')' after expression");
+      return expr;
+    }
+
+    throw new Error(`Unexpected token: ${this.peek().value} at line ${this.peek().line}`);
   }
 
-  private consume(type: TokenType, message: string): Token {
-    if (this.check(type)) return this.advance();
-
-    throw new ParseError(message, this.peek());
-  }
-
-  private consumeOptional(type: TokenType): Token | null {
-    if (this.check(type)) {
+  // 辅助方法
+  private consume(type: string, message: string): Token {
+    if (this.check(type as any)) {
       return this.advance();
     }
-    return null;
+    throw new Error(`${message} at line ${this.peek().line}`);
   }
 
-  private check(type: TokenType): boolean {
-    if (this.isAtEnd()) return false;
+  private check(type: any): boolean {
+    if (this.isAtEnd()) {
+      return false;
+    }
     return this.peek().type === type;
   }
 
   private advance(): Token {
-    if (!this.isAtEnd()) this.current++;
+    if (!this.isAtEnd()) {
+      this.position++;
+    }
     return this.previous();
   }
 
-  private previous(): Token {
-    return this.tokens[this.current - 1];
+  private isAtEnd(): boolean {
+    return this.peek().type === 'EOF';
   }
 
   private peek(): Token {
-    return this.tokens[this.current];
+    return this.tokens[this.position];
   }
 
-  private isAtEnd(): boolean {
-    return this.peek().type === TokenType.Eof;
+  private previous(): Token {
+    return this.tokens[this.position - 1];
   }
 }

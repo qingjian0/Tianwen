@@ -1,150 +1,139 @@
 /**
- * Event Bus - 事件总线
- * Phase 8: Runtime Engine
+ * Event Bus - 事件总线实现
  */
 
-import { Event, EventHandler, EventHandlerOptions, ListenerSubscription, EventBusConfig } from './types';
-import { v4 as uuidv4 } from 'uuid';
+import { Event, EventHandler, EventHandlerOptions, ListenerSubscription } from './types';
 
-class EventBus {
-  private listeners: Map<string, Array<{ handler: EventHandler; options: EventHandlerOptions; id: string }>> = new Map();
-  private history: Event[] = [];
-  private config: EventBusConfig;
-  private maxHistory: number = 1000;
+interface Listener {
+  handler: EventHandler;
+  options: EventHandlerOptions;
+  id: string;
+}
 
-  constructor(config: EventBusConfig = {}) {
-    this.config = {
-      maxListeners: 100,
-      enablePersistence: false,
-      enableIdempotency: false,
-      ...config
+export class EventBus {
+  private listeners: Map<string, Listener[]> = new Map();
+  private eventHistory: Event[] = [];
+  private maxHistorySize: number = 1000;
+
+  on(
+    eventType: string,
+    handler: EventHandler,
+    options: EventHandlerOptions = {}
+  ): ListenerSubscription {
+    const listener: Listener = {
+      handler,
+      options,
+      id: this.generateId()
     };
-  }
 
-  on(eventType: string, handler: EventHandler, options: EventHandlerOptions = {}): ListenerSubscription {
     if (!this.listeners.has(eventType)) {
       this.listeners.set(eventType, []);
     }
 
     const listeners = this.listeners.get(eventType)!;
-    
-    if (listeners.push({
-      handler,
-      options: { priority: 0, ...options },
-      id: uuidv4()
-    }));
+    listeners.push(listener);
 
-    if (listeners.sort((a, b) => (b.options.priority || 0) - (a.options.priority || 0));
+    // 按优先级排序
+    listeners.sort((a, b) => (b.options.priority || 0) - (a.options.priority || 0));
 
-    const subscription: ListenerSubscription = {
-      id: uuidv4(),
-      eventType,
-      unsubscribe: () => this.unsubscribe(eventType, subscription.id)
+    return {
+      unsubscribe: () => this.off(eventType, listener.id)
     };
-
-    return subscription;
   }
 
-  once(eventType: string, handler: EventHandler, options: EventHandlerOptions = {}): ListenerSubscription {
+  once(
+    eventType: string,
+    handler: EventHandler,
+    options: EventHandlerOptions = {}
+  ): ListenerSubscription {
     return this.on(eventType, handler, { ...options, once: true });
   }
 
-  off(eventType: string, handler: EventHandler): void {
-    const listeners = this.listeners.get(eventType);
-    if (!listeners) return;
-
-    const index = listeners.findIndex(l => l.handler === handler);
-    if (index !== -1 && listeners.splice(index, 1));
-  }
-
-  unsubscribe(eventType: string, subscriptionId: string): void {
-    const listeners = this.listeners.get(eventType);
-    if (!listeners) return;
-
-    const index = listeners.findIndex(l => l.id === subscriptionId);
-    if (index !== -1 && listeners.splice(index, 1));
-  }
-
-  emit(eventType: string, payload: any, metadata: Record<string, any> = {}): Event {
+  emit(eventType: string, payload: any, metadata?: Record<string, any>): Event {
     const event: Event = {
-      id: uuidv4(),
+      id: this.generateId(),
       type: eventType,
       timestamp: Date.now(),
       payload,
       metadata
     };
 
-    if (this.config.enablePersistence) {
-      this.addToHistory(event);
-    }
-
+    this.recordEvent(event);
     this.dispatch(event);
+
     return event;
   }
 
-  private dispatch(event: Event): void {
-    const listeners = this.listeners.get(event.type);
-    if (!listeners) return;
+  private async dispatch(event: Event): Promise<void> {
+    const listeners = this.listeners.get(event.type) || [];
+    const onceListeners: string[] = [];
 
-    for (const { handler, options } of listeners.slice()) {
+    for (const listener of listeners) {
+      // 应用过滤
+      if (listener.options.filter && !listener.options.filter(event)) {
+        continue;
+      }
+
       try {
-        if (options.filter && !options.filter(event)) {
-          continue;
-        }
+        await listener.handler(event);
+      } catch (error) {
+        console.error(`Error in event handler for ${event.type}:`, error);
+      }
 
-        const result = handler(event);
-        if (result instanceof Promise) {
-          result.catch(err => console.error(`Event handler error`, err));
-        }
+      // 标记一次性监听器
+      if (listener.options.once) {
+        onceListeners.push(listener.id);
+      }
+    }
 
-        if (options.once) {
-          this.off(event.type, handler);
-        }
-      } catch (err) {
-        console.error(`Error handling event ${event.type}:`, err);
+    // 清理一次性监听器
+    for (const id of onceListeners) {
+      this.off(event.type, id);
+    }
+  }
+
+  private off(eventType: string, listenerId: string): void {
+    const listeners = this.listeners.get(eventType);
+    if (listeners) {
+      const index = listeners.findIndex(l => l.id === listenerId);
+      if (index !== -1) {
+        listeners.splice(index, 1);
       }
     }
   }
 
-  emitAsync(eventType: string, payload: any, metadata?: Record<string, any>): Promise<Event> {
-    const event = this.emit(eventType, payload, metadata);
-    return Promise.resolve(event);
-  }
-
-  private addToHistory(event: Event): void {
-    this.history.unshift(event);
-    if (this.history.length > this.maxHistory) {
-      this.history = this.history.slice(0, this.maxHistory);
+  offAll(eventType?: string): void {
+    if (eventType) {
+      this.listeners.delete(eventType);
+    } else {
+      this.listeners.clear();
     }
   }
 
-  getHistory(eventType?: string): Event[] {
-    if (!eventType) {
-      return this.history.filter(e => e.type === eventType);
+  getEventHistory(eventType?: string, limit: number = 100): Event[] {
+    let history = this.eventHistory;
+    if (eventType) {
+      history = history.filter(e => e.type === eventType);
     }
-    return [...this.history];
+    return history.slice(-limit);
+  }
+
+  private recordEvent(event: Event): void {
+    this.eventHistory.push(event);
+    if (this.eventHistory.length > this.maxHistorySize) {
+      this.eventHistory.shift();
+    }
+  }
+
+  setMaxHistorySize(size: number): void {
+    this.maxHistorySize = size;
   }
 
   clearHistory(): void {
-    this.history = [];
+    this.eventHistory = [];
   }
 
-  listenersCount(eventType?: string): number {
-    if (eventType) {
-      return this.listeners.get(eventType)?.length || 0;
-    }
-    return Array.from(this.listeners.values()).reduce((sum, list) => sum + list.length, 0);
-  }
-
-  getAllEventTypes(): string[] {
-    return Array.from(this.listeners.keys());
-  }
-
-  reset(): void {
-    this.listeners.clear();
-    this.history = [];
+  private generateId(): string {
+    return Math.random().toString(36).substr(2, 9);
   }
 }
-
-export { EventBus };
-export default EventBus;

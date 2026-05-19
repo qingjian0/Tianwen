@@ -1,308 +1,248 @@
 /**
- * Rule DSL - 词法分析器
- * Phase 8: Runtime Engine
+ * Rule DSL 词法分析器
  */
 
 import { Token, TokenType } from './types';
 
+const KEYWORDS: Record<string, TokenType> = {
+  'if': 'IF',
+  'then': 'THEN',
+  'rule': 'RULE',
+  'category': 'CATEGORY',
+  'description': 'DESCRIPTION',
+  'priority': 'PRIORITY',
+  'true': 'BOOLEAN',
+  'false': 'BOOLEAN',
+  'null': 'NULL',
+};
+
 export class Lexer {
-  private input: string;
-  private pos: number = 0;
+  private source: string;
+  private position: number = 0;
   private line: number = 1;
   private column: number = 1;
+  private tokens: Token[] = [];
 
-  private static KEYWORDS: Record<string, TokenType> = {
-    'rule': TokenType.Rule,
-    'if': TokenType.If,
-    'then': TokenType.Then,
-    'priority': TokenType.Priority,
-    'category': TokenType.Category,
-    'description': TokenType.Description,
-    'true': TokenType.Boolean,
-    'false': TokenType.Boolean,
-    'null': TokenType.Null,
-    'critical': TokenType.Identifier,
-    'high': TokenType.Identifier,
-    'medium': TokenType.Identifier,
-    'low': TokenType.Identifier,
-    'informational': TokenType.Identifier
-  };
-
-  constructor(input: string) {
-    this.input = input;
+  constructor(source: string) {
+    this.source = source;
   }
 
   tokenize(): Token[] {
-    const tokens: Token[] = [];
+    while (this.position < this.source.length) {
+      const char = this.source[this.position];
 
-    while (!this.isEof()) {
-      this.skipWhitespace();
-
-      if (this.isEof()) {
-        break;
-      }
-
-      const char = this.currentChar();
-
-      if (char === '/' && this.peek() === '/') {
-        this.skipLineComment();
-        continue;
-      }
-
-      if (char === '/' && this.peek() === '*') {
-        this.skipBlockComment();
-        continue;
-      }
-
-      if (char === '"' || char === "'") {
-        tokens.push(this.readString());
-        continue;
-      }
-
-      if (this.isDigit(char)) {
-        tokens.push(this.readNumber());
-        continue;
-      }
-
-      if (this.isIdentifierStart(char)) {
-        tokens.push(this.readIdentifier());
-        continue;
-      }
-
-      const symbolToken = this.readSymbol();
-      if (symbolToken) {
-        tokens.push(symbolToken);
-        continue;
-      }
-
-      // Unknown character
-      tokens.push(this.createToken(TokenType.Unknown, char));
-      this.advance();
-    }
-
-    tokens.push(this.createToken(TokenType.Eof, ''));
-    return tokens;
-  }
-
-  private readString(): Token {
-    const startLine = this.line;
-    const startCol = this.column;
-    const quote = this.currentChar();
-    this.advance();
-
-    let value = '';
-    while (!this.isEof() && this.currentChar() !== quote) {
-      if (this.currentChar() === '\\') {
-        this.advance();
-        value += this.readEscape();
+      if (/\s/.test(char)) {
+        this.handleWhitespace(char);
+      } else if (char === '/' && this.source[this.position + 1] === '/') {
+        this.handleComment();
+      } else if (char === '/' && this.source[this.position + 1] === '*') {
+        this.handleMultilineComment();
+      } else if (char === '"' || char === "'") {
+        this.handleString(char);
+      } else if (/\d/.test(char)) {
+        this.handleNumber();
+      } else if (/[a-zA-Z_]/.test(char)) {
+        this.handleIdentifier();
       } else {
-        value += this.currentChar();
-        this.advance();
+        this.handlePunctuation(char);
       }
     }
 
-    if (this.currentChar() === quote) {
-      this.advance();
+    this.addToken('EOF', '');
+    return this.tokens;
+  }
+
+  private handleWhitespace(char: string): void {
+    if (char === '\n') {
+      this.line++;
+      this.column = 1;
+      this.addToken('NEWLINE', '\\n');
+    } else if (char === '\r') {
+      // 忽略
+    } else {
+      this.column++;
     }
-
-    return {
-      type: TokenType.String,
-      value,
-      line: startLine,
-      column: startCol
-    };
+    this.position++;
   }
 
-  private readEscape(): string {
-    if (this.isEof()) return '';
-    const char = this.currentChar();
-    this.advance();
-
-    const escapes: Record<string, string> = {
-      'n': '\n',
-      't': '\t',
-      'r': '\r',
-      '\\': '\\',
-      '"': '"',
-      "'": "'"
-    };
-
-    return escapes[char] || char;
+  private handleComment(): void {
+    while (this.position < this.source.length && this.source[this.position] !== '\n') {
+      this.position++;
+    }
   }
 
-  private readNumber(): Token {
-    const startLine = this.line;
-    const startCol = this.column;
+  private handleMultilineComment(): void {
+    this.position += 2;
+    while (this.position < this.source.length) {
+      if (this.source[this.position] === '*' && this.source[this.position + 1] === '/') {
+        this.position += 2;
+        return;
+      }
+      if (this.source[this.position] === '\n') {
+        this.line++;
+        this.column = 1;
+      }
+      this.position++;
+    }
+  }
+
+  private handleString(quote: string): void {
+    const startColumn = this.column;
+    this.position++;
+    this.column++;
     let value = '';
 
-    while (!this.isEof() && this.isDigit(this.currentChar())) {
-      value += this.currentChar();
-      this.advance();
-    }
-
-    if (!this.isEof() && this.currentChar() === '.') {
-      value += this.currentChar();
-      this.advance();
-
-      while (!this.isEof() && this.isDigit(this.currentChar())) {
-        value += this.currentChar();
-        this.advance();
-      }
-    }
-
-    return {
-      type: TokenType.Number,
-      value,
-      line: startLine,
-      column: startCol
-    };
-  }
-
-  private readIdentifier(): Token {
-    const startLine = this.line;
-    const startCol = this.column;
-    let value = '';
-
-    while (!this.isEof() && this.isIdentifierPart(this.currentChar())) {
-      value += this.currentChar();
-      this.advance();
-    }
-
-    const keywordType = Lexer.KEYWORDS[value];
-    if (keywordType) {
-      if (keywordType === TokenType.Boolean || keywordType === TokenType.Null) {
-        return this.createToken(keywordType, value, startLine, startCol);
-      }
-      return this.createToken(keywordType, value, startLine, startCol);
-    }
-
-    return {
-      type: TokenType.Identifier,
-      value,
-      line: startLine,
-      column: startCol
-    };
-  }
-
-  private readSymbol(): Token | null {
-    const startLine = this.line;
-    const startCol = this.column;
-    const char = this.currentChar();
-
-    const twoChars = char + (this.peek() || '');
-
-    const twoCharSymbols: Record<string, TokenType> = {
-      '==': TokenType.Eq,
-      '!=': TokenType.Neq,
-      '>=': TokenType.Gte,
-      '<=': TokenType.Lte,
-      '&&': TokenType.And,
-      '||': TokenType.Or
-    };
-
-    if (twoCharSymbols[twoChars]) {
-      this.advance(2);
-      return this.createToken(twoCharSymbols[twoChars], twoChars, startLine, startCol);
-    }
-
-    const singleCharSymbols: Record<string, TokenType> = {
-      '!': TokenType.Not,
-      '>': TokenType.Gt,
-      '<': TokenType.Lt,
-      '+': TokenType.Plus,
-      '-': TokenType.Minus,
-      '*': TokenType.Mul,
-      '/': TokenType.Div,
-      '=': TokenType.Assign,
-      '(': TokenType.Lparen,
-      ')': TokenType.Rparen,
-      '{': TokenType.Lbrace,
-      '}': TokenType.Rbrace,
-      '[': TokenType.Lbracket,
-      ']': TokenType.Rbracket,
-      ':': TokenType.Colon,
-      ';': TokenType.Semicolon,
-      ',': TokenType.Comma,
-      '.': TokenType.Dot
-    };
-
-    if (singleCharSymbols[char]) {
-      this.advance();
-      return this.createToken(singleCharSymbols[char], char, startLine, startCol);
-    }
-
-    return null;
-  }
-
-  private skipWhitespace(): void {
-    while (!this.isEof() && this.isWhitespace(this.currentChar())) {
-      this.advance();
-    }
-  }
-
-  private skipLineComment(): void {
-    while (!this.isEof() && this.currentChar() !== '\n') {
-      this.advance();
-    }
-  }
-
-  private skipBlockComment(): void {
-    this.advance(2);
-    while (!this.isEof()) {
-      if (this.currentChar() === '*' && this.peek() === '/') {
-        this.advance(2);
+    while (this.position < this.source.length) {
+      const char = this.source[this.position];
+      
+      if (char === quote) {
+        this.position++;
+        this.column++;
         break;
       }
-      this.advance();
-    }
-  }
-
-  private isWhitespace(char: string): boolean {
-    return /\s/.test(char);
-  }
-
-  private isDigit(char: string): boolean {
-    return /[0-9]/.test(char);
-  }
-
-  private isIdentifierStart(char: string): boolean {
-    return /[a-zA-Z_]/.test(char);
-  }
-
-  private isIdentifierPart(char: string): boolean {
-    return /[a-zA-Z0-9_]/.test(char);
-  }
-
-  private currentChar(): string {
-    return this.input[this.pos] || '';
-  }
-
-  private peek(offset: number = 1): string {
-    return this.input[this.pos + offset] || '';
-  }
-
-  private advance(count: number = 1): void {
-    for (let i = 0; i < count && !this.isEof(); i++) {
-      if (this.input[this.pos] === '\n') {
+      
+      if (char === '\\') {
+        this.position++;
+        this.column++;
+        const next = this.source[this.position];
+        switch (next) {
+          case 'n': value += '\n'; break;
+          case 't': value += '\t'; break;
+          case 'r': value += '\r'; break;
+          default: value += next;
+        }
+      } else {
+        value += char;
+      }
+      
+      if (char === '\n') {
         this.line++;
         this.column = 1;
       } else {
         this.column++;
       }
-      this.pos++;
+      
+      this.position++;
+    }
+
+    this.tokens.push({
+      type: 'STRING',
+      value,
+      line: this.line,
+      column: startColumn
+    });
+  }
+
+  private handleNumber(): void {
+    const startColumn = this.column;
+    let value = '';
+
+    while (this.position < this.source.length && /[\d.]/.test(this.source[this.position])) {
+      value += this.source[this.position];
+      this.position++;
+      this.column++;
+    }
+
+    this.tokens.push({
+      type: 'NUMBER',
+      value,
+      line: this.line,
+      column: startColumn
+    });
+  }
+
+  private handleIdentifier(): void {
+    const startColumn = this.column;
+    let value = '';
+
+    while (this.position < this.source.length && /[a-zA-Z0-9_]/.test(this.source[this.position])) {
+      value += this.source[this.position];
+      this.position++;
+      this.column++;
+    }
+
+    const type = KEYWORDS[value] || 'IDENTIFIER';
+    this.tokens.push({
+      type,
+      value,
+      line: this.line,
+      column: startColumn
+    });
+  }
+
+  private handlePunctuation(char: string): void {
+    const startColumn = this.column;
+
+    // 处理两个字符的运算符
+    const twoChars = char + (this.source[this.position + 1] || '');
+    const twoCharTokens: Record<string, TokenType> = {
+      '==': 'EQ',
+      '!=': 'NEQ',
+      '<=': 'LTE',
+      '>=': 'GTE',
+      '&&': 'AND',
+      '||': 'OR',
+      '+=': 'PLUS_ASSIGN',
+      '-=': 'MINUS_ASSIGN',
+      '*=': 'MULTIPLY_ASSIGN',
+      '/=': 'DIVIDE_ASSIGN',
+    };
+
+    if (twoCharTokens[twoChars]) {
+      this.tokens.push({
+        type: twoCharTokens[twoChars],
+        value: twoChars,
+        line: this.line,
+        column: startColumn
+      });
+      this.position += 2;
+      this.column += 2;
+      return;
+    }
+
+    // 处理单字符的标点
+    const singleCharTokens: Record<string, TokenType> = {
+      '{': 'LBRACE',
+      '}': 'RBRACE',
+      '(': 'LPAREN',
+      ')': 'RPAREN',
+      '[': 'LBRACKET',
+      ']': 'RBRACKET',
+      ',': 'COMMA',
+      ':': 'COLON',
+      ';': 'SEMICOLON',
+      '.': 'DOT',
+      '+': 'PLUS',
+      '-': 'MINUS',
+      '*': 'MULTIPLY',
+      '/': 'DIVIDE',
+      '%': 'MODULO',
+      '=': 'ASSIGN',
+      '<': 'LT',
+      '>': 'GT',
+      '!': 'NOT',
+    };
+
+    if (singleCharTokens[char]) {
+      this.tokens.push({
+        type: singleCharTokens[char],
+        value: char,
+        line: this.line,
+        column: startColumn
+      });
+      this.position++;
+      this.column++;
+    } else {
+      throw new Error(`Unexpected character: ${char} at line ${this.line}, column ${this.column}`);
     }
   }
 
-  private isEof(): boolean {
-    return this.pos >= this.input.length;
-  }
-
-  private createToken(type: TokenType, value: string, line?: number, col?: number): Token {
-    return {
+  private addToken(type: TokenType, value: string): void {
+    this.tokens.push({
       type,
       value,
-      line: line || this.line,
-      column: col || this.column
-    };
+      line: this.line,
+      column: this.column
+    });
   }
 }

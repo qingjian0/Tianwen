@@ -1,32 +1,25 @@
 /**
- * Rule DSL - 入口
- * Phase 8: Runtime Engine
+ * Rule DSL - 规则定义语言包
  */
 
 export * from './types';
-export * from './lexer';
-export * from './parser';
-export * from './interpreter';
+export { Lexer } from './lexer';
+export { Parser } from './parser';
+export { Interpreter } from './interpreter';
 
-import { Lexer } from './lexer';
 import { Parser } from './parser';
-import { Interpreter, Context } from './interpreter';
+import { Interpreter } from './interpreter';
+import { ExecutionContext, ExecutionResult } from './types';
 
 export class RuleDSL {
-  static parse(input: string) {
-    const lexer = new Lexer(input);
-    const tokens = lexer.tokenize();
-    const parser = new Parser(tokens);
+  static parse(source: string) {
+    const parser = new Parser(source);
     return parser.parse();
   }
 
-  static execute(input: string, context: Context) {
-    const program = this.parse(input);
-    const interpreter = new Interpreter(context);
-    return interpreter.interpretProgram(program);
-  }
-
-  static interpret(program: any, context: Context) {
+  static execute(source: string, context: ExecutionContext = {}): ExecutionResult {
+    const parser = new Parser(source);
+    const program = parser.parse();
     const interpreter = new Interpreter(context);
     return interpreter.interpretProgram(program);
   }

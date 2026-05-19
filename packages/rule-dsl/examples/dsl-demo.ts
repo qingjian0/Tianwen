@@ -1,82 +1,83 @@
 /**
- * Rule DSL 演示
- * Phase 8: Runtime Engine
+ * Rule DSL 完整示例
  */
 
-import { RuleDSL } from '../src';
+import { RuleDSL } from '../src/index';
 
-const dslCode = `
-// 八字规则示例
+// 示例 1: 简单规则示例
+const rule1 = `
 rule dayMasterStrong {
-    description: "日主得地，富贵可期";
-    category: bazi;
-    priority: critical;
-    source: "渊海子平";
+    description: "日主强旺，得地得时";
+    category: "bazi";
+    priority: "high";
+    
     if dayMasterStrength == "strong";
-    if wuxingSheng(dayMasterWuxing, yearGanWuxing);
-    then fortune += 15;
-    then signal = "日主得地";
-    then confidence = 0.85;
-}
-
-rule wealthStarStrong {
-    description: "财星得用，财运亨通";
-    category: bazi;
-    priority: high;
-    if wealthStarStrength == "strong";
-    if wuxingKe(wealthStarWuxing, officerStarWuxing) == false;
-    then fortune += 10;
-    then signal = "财星得用";
-    then probability = 0.8;
-}
-
-rule dayHourHarmony {
-    description: "日时相合，晚运吉祥";
-    category: bazi;
-    priority: medium;
-    if zhiHe(dayZhi, hourZhi);
-    then fortune += 8;
-    then timing = "有利姻缘";
+    if dayMasterWuxing == "木";
+    if wuxingSheng(dayMasterWuxing, monthWuxing);
+    
+    then fortune = 80;
+    then confidence += 0.3;
 }
 `;
 
-console.log('=== Rule DSL 演示\n');
+// 示例 2: 多个条件与条件
+const rule2 = `
+rule wealthAndOfficer {
+    description: "财官两旺";
+    category: "bazi";
+    
+    if wealthStarVisible == true;
+    if officerStarVisible == true;
+    if zhiHe(dayBranch, yearBranch);
+    
+    then fortune += 15;
+}
+`;
 
-const context = {
-  dayMasterStrength: 'strong',
-  dayMasterWuxing: '木',
-  yearGanWuxing: '水',
-  wealthStarStrength: 'strong',
-  wealthStarWuxing: '土',
-  officerStarWuxing: '木',
-  dayZhi: '子',
-  hourZhi: '丑'
+console.log("=== 测试 Rule DSL ===");
+console.log("\n--- 测试 1: 简单规则 ---");
+
+const context1 = {
+  dayMasterStrength: "strong",
+  dayMasterWuxing: "木",
+  monthWuxing: "火",
+  fortune: 50,
+  confidence: 0.5
 };
 
-console.log('执行上下文:', JSON.stringify(context, null, 2));
+const result1 = RuleDSL.execute(rule1, context1);
+console.log("执行结果:", JSON.stringify(result1, null, 2)");
+console.log("是否匹配:", result1.matched);
+console.log("效果:", result1.effects);
 
-console.log();
+console.log("\n--- 测试 2: 多个条件 ---");
 
-try {
-  console.log('1. 解析 DSL...');
-  const program = RuleDSL.parse(dslCode);
-  console.log('解析成功，规则数:', program.rules.length);
+const context2 = {
+  wealthStarVisible: true,
+  officerStarVisible: true,
+  dayBranch: "子",
+  yearBranch: "丑",
+  fortune: 50
+};
 
-  console.log();
+const result2 = RuleDSL.execute(rule2, context2);
+console.log("执行结果:", JSON.stringify(result2, null, 2)");
+console.log("是否匹配:", result2.matched);
+console.log("效果:", result2.effects);
 
-  console.log('2. 执行规则...');
-  const result = RuleDSL.interpret(program, context);
+console.log("\n--- 测试 3: 不匹配的条件 ---");
 
-  console.log('执行结果:');
-  console.log('- 成功:', result.success);
-  console.log('- 应用效果:', result.effects);
-  console.log('- 错误:', result.errors);
-  console.log();
+const context3 = {
+  dayMasterStrength: "weak",
+  dayMasterWuxing: "木",
+  monthWuxing: "金",
+  fortune: 50,
+  confidence: 0.5
+};
 
-  console.log('=== 应用效果详情:');
-  result.effects.forEach((effect, index) => {
-    console.log(`  ${index + 1}. ${effect.type} - ${effect.action}:`, effect.value);
-  });
-} catch (error) {
-  console.error('执行失败:', error);
-}
+const result3 = RuleDSL.execute(rule1, context3);
+console.log("执行结果:", JSON.stringify(result3, null, 2)");
+console.log("是否匹配:", result3.matched);
+console.log("效果:", result3.effects);
+
+console.log("\n=== 测试完成 ===");

@@ -1,231 +1,243 @@
 /**
- * Rule DSL - 解释器
- * Phase 8: Runtime Engine
+ * Rule DSL 解释器
  */
 
 import {
+  ProgramNode,
+  RuleDefinitionNode,
   ExpressionNode,
-  LiteralNode,
+  BinaryExpressionNode,
+  UnaryExpressionNode,
   IdentifierNode,
-  MemberAccessNode,
-  BinaryOpNode,
-  UnaryOpNode,
+  MemberExpressionNode,
   CallExpressionNode,
-  ConditionNode,
-  EffectNode,
-  RuleNode,
-  ProgramNode
+  ExecutionContext,
+  ExecutionResult,
 } from './types';
 
-export type Context = Record<string, any>;
+// 内置五行生克函数
+const WUXING_RELATIONS: Record<string, string[]> = {
+  '木': ['火', '土'],
+  '火': ['土', '金'],
+  '土': ['金', '水'],
+  '金': ['水', '木'],
+  '水': ['木', '火'],
+};
 
-export interface ExecutionResult {
-  success: boolean;
-  effects: AppliedEffect[];
-  errors: string[];
-}
+// 干支六合关系
+const ZHI_HE: Record<string, string> = {
+  '子': '丑',
+  '丑': '子',
+  '寅': '亥',
+  '亥': '寅',
+  '卯': '戌',
+  '戌': '卯',
+  '辰': '酉',
+  '酉': '辰',
+  '巳': '申',
+  '申': '巳',
+  '午': '未',
+  '未': '午',
+};
 
-export interface AppliedEffect {
-  type: 'signal' | 'probability' | 'fortune' | 'timing' | 'confidence';
-  action: string;
-  value: any;
-}
+// 干支六冲关系
+const ZHI_CHONG: Record<string, string> = {
+  '子': '午',
+  '午': '子',
+  '丑': '未',
+  '未': '丑',
+  '寅': '申',
+  '申': '寅',
+  '卯': '酉',
+  '酉': '卯',
+  '辰': '戌',
+  '戌': '辰',
+  '巳': '亥',
+  '亥': '巳',
+};
 
 export class Interpreter {
-  private context: Context;
-  private builtins: Record<string, (...args: any[]) => any>;
+  private context: ExecutionContext;
+  private effects: Record<string, any> = {};
+  private builtInFunctions: Record<string, (...args: any[]) => any> = {};
 
-  constructor(context: Context = {}) {
-    this.context = context;
-    this.builtins = {
-      // 五行生克
-      wuxingSheng: (a: string, b: string) => {
-        const sheng: Record<string, string> = {
-          '木': '火',
-          '火': '土',
-          '土': '金',
-          '金': '水',
-          '水': '木'
-        };
-        return sheng[a] === b;
-      },
-      wuxingKe: (a: string, b: string) => {
-        const ke: Record<string, string> = {
-          '木': '土',
-          '土': '水',
-          '水': '火',
-          '火': '金',
-          '金': '木'
-        };
-        return ke[a] === b;
-      },
-      // 干支关系
-      ganHe: (a: string, b: string) => {
-        const he: Record<string, string> = {
-          '甲': '己', '己': '甲',
-          '乙': '庚', '庚': '乙',
-          '丙': '辛', '辛': '丙',
-          '丁': '壬', '壬': '丁',
-          '戊': '癸', '癸': '戊'
-        };
-        return he[a] === b;
-      },
-      zhiHe: (a: string, b: string) => {
-        const he: Record<string, string> = {
-          '子': '丑', '丑': '子',
-          '寅': '亥', '亥': '寅',
-          '卯': '戌', '戌': '卯',
-          '辰': '酉', '酉': '辰',
-          '巳': '申', '申': '巳',
-          '午': '未', '未': '午'
-        };
-        return he[a] === b;
-      },
-      zhiChong: (a: string, b: string) => {
-        const chong: Record<string, string> = {
-          '子': '午', '午': '子',
-          '丑': '未', '未': '丑',
-          '寅': '申', '申': '寅',
-          '卯': '酉', '酉': '卯',
-          '辰': '戌', '戌': '辰',
-          '巳': '亥', '亥': '巳'
-        };
-        return chong[a] === b;
-      },
-      min: Math.min,
-      max: Math.max,
-      sum: (...args: number[]) => args.reduce((a, b) => a + b, 0),
-      avg: (...args: number[]) => args.reduce((a, b) => a + b, 0) / args.length
+  constructor(context: ExecutionContext = {}) {
+    this.context = { ...context };
+    this.initBuiltInFunctions();
+  }
+
+  private initBuiltInFunctions(): void {
+    // 五行生克
+    this.builtInFunctions['wuxingSheng'] = (sheng: string, shengZhe: string): boolean => {
+      return WUXING_RELATIONS[sheng]?.[0] === shengZhe;
+    };
+
+    this.builtInFunctions['wuxingKe'] = (ke: string, keZhe: string): boolean => {
+      return WUXING_RELATIONS[ke]?.[1] === keZhe;
+    };
+
+    // 干支关系
+    this.builtInFunctions['zhiHe'] = (zhi1: string, zhi2: string): boolean => {
+      return ZHI_HE[zhi1] === zhi2;
+    };
+
+    this.builtInFunctions['zhiChong'] = (zhi1: string, zhi2: string): boolean => {
+      return ZHI_CHONG[zhi1] === zhi2;
+    };
+
+    // 工具函数
+    this.builtInFunctions['includes'] = (arr: any[], item: any): boolean => {
+      return Array.isArray(arr) && arr.includes(item);
+    };
+
+    this.builtInFunctions['length'] = (arr: any[]): number => {
+      return Array.isArray(arr) ? arr.length : 0;
     };
   }
 
   interpretProgram(program: ProgramNode): ExecutionResult {
-    const effects: AppliedEffect[] = [];
+    let allMatched = true;
     const errors: string[] = [];
 
     for (const rule of program.rules) {
-      try {
-        const result = this.interpretRule(rule);
-        if (result.success) {
-          effects.push(...result.effects);
-        }
-      } catch (err) {
-        errors.push(err instanceof Error ? err.message : String(err));
+      const result = this.interpretRule(rule);
+      if (!result.matched) {
+        allMatched = false;
+      }
+      if (result.errors) {
+        errors.push(...result.errors);
       }
     }
 
     return {
       success: errors.length === 0,
-      effects,
-      errors
+      matched: allMatched,
+      effects: this.effects,
+      errors: errors.length > 0 ? errors : undefined
     };
   }
 
-  interpretRule(rule: RuleNode): ExecutionResult {
-    const effects: AppliedEffect[] = [];
+  interpretRule(rule: RuleDefinitionNode): ExecutionResult {
+    let allConditionsMet = true;
     const errors: string[] = [];
 
     try {
-      const allConditionsSatisfied = rule.conditions.every(condition => {
-        try {
-          const result = this.interpretCondition(condition);
-          return Boolean(result);
-        } catch (err) {
-          errors.push(err instanceof Error ? err.message : String(err));
-          return false;
-        }
-      });
-
-      if (allConditionsSatisfied) {
-        for (const effect of rule.effects) {
-          try {
-            const appliedEffect = this.interpretEffect(effect);
-            effects.push(appliedEffect);
-          } catch (err) {
-            errors.push(err instanceof Error ? err.message : String(err));
-          }
+      // 检查所有条件
+      for (const ifStmt of rule.conditions) {
+        const result = this.interpretExpression(ifStmt.condition);
+        if (!result) {
+          allConditionsMet = false;
+          break;
         }
       }
-    } catch (err) {
-      errors.push(err instanceof Error ? err.message : String(err));
+
+      // 如果条件都满足，执行效果
+      if (allConditionsMet) {
+        for (const thenStmt of rule.effects) {
+          this.interpretEffect(thenStmt.effect);
+        }
+      }
+
+      return {
+        success: true,
+        matched: allConditionsMet,
+        effects: this.effects,
+        errors: errors.length > 0 ? errors : undefined
+      };
+    } catch (error) {
+      return {
+        success: false,
+        matched: false,
+        effects: this.effects,
+        errors: [error instanceof Error ? error.message : String(error)]
+      };
+    }
+  }
+
+  private interpretEffect(expr: ExpressionNode): void {
+    if (expr.type === 'BinaryExpression') {
+      const binExpr = expr as BinaryExpressionNode;
+      
+      // 处理赋值操作
+      if (binExpr.operator === '=') {
+        const left = binExpr.left;
+        const right = this.interpretExpression(binExpr.right);
+        this.assignValue(left, right);
+        return;
+      }
+
+      // 处理复合赋值
+      if (['+=', '-=', '*=', '/='].includes(binExpr.operator)) {
+        const left = binExpr.left;
+        const currentValue = this.interpretExpression(left);
+        const rightValue = this.interpretExpression(binExpr.right);
+        let newValue: any;
+
+        switch (binExpr.operator) {
+          case '+=':
+            newValue = currentValue + rightValue;
+            break;
+          case '-=':
+            newValue = currentValue - rightValue;
+            break;
+          case '*=':
+            newValue = currentValue * rightValue;
+            break;
+          case '/=':
+            newValue = currentValue / rightValue;
+            break;
+        }
+
+        this.assignValue(left, newValue);
+        return;
+      }
     }
 
-    return {
-      success: errors.length === 0,
-      effects,
-      errors
-    };
+    // 如果不是赋值，只是执行表达式（虽然 effect 通常应该是赋值）
+    this.interpretExpression(expr);
   }
 
-  interpretCondition(condition: ConditionNode): any {
-    return this.interpretExpression(condition.expression);
+  private assignValue(target: ExpressionNode, value: any): void {
+    if (target.type === 'Identifier') {
+      const id = target as IdentifierNode;
+      this.context[id.name] = value;
+      this.effects[id.name] = value;
+    } else if (target.type === 'MemberExpression') {
+      const member = target as MemberExpressionNode;
+      const obj = this.interpretExpression(member.object);
+      if (obj && typeof obj === 'object') {
+        obj[member.property.name] = value;
+        this.effects[`${JSON.stringify(obj)}.${member.property.name}`] = value;
+      }
+    }
   }
 
-  interpretEffect(effect: EffectNode): AppliedEffect {
-    const value = this.interpretExpression(effect.value);
-
-    return {
-      type: effect.effectType,
-      action: effect.action,
-      value
-    };
-  }
-
-  interpretExpression(expr: ExpressionNode): any {
+  private interpretExpression(expr: ExpressionNode): any {
     switch (expr.type) {
-      case 'literal':
-        return (expr as LiteralNode).value;
-
-      case 'identifier':
-        return this.resolveIdentifier((expr as IdentifierNode).name);
-
-      case 'memberAccess':
-        return this.resolveMemberAccess(expr as MemberAccessNode);
-
-      case 'binaryOp':
-        return this.interpretBinaryOp(expr as BinaryOpNode);
-
-      case 'unaryOp':
-        return this.interpretUnaryOp(expr as UnaryOpNode);
-
-      case 'call':
-        return this.interpretCall(expr as CallExpressionNode);
-
+      case 'BinaryExpression':
+        return this.interpretBinaryExpression(expr as BinaryExpressionNode);
+      case 'UnaryExpression':
+        return this.interpretUnaryExpression(expr as UnaryExpressionNode);
+      case 'Identifier':
+        return this.interpretIdentifier(expr as IdentifierNode);
+      case 'MemberExpression':
+        return this.interpretMemberExpression(expr as MemberExpressionNode);
+      case 'CallExpression':
+        return this.interpretCallExpression(expr as CallExpressionNode);
+      case 'NumberLiteral':
+        return (expr as any).value;
+      case 'StringLiteral':
+        return (expr as any).value;
+      case 'BooleanLiteral':
+        return (expr as any).value;
+      case 'NullLiteral':
+        return null;
       default:
         throw new Error(`Unknown expression type: ${expr.type}`);
     }
   }
 
-  private resolveIdentifier(name: string): any {
-    if (name in this.builtins) {
-      return this.builtins[name];
-    }
-    if (name in this.context) {
-      return this.context[name];
-    }
-    throw new Error(`Undefined identifier: ${name}`);
-  }
-
-  private resolveMemberAccess(expr: MemberAccessNode): any {
-    let obj: any;
-    if (expr.object.type === 'identifier') {
-      obj = this.resolveIdentifier((expr.object as IdentifierNode).name);
-    } else {
-      obj = this.interpretExpression(expr.object);
-    }
-
-    if (obj === null || obj === undefined) {
-      throw new Error(`Cannot access property '${expr.property}' of null/undefined`);
-    }
-
-    if (!(expr.property in obj)) {
-      throw new Error(`Property '${expr.property}' does not exist on object`);
-    }
-
-    return obj[expr.property];
-  }
-
-  private interpretBinaryOp(expr: BinaryOpNode): any {
+  private interpretBinaryExpression(expr: BinaryExpressionNode): any {
     const left = this.interpretExpression(expr.left);
     const right = this.interpretExpression(expr.right);
 
@@ -234,69 +246,95 @@ export class Interpreter {
         return left === right;
       case '!=':
         return left !== right;
-      case '>':
-        return left > right;
       case '<':
         return left < right;
-      case '>=':
-        return left >= right;
+      case '>':
+        return left > right;
       case '<=':
         return left <= right;
+      case '>=':
+        return left >= right;
       case '&&':
-        return Boolean(left) && Boolean(right);
+        return left && right;
       case '||':
-        return Boolean(left) || Boolean(right);
+        return left || right;
       case '+':
-        return Number(left) + Number(right);
+        return left + right;
       case '-':
-        return Number(left) - Number(right);
+        return left - right;
       case '*':
-        return Number(left) * Number(right);
+        return left * right;
       case '/':
-        return Number(left) / Number(right);
+        return left / right;
+      case '%':
+        return left % right;
       default:
-        throw new Error(`Unknown binary operator: ${expr.operator}`);
+        throw new Error(`Unknown operator: ${expr.operator}`);
     }
   }
 
-  private interpretUnaryOp(expr: UnaryOpNode): any {
+  private interpretUnaryExpression(expr: UnaryExpressionNode): any {
     const operand = this.interpretExpression(expr.operand);
 
     switch (expr.operator) {
       case '!':
-        return !Boolean(operand);
+        return !operand;
       case '-':
-        return -Number(operand);
+        return -operand;
+      case '+':
+        return +operand;
       default:
         throw new Error(`Unknown unary operator: ${expr.operator}`);
     }
   }
 
-  private interpretCall(expr: CallExpressionNode): any {
-    let fn: any;
-    if (expr.callee.type === 'identifier') {
-      fn = this.resolveIdentifier(expr.callee.name);
-    } else {
-      throw new Error('Only identifier functions are supported');
+  private interpretIdentifier(expr: IdentifierNode): any {
+    if (expr.name in this.context) {
+      return this.context[expr.name];
+    }
+    if (expr.name in this.effects) {
+      return this.effects[expr.name];
+    }
+    throw new Error(`Undefined variable: ${expr.name}`);
+  }
+
+  private interpretMemberExpression(expr: MemberExpressionNode): any {
+    const obj = this.interpretExpression(expr.object);
+    if (obj && typeof obj === 'object') {
+      return obj[expr.property.name];
+    }
+    return undefined;
+  }
+
+  private interpretCallExpression(expr: CallExpressionNode): any {
+    const callee = expr.callee;
+    if (callee.type !== 'Identifier') {
+      throw new Error('Only identifier function calls are supported');
     }
 
-    if (typeof fn !== 'function') {
-      throw new Error(`${expr.callee.name} is not a function`);
-    }
-
+    const funcName = (callee as IdentifierNode).name;
     const args = expr.arguments.map(arg => this.interpretExpression(arg));
-    return fn(...args);
+
+    if (funcName in this.builtInFunctions) {
+      return this.builtInFunctions[funcName](...args);
+    }
+
+    throw new Error(`Undefined function: ${funcName}`);
   }
 
-  setContext(context: Context): void {
-    this.context = context;
+  setContext(context: ExecutionContext): void {
+    this.context = { ...context };
   }
 
-  updateContext(updates: Context): void {
-    this.context = { ...this.context, ...updates };
-  }
-
-  getContext(): Context {
+  getContext(): ExecutionContext {
     return { ...this.context };
+  }
+
+  getEffects(): Record<string, any> {
+    return { ...this.effects };
+  }
+
+  clearEffects(): void {
+    this.effects = {};
   }
 }
