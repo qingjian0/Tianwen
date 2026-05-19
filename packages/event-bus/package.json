@@ -1,0 +1,11 @@
+{
+  "name": "@tianwen/event-bus",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "description": "Event Bus for Tianwen - Event-driven architecture",
+  "dependencies": {
+    "uuid": "^9.0.0"
+  }
+}

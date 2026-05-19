@@ -1,0 +1,8 @@
+{
+  "name": "@tianwen/rule-dsl",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "description": "Rule DSL for Tianwen - Metaphysics Rule Definition Language"
+}
