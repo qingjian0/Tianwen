@@ -14,6 +14,7 @@ import {
   DIZHI_CHONG,
   DIZHI_XING
 } from './constants';
+import { RuleConflictResolver, ConflictResolutionResult, ResolutionStrategy } from './conflict-resolver';
 
 // 条件评估器
 export class ConditionEvaluator {
@@ -394,9 +395,11 @@ export class EffectApplier {
 export class RuleEngine {
   private rules: Rule[] = [];
   private config: RuleEngineConfig;
+  private conflictResolver: RuleConflictResolver;
 
   constructor(config: Partial<RuleEngineConfig> = {}) {
     this.config = { ...DEFAULT_RULE_ENGINE_CONFIG, ...config };
+    this.conflictResolver = new RuleConflictResolver(config);
   }
 
   // 添加规则
@@ -457,15 +460,28 @@ export class RuleEngine {
     return results.sort((a, b) => b.matchScore - a.matchScore);
   }
 
-  // 执行规则
-  executeRules(context: RuleContext): RuleExecutionResult[] {
-    const start = Date.now();
-    const matchResults = this.matchRules(context);
-    const executionResults: RuleExecutionResult[] = [];
+  // 匹配规则（包含冲突处理）
+  matchRulesWithConflictResolution(
+    context: RuleContext,
+    strategy: ResolutionStrategy = 'priority_based'
+  ): ConflictResolutionResult {
+    const matches = this.matchRules(context);
+    return this.conflictResolver.resolveConflicts(matches, strategy);
+  }
 
-    for (const matchResult of matchResults) {
+  // 执行规则（包含冲突处理）
+  executeRulesWithConflictResolution(
+    context: RuleContext,
+    strategy: ResolutionStrategy = 'priority_based'
+  ): RuleExecutionResult[] {
+    const conflictResult = this.matchRulesWithConflictResolution(context, strategy);
+    const executionResults: RuleExecutionResult[] = [];
+    const skippedRuleSet = new Set(conflictResult.skippedRuleIds);
+
+    for (const matchResult of conflictResult.resolvedMatches) {
       if (!matchResult.matched) continue;
-      
+      if (skippedRuleSet.has(matchResult.rule.metadata.id)) continue;
+
       const ruleStart = Date.now();
       const applier = new EffectApplier(context);
       const appliedEffects: RuleEffect[] = [];
@@ -498,6 +514,70 @@ export class RuleEngine {
     }
 
     return executionResults;
+  }
+
+  // 执行规则
+  executeRules(context: RuleContext): RuleExecutionResult[] {
+    const start = Date.now();
+    const matchResults = this.matchRules(context);
+    const executionResults: RuleExecutionResult[] = [];
+
+    for (const matchResult of matchResults) {
+      if (!matchResult.matched) continue;
+
+      const ruleStart = Date.now();
+      const applier = new EffectApplier(context);
+      const appliedEffects: RuleEffect[] = [];
+      const skippedEffects: RuleEffect[] = [];
+      const errors: string[] = [];
+      const warnings: string[] = [];
+
+      for (const effect of matchResult.rule.effects) {
+        try {
+          if (applier.applyEffect(effect)) {
+            appliedEffects.push(effect);
+          } else {
+            skippedEffects.push(effect);
+          }
+        } catch (error) {
+          errors.push(`Effect ${effect.id} failed: ${error}`);
+        }
+      }
+
+      executionResults.push({
+        rule: matchResult.rule,
+        executed: true,
+        matched: matchResult.matched,
+        appliedEffects,
+        skippedEffects,
+        errors: errors.length > 0 ? errors : undefined,
+        warnings: warnings.length > 0 ? warnings : undefined,
+        executionTimeMs: Date.now() - ruleStart
+      });
+    }
+
+    return executionResults;
+  }
+
+  // 执行并获取结果（包含冲突处理）
+  executeAndGetResultWithConflictResolution(
+    context: RuleContext,
+    strategy: ResolutionStrategy = 'priority_based'
+  ): { result: any; conflictResolution: ConflictResolutionResult } {
+    const applier = new EffectApplier(context);
+    const conflictResolution = this.matchRulesWithConflictResolution(context, strategy);
+    const skippedRuleSet = new Set(conflictResolution.skippedRuleIds);
+
+    for (const matchResult of conflictResolution.resolvedMatches) {
+      if (!matchResult.matched) continue;
+      if (skippedRuleSet.has(matchResult.rule.metadata.id)) continue;
+
+      for (const effect of matchResult.rule.effects) {
+        applier.applyEffect(effect);
+      }
+    }
+
+    return { result: applier.getResult(), conflictResolution };
   }
 
   // 执行并获取结果
