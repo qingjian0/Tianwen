@@ -2,6 +2,12 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
+import { Input } from '@/components/ui/Input';
+import { Segment } from '@/components/ui/Segment';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { Badge } from '@/components/ui/Badge';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
@@ -15,9 +21,15 @@ const stagger = {
   animate: { transition: { staggerChildren: 0.1 } },
 };
 
-const PageContainer = ({ children }: { children: React.ReactNode }) => (
-  <div className="max-w-6xl mx-auto px-4 py-8">{children}</div>
-);
+const staggerContainer = {
+  initial: {},
+  animate: { transition: { staggerChildren: 0.12 } },
+};
+
+const staggerItem = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
 
 const systems = [
   { id: 'meihua', name: '梅花易数', description: '观物取象，心易相合' },
@@ -27,16 +39,30 @@ const systems = [
   { id: 'ziwei', name: '紫微斗数', description: '命盘十二宫，星曜布局' },
 ];
 
+const systemOptions = [
+  { id: 'meihua', label: '梅花', icon: '☰' },
+  { id: 'liuyao', label: '六爻', icon: '☷' },
+  { id: 'bazi', label: '八字', icon: '☯' },
+  { id: 'qimen', label: '奇门', icon: '☲' },
+  { id: 'ziwei', label: '紫微', icon: '◎' },
+];
+
 const modes = [
   { id: 'single', name: '单系统', description: '使用选定的术数独立推演' },
   { id: 'multi', name: '多系统', description: '各系统独立推演，结果对比' },
   { id: 'fusion', name: '融合', description: '多系统信号融合分析' },
 ];
 
+const modeOptions = [
+  { id: 'single', label: '单系统' },
+  { id: 'multi', label: '多系统' },
+  { id: 'fusion', label: '融合' },
+];
+
 const timeRanges = [
-  { id: 'short', name: '短期', days: 7, description: '一周内' },
-  { id: 'medium', name: '中期', days: 30, description: '一月内' },
-  { id: 'long', name: '长期', days: 90, description: '三月内' },
+  { id: 'immediate', label: '即时' },
+  { id: 'week', label: '本周' },
+  { id: 'month', label: '本月' },
 ];
 
 type PredictionState = 'idle' | 'loading' | 'success' | 'error';
@@ -90,7 +116,7 @@ export default function PredictionPage() {
   const [question, setQuestion] = useState('');
   const [selectedSystems, setSelectedSystems] = useState<string[]>(['meihua']);
   const [selectedMode, setSelectedMode] = useState('single');
-  const [selectedTimeRange, setSelectedTimeRange] = useState('medium');
+  const [selectedTimeRange, setSelectedTimeRange] = useState('week');
   const [state, setState] = useState<PredictionState>('idle');
   const [results, setResults] = useState<any[]>([]);
   const [error, setError] = useState('');
@@ -109,7 +135,7 @@ export default function PredictionPage() {
     setResults([]);
 
     try {
-      const targetSystems = selectedMode === 'single' ? [selectedSystems[0]] : selectedSystems;
+      const targetSystems = selectedMode === 'single' ? [selectedSystems[0]] : systems.map(s => s.id);
       const allResults = await Promise.all(targetSystems.map(callEngine));
       setResults(allResults);
       setState('success');
@@ -134,154 +160,164 @@ export default function PredictionPage() {
   };
 
   return (
-    <PageContainer>
+    <div className="max-w-4xl mx-auto px-4 py-8">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
         <motion.h1 {...fadeInUp} className="text-4xl font-serif text-amber-400 mb-2">推演</motion.h1>
         <motion.p {...fadeInUp} className="text-gray-400 mb-8">至诚之道，可以前知</motion.p>
 
-        <div className="grid gap-6 max-w-4xl">
+        <div className="space-y-6">
           <motion.div {...fadeInUp} variants={stagger}>
-            {/* 输入区 */}
-            <motion.div variants={fadeInUp} className="bg-[#12121c] border border-amber-500/10 rounded-xl p-6">
-              <label className="block text-sm text-gray-400 mb-2">请起一念</label>
-              <textarea
-                className="w-full bg-[#0a0a0f] border border-amber-500/10 rounded-lg p-4 text-white focus:border-amber-500/50 focus:outline-none resize-none transition-all"
-                rows={3}
-                placeholder="心中所想，一事一问..."
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-              />
+            <motion.div variants={fadeInUp}>
+              <Card>
+                <label className="block text-sm text-gray-400 mb-3">请起一念</label>
+                <div className="relative">
+                  <div className="absolute left-3 top-3 text-gray-500 text-lg">🔮</div>
+                  <textarea
+                    className="w-full bg-[#0a0a0f] border border-gold-500/10 rounded-lg py-3 pl-10 pr-4 text-white placeholder:text-gray-600 focus:border-gold-500/40 focus:outline-none focus:shadow-glow-sm transition-all duration-300 resize-none"
+                    rows={3}
+                    placeholder="心中所想，一事一问..."
+                    value={question}
+                    onChange={(e) => setQuestion(e.target.value)}
+                  />
+                </div>
+              </Card>
             </motion.div>
 
-            {/* 推演模式 */}
-            <motion.div variants={fadeInUp} className="bg-[#12121c] border border-amber-500/10 rounded-xl p-6">
-              <label className="block text-sm text-gray-400 mb-4">推演模式</label>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {modes.map((mode) => (
-                  <button key={mode.id} onClick={() => setSelectedMode(mode.id)}
-                    className={`p-4 rounded-lg border text-left transition-all duration-300 ${
-                      selectedMode === mode.id ? 'bg-amber-500/10 border-amber-500/30 text-amber-400' : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'
-                    }`}>
-                    <div className="font-medium mb-1">{mode.name}</div>
-                    <div className="text-xs opacity-70">{mode.description}</div>
-                  </button>
-                ))}
-              </div>
+            <motion.div variants={fadeInUp}>
+              <Card>
+                <label className="block text-sm text-gray-400 mb-4">选择术数</label>
+                <Segment
+                  options={systemOptions}
+                  value={selectedSystems[0]}
+                  onChange={(id) => setSelectedSystems([id])}
+                />
+              </Card>
             </motion.div>
 
-            {/* 术数选择 */}
-            <motion.div variants={fadeInUp} className="bg-[#12121c] border border-amber-500/10 rounded-xl p-6">
-              <label className="block text-sm text-gray-400 mb-4">选择术数</label>
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                {systems.map((system) => (
-                  <button key={system.id} onClick={() => toggleSystem(system.id)}
-                    className={`p-3 rounded-lg border text-center transition-all duration-300 ${
-                      selectedSystems.includes(system.id) ? 'bg-amber-500/10 border-amber-500/30 text-amber-400' : 'bg-white/5 border-white/10 text-gray-500 opacity-50'
-                    }`}>
-                    <div className="font-medium">{system.name}</div>
-                    <div className="text-xs opacity-70 mt-1">{system.description}</div>
-                  </button>
-                ))}
-              </div>
+            <motion.div variants={fadeInUp}>
+              <Card>
+                <label className="block text-sm text-gray-400 mb-4">推演模式</label>
+                <Segment
+                  options={modeOptions}
+                  value={selectedMode}
+                  onChange={setSelectedMode}
+                />
+              </Card>
             </motion.div>
 
-            {/* 时间范围 */}
-            <motion.div variants={fadeInUp} className="bg-[#12121c] border border-amber-500/10 rounded-xl p-6">
-              <label className="block text-sm text-gray-400 mb-4">时间范围</label>
-              <div className="flex flex-wrap gap-3">
-                {timeRanges.map((range) => (
-                  <button key={range.id} onClick={() => setSelectedTimeRange(range.id)}
-                    className={`px-4 py-2 rounded-full text-sm transition-all duration-300 ${
-                      selectedTimeRange === range.id ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-white/5 text-gray-400 border border-white/10 hover:border-white/20'
-                    }`}>
-                    {range.name}<span className="ml-1 text-xs opacity-60">({range.description})</span>
-                  </button>
-                ))}
-              </div>
+            <motion.div variants={fadeInUp}>
+              <Card>
+                <label className="block text-sm text-gray-400 mb-4">时间范围</label>
+                <Segment
+                  options={timeRanges}
+                  value={selectedTimeRange}
+                  onChange={setSelectedTimeRange}
+                />
+              </Card>
             </motion.div>
 
-            {/* 推演按钮 */}
-            <motion.button variants={fadeInUp} onClick={handlePredict}
-              disabled={selectedSystems.length === 0 || state === 'loading'}
-              className="w-full bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/30 text-amber-400 py-5 rounded-xl font-serif tracking-widest transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
-              {state === 'loading' ? '推演中...' : '启·演'}
-            </motion.button>
+            <motion.div variants={fadeInUp}>
+              <Button
+                variant="primary"
+                size="lg"
+                loading={state === 'loading'}
+                disabled={selectedSystems.length === 0 || state === 'loading'}
+                onClick={handlePredict}
+                className="w-full font-serif tracking-widest"
+              >
+                {state === 'loading' ? '推演中...' : '启·演'}
+              </Button>
+            </motion.div>
 
-            {/* 结果区 */}
             {state !== 'idle' && (
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-[#12121c] border border-amber-500/10 rounded-xl p-6">
-                <h2 className="text-xl font-serif text-white mb-6">推演结果</h2>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                <Card>
+                  <h2 className="text-xl font-serif text-white mb-6">推演结果</h2>
 
-                {state === 'loading' ? (
-                  <div className="text-center py-12">
-                    <div className="w-12 h-12 border-4 border-amber-500/30 border-t-amber-400 rounded-full animate-spin mx-auto mb-4" />
-                    <p className="text-gray-400">正在推演...</p>
-                  </div>
-                ) : state === 'error' ? (
-                  <div className="text-center py-12 text-red-400">{error}</div>
-                ) : (
-                  <div className="space-y-6">
-                    {/* 综合 */}
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="text-center p-4 bg-white/5 rounded-lg">
-                        <div className="text-4xl font-serif text-amber-400 mb-1">{getOverallFortune().text}</div>
-                        <div className="text-sm text-gray-500">综合论断</div>
-                      </div>
-                      <div className="text-center p-4 bg-white/5 rounded-lg">
-                        <div className="text-4xl font-serif text-blue-400 mb-1">{getOverallFortune().score}</div>
-                        <div className="text-sm text-gray-500">综合评分</div>
-                      </div>
+                  {state === 'loading' ? (
+                    <div className="space-y-4 py-4">
+                      <Skeleton variant="rect" height="5rem" />
+                      <Skeleton variant="rect" height="5rem" />
+                      <Skeleton variant="rect" height="5rem" />
                     </div>
+                  ) : state === 'error' ? (
+                    <div className="text-center py-12 text-red-400">{error}</div>
+                  ) : (
+                    <div className="space-y-6">
+                      <Card variant="highlight">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="text-center">
+                            <div className="text-5xl font-serif text-amber-400 mb-1">{getOverallFortune().text}</div>
+                            <div className="text-sm text-gray-500">综合论断</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-5xl font-serif text-blue-400 mb-1">{getOverallFortune().score}</div>
+                            <div className="text-sm text-gray-500">综合评分</div>
+                          </div>
+                        </div>
+                      </Card>
 
-                    {/* 各系统结果 */}
-                    {results.map((r, i) => (
-                      <div key={i} className="bg-white/5 rounded-lg p-4 border border-white/10">
-                        <div className="text-amber-400 font-medium mb-3">{r.name}</div>
-                        {r.system === 'meihua' && (
-                          <div className="grid grid-cols-3 gap-3 text-sm">
-                            <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">卦名</div><div className="text-white">{r.guaName}</div></div>
-                            <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">卦数</div><div className="text-white">{r.guaNum}</div></div>
-                            <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">解读</div><div className="text-white text-xs">{r.interpretation?.slice(0,20) || '—'}</div></div>
-                          </div>
-                        )}
-                        {r.system === 'liuyao' && (
-                          <div className="grid grid-cols-3 gap-3 text-sm">
-                            <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">卦名</div><div className="text-white">{r.guaName}</div></div>
-                            <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">世爻</div><div className="text-white">第{r.shiYao}爻</div></div>
-                            <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">六亲</div><div className="text-white text-xs">{(r.liuqin || []).slice(0,3).join(',')}</div></div>
-                          </div>
-                        )}
-                        {r.system === 'qimen' && (
-                          <div className="grid grid-cols-3 gap-3 text-sm">
-                            <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">局数</div><div className="text-white">{r.ju}</div></div>
-                            <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">值符</div><div className="text-white">{r.zhiFu}</div></div>
-                            <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">值使</div><div className="text-white">{r.zhiShi}</div></div>
-                          </div>
-                        )}
-                        {r.system === 'bazi' && (
-                          <div className="grid grid-cols-4 gap-3 text-sm">
-                            <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">年柱</div><div className="text-white">{r.year}</div></div>
-                            <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">月柱</div><div className="text-white">{r.month}</div></div>
-                            <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">日柱</div><div className="text-white">{r.day}</div></div>
-                            <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">评分</div><div className="text-white">{r.score}</div></div>
-                          </div>
-                        )}
-                        {r.system === 'ziwei' && (
-                          <div className="grid grid-cols-3 gap-3 text-sm">
-                            <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">命宫</div><div className="text-white">{r.mainPalace}</div></div>
-                            <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">主星</div><div className="text-white">{r.mainStar}</div></div>
-                            <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">运势</div><div className="text-white">{r.score || '—'}</div></div>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
+                      <motion.div
+                        variants={staggerContainer}
+                        initial="initial"
+                        animate="animate"
+                        className="space-y-4"
+                      >
+                        {results.map((r, i) => (
+                          <motion.div key={i} variants={staggerItem}>
+                            <Card>
+                              <div className="flex items-center gap-3 mb-4">
+                                <span className="text-gold-400 font-medium">{r.name}</span>
+                                <Badge variant="gold" size="sm">{r.system}</Badge>
+                              </div>
+                              {r.system === 'meihua' && (
+                                <div className="grid grid-cols-3 gap-3 text-sm">
+                                  <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">卦名</div><div className="text-white">{r.guaName}</div></div>
+                                  <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">卦数</div><div className="text-white">{r.guaNum}</div></div>
+                                  <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">解读</div><div className="text-white text-xs">{r.interpretation?.slice(0,20) || '—'}</div></div>
+                                </div>
+                              )}
+                              {r.system === 'liuyao' && (
+                                <div className="grid grid-cols-3 gap-3 text-sm">
+                                  <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">卦名</div><div className="text-white">{r.guaName}</div></div>
+                                  <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">世爻</div><div className="text-white">第{r.shiYao}爻</div></div>
+                                  <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">六亲</div><div className="text-white text-xs">{(r.liuqin || []).slice(0,3).join(',')}</div></div>
+                                </div>
+                              )}
+                              {r.system === 'qimen' && (
+                                <div className="grid grid-cols-3 gap-3 text-sm">
+                                  <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">局数</div><div className="text-white">{r.ju}</div></div>
+                                  <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">值符</div><div className="text-white">{r.zhiFu}</div></div>
+                                  <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">值使</div><div className="text-white">{r.zhiShi}</div></div>
+                                </div>
+                              )}
+                              {r.system === 'bazi' && (
+                                <div className="grid grid-cols-4 gap-3 text-sm">
+                                  <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">年柱</div><div className="text-white">{r.year}</div></div>
+                                  <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">月柱</div><div className="text-white">{r.month}</div></div>
+                                  <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">日柱</div><div className="text-white">{r.day}</div></div>
+                                  <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">评分</div><div className="text-white">{r.score}</div></div>
+                                </div>
+                              )}
+                              {r.system === 'ziwei' && (
+                                <div className="grid grid-cols-3 gap-3 text-sm">
+                                  <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">命宫</div><div className="text-white">{r.mainPalace}</div></div>
+                                  <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">主星</div><div className="text-white">{r.mainStar}</div></div>
+                                  <div className="text-center p-2 bg-white/5 rounded"><div className="text-gray-400 text-xs">运势</div><div className="text-white">{r.score || '—'}</div></div>
+                                </div>
+                              )}
+                            </Card>
+                          </motion.div>
+                        ))}
+                      </motion.div>
+                    </div>
+                  )}
+                </Card>
               </motion.div>
             )}
           </motion.div>
         </div>
       </motion.div>
-    </PageContainer>
+    </div>
   );
 }

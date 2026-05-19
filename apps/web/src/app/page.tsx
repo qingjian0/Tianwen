@@ -2,97 +2,121 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 
-// 临时定义动画
-const float = {
-  animate: {
-    y: [0, -15, 0],
-  },
-  transition: {
-    duration: 6,
-    ease: 'easeInOut',
-    repeat: Infinity,
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.1,
+    },
   },
 };
 
-const PageContainer = ({ children }: { children: React.ReactNode }) => (
-  <div className="max-w-6xl mx-auto">{children}</div>
-);
+const itemVariants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: 'easeOut' },
+  },
+};
+
+const systems = [
+  {
+    icon: '☰',
+    name: '梅花易数',
+    description: '观象玩占，八卦推演',
+    href: '/prediction',
+  },
+  {
+    icon: '☷',
+    name: '六爻纳甲',
+    description: '六爻装卦，世应生克',
+    href: '/prediction',
+  },
+  {
+    icon: '☯',
+    name: '八字命理',
+    description: '四柱八字，大运流年',
+    href: '/destiny-palace',
+  },
+  {
+    icon: '☲',
+    name: '奇门遁甲',
+    description: '九宫八门，时空推演',
+    href: '/chart',
+  },
+  {
+    icon: '◎',
+    name: '紫微斗数',
+    description: '十二命宫，星曜布局',
+    href: '/destiny-palace',
+  },
+];
 
 export default function TianWenDian() {
   return (
-    <PageContainer>
-      <div className="min-h-[80vh] flex flex-col items-center justify-center py-12">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
+    <div className="min-h-[calc(100vh-4rem)] p-8 relative flex flex-col items-center justify-center">
+      <section className="text-center mb-16">
+        <motion.h1
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: 'easeOut' }}
-          className="text-center"
+          transition={{ duration: 0.8, delay: 0.1, ease: 'easeOut' }}
+          className="text-7xl lg:text-8xl font-serif font-bold tracking-[0.2em] text-gradient-gold"
         >
-          {/* 天问标题 */}
-          <div className="mb-12">
-            <motion.div
-              animate={float.animate}
-              transition={float.transition}
-              className="inline-block"
-            >
-              <h1 className="text-6xl md:text-8xl font-bold bg-gradient-to-br from-amber-300 via-amber-400 to-amber-500 bg-clip-text text-transparent">
-                天问
-              </h1>
-            </motion.div>
-            <p className="text-xl text-gray-400 mt-4 tracking-[0.3em] font-serif">
-              TIANWEN
-            </p>
-          </div>
+          天问
+        </motion.h1>
 
-          {/* 副标题 */}
-          <div className="mb-8">
-            <h2 className="text-xl md:text-2xl font-serif text-gray-200 mb-2">
-              AI 华夏术数推演操作系统
-            </h2>
-            <p className="text-gray-500 max-w-2xl mx-auto text-lg">
-              时间、命运、概率与 AI 的融合推演系统
-            </p>
-          </div>
+        <motion.p
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
+          className="text-lg text-gray-500 tracking-[0.3em] mt-4"
+        >
+          AI 华夏术数推演操作系统
+        </motion.p>
 
-          {/* 说明文字 */}
-          <p className="text-gray-400 max-w-xl mx-auto mb-12 leading-relaxed font-serif">
-            遂古之初，谁传道之？上下未形，何由考之？
-          </p>
+        <motion.div
+          initial={{ opacity: 0, scaleX: 0 }}
+          animate={{ opacity: 1, scaleX: 1 }}
+          transition={{ duration: 0.6, delay: 0.5, ease: 'easeOut' }}
+          className="w-24 h-px bg-gradient-to-r from-transparent via-gold-500/50 to-transparent mx-auto my-8"
+        />
+      </section>
 
-          {/* 按钮区域 */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link href="/prediction">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.98 }}
-                className="px-10 py-4 bg-amber-500/20 border border-amber-500/40 text-amber-400 rounded-xl backdrop-blur-sm hover:border-amber-500/70 transition-all font-serif tracking-wider"
-              >
-                启·演
-              </motion.button>
+      <motion.section
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-4xl mx-auto w-full"
+      >
+        {systems.map((system) => (
+          <motion.div key={system.name} variants={itemVariants}>
+            <Link href={system.href} className="block">
+              <Card hover>
+                <div className="flex flex-col items-center text-center gap-3">
+                  <span className="text-3xl">{system.icon}</span>
+                  <h3 className="text-lg font-serif text-gold-400">
+                    {system.name}
+                  </h3>
+                  <p className="text-xs text-gray-500">{system.description}</p>
+                </div>
+              </Card>
             </Link>
-
-            <Link href="/destiny-palace">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.98 }}
-                className="px-10 py-4 bg-white/5 border border-white/10 text-gray-300 rounded-xl backdrop-blur-sm hover:border-white/20 transition-all font-serif tracking-wider"
-              >
-                命宫
-              </motion.button>
-            </Link>
-          </div>
-
-          {/* 底部装饰 */}
-          <motion.div
-            animate={{ opacity: [0.3, 0.7, 0.3] }}
-            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-            className="mt-20 text-gray-600 text-sm font-serif"
-          >
-            <p>东方时空认知基础设施 · Phase 2</p>
           </motion.div>
-        </motion.div>
-      </div>
-    </PageContainer>
+        ))}
+      </motion.section>
+
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, delay: 1.2, ease: 'easeOut' }}
+        className="text-xs text-gray-600 text-center mt-12"
+      >
+        观乎天文，以察时变；观乎人文，以化成天下 —《周易》
+      </motion.p>
+    </div>
   );
 }

@@ -2,6 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Card } from '@/components/ui/Card';
+import { Segment } from '@/components/ui/Segment';
+import { Badge } from '@/components/ui/Badge';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
@@ -20,6 +24,13 @@ const baguaPos: Record<string, string> = { '乾': '西北', '兑': '西', '离':
 const baguaElem: Record<string, string> = { '乾':'金','兑':'金','离':'火','震':'木','巽':'木','坎':'水','艮':'土','坤':'土' };
 
 type ChartType = 'meihua' | 'liuyao' | 'qimen' | 'bazi';
+
+const SEGMENT_OPTIONS = [
+  { id: 'meihua', label: '梅花卦', icon: '☰' },
+  { id: 'liuyao', label: '六爻', icon: '☷' },
+  { id: 'qimen', label: '奇门', icon: '☲' },
+  { id: 'bazi', label: '八字', icon: '☯' },
+];
 
 export default function ChartPage() {
   const [chartType, setChartType] = useState<ChartType>('meihua');
@@ -84,158 +95,177 @@ export default function ChartPage() {
         <motion.h1 {...fadeInUp} className="text-4xl font-serif text-amber-400 mb-2">排盘</motion.h1>
         <motion.p {...fadeInUp} className="text-gray-400 mb-8">仰观天文，俯察地理</motion.p>
 
-        {/* 排盘类型选择 */}
-        <motion.div {...fadeInUp} className="bg-[#12121c] border border-amber-500/10 rounded-xl p-6 mb-6">
-          <label className="block text-sm text-gray-400 mb-4">选择排盘</label>
-          <div className="flex flex-wrap gap-3">
-            {[
-              { id: 'meihua', name: '梅花卦', desc: '观物取象' },
-              { id: 'liuyao', name: '六爻', desc: '纳甲筮法' },
-              { id: 'qimen', name: '奇门', desc: '九宫遁甲' },
-              { id: 'bazi', name: '八字', desc: '四柱命理' },
-            ].map((type) => (
-              <button key={type.id} onClick={() => setChartType(type.id as ChartType)}
-                className={`px-5 py-3 rounded-lg border transition-all duration-300 ${
-                  chartType === type.id ? 'bg-amber-500/20 border-amber-500/30 text-amber-400' : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'
-                }`}>
-                <div className="font-medium">{type.name}</div>
-                <div className="text-xs opacity-60">{type.desc}</div>
-              </button>
-            ))}
-          </div>
+        <motion.div {...fadeInUp} className="mb-6">
+          <p className="text-sm text-gray-400 mb-3">选择排盘</p>
+          <Segment
+            options={SEGMENT_OPTIONS}
+            value={chartType}
+            onChange={(id) => setChartType(id as ChartType)}
+          />
         </motion.div>
 
         {loading ? (
-          <div className="text-center py-20">
-            <div className="w-12 h-12 border-4 border-amber-500/30 border-t-amber-400 rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-gray-400">正在排盘...</p>
+          <div className="space-y-4">
+            <Skeleton variant="rect" height="16rem" />
+            <div className="grid gap-6 lg:grid-cols-2">
+              <Skeleton variant="rect" height="12rem" />
+              <Skeleton variant="rect" height="12rem" />
+            </div>
           </div>
         ) : error ? (
           <div className="text-center py-20 text-red-400">{error}</div>
         ) : (
           <div className="grid gap-6 lg:grid-cols-2">
-            {/* 主排盘区 */}
-            <motion.div {...fadeInUp} className="bg-[#12121c] border border-amber-500/10 rounded-xl p-6 lg:col-span-2">
-              <h2 className="text-xl font-serif text-white mb-6">
-                {chartType === 'meihua' && `梅花卦 · ${meihuaData?.benGua?.name || meihuaData?.name || '—'}`}
-                {chartType === 'liuyao' && `六爻 · ${liuyaoData?.benGua?.name || '—'}`}
-                {chartType === 'qimen' && `奇门遁甲 · ${(qimenData?.yinYang||qimenData?.juxing||'')}遁${qimenData?.ju||qimenData?.jushu||''}局`}
-                {chartType === 'bazi' && '四柱八字'}
-              </h2>
-
-              {/* 梅花卦 */}
+            {/* ---- 主排盘区 ---- */}
+            <Card className="lg:col-span-2"
+              header={
+                <span>
+                  {chartType === 'meihua' && `梅花卦 · ${meihuaData?.benGua?.name || meihuaData?.name || '—'}`}
+                  {chartType === 'liuyao' && `六爻 · ${liuyaoData?.benGua?.name || '—'}`}
+                  {chartType === 'qimen' && `奇门遁甲 · ${(qimenData?.yinYang||qimenData?.juxing||'')}遁${qimenData?.ju||qimenData?.jushu||''}局`}
+                  {chartType === 'bazi' && '四柱八字'}
+                </span>
+              }
+            >
+              {/* ---------- 梅花卦 ---------- */}
               {chartType === 'meihua' && meihuaData && (
-                <div className="text-center space-y-6">
-                  <div className="flex justify-center items-center gap-8">
-                    <div className="text-center">
-                      <div className="text-6xl mb-2">{baguaMap[meihuaData.benGua?.shangGua] || baguaMap[meihuaData.benGua?.name] || '—'}</div>
-                      <div className="text-white font-serif text-lg">{meihuaData.benGua?.name || '—'}</div>
-                      <div className="text-gray-500 text-sm">本卦</div>
+                <div className="space-y-6">
+                  <div className="flex justify-center items-start gap-12">
+                    {/* 本卦 */}
+                    <div className="text-center flex flex-col items-center gap-2">
+                      <div className="text-6xl">{baguaMap[meihuaData.benGua?.shangGua] || baguaMap[meihuaData.benGua?.name] || '—'}</div>
+                      <div className="text-gold-400 font-serif text-2xl">{meihuaData.benGua?.name || '—'}</div>
+                      <Badge variant="gold" size="sm">{baguaElem[meihuaData.benGua?.shangGua] || meihuaData.benGua?.wuxing || '—'}</Badge>
+                      <div className="text-xs text-gray-500 mt-1">本卦</div>
                     </div>
+                    {/* 互卦 */}
                     {meihuaData.huGua && (
-                      <div className="text-center">
-                        <div className="text-5xl mb-2">{baguaMap[meihuaData.huGua?.name] || '—'}</div>
-                        <div className="text-white font-serif text-lg">{meihuaData.huGua?.name || '—'}</div>
-                        <div className="text-gray-500 text-sm">互卦</div>
+                      <div className="text-center flex flex-col items-center gap-2">
+                        <div className="text-5xl">{baguaMap[meihuaData.huGua?.name] || '—'}</div>
+                        <div className="text-gold-400 font-serif text-2xl">{meihuaData.huGua?.name || '—'}</div>
+                        <Badge variant="gold" size="sm">{baguaElem[meihuaData.huGua?.shangGua] || meihuaData.huGua?.wuxing || '—'}</Badge>
+                        <div className="text-xs text-gray-500 mt-1">互卦</div>
                       </div>
                     )}
+                    {/* 变卦 */}
                     {meihuaData.bianGua && (
-                      <div className="text-center">
-                        <div className="text-6xl mb-2">{baguaMap[meihuaData.bianGua?.name] || '—'}</div>
-                        <div className="text-white font-serif text-lg">{meihuaData.bianGua?.name || '—'}</div>
-                        <div className="text-gray-500 text-sm">变卦</div>
+                      <div className="text-center flex flex-col items-center gap-2">
+                        <div className="text-6xl">{baguaMap[meihuaData.bianGua?.name] || '—'}</div>
+                        <div className="text-gold-400 font-serif text-2xl">{meihuaData.bianGua?.name || '—'}</div>
+                        <Badge variant="gold" size="sm">{baguaElem[meihuaData.bianGua?.shangGua] || meihuaData.bianGua?.wuxing || '—'}</Badge>
+                        <div className="text-xs text-gray-500 mt-1">变卦</div>
                       </div>
                     )}
                   </div>
+                  {meihuaData.dongYao != null && (
+                    <div className="flex justify-center gap-2">
+                      <Badge variant="vermillion" size="sm">
+                        动爻: {Array.isArray(meihuaData.dongYao) ? meihuaData.dongYao.join(', ') : meihuaData.dongYao}
+                      </Badge>
+                    </div>
+                  )}
                   {meihuaData.interpretation && (
-                    <p className="text-gray-300 text-sm max-w-md mx-auto">{meihuaData.interpretation}</p>
+                    <p className="text-sm text-gray-400 text-center max-w-md mx-auto">{meihuaData.interpretation}</p>
                   )}
                 </div>
               )}
 
-              {/* 六爻 */}
+              {/* ---------- 六爻 ---------- */}
               {chartType === 'liuyao' && liuyaoData && (
-                <div className="max-w-md mx-auto space-y-3">
-                  {(liuyaoData.benGua?.yaos || []).slice().reverse().map((yao: any, idx: number) => (
-                    <div key={idx}
-                      className={`flex items-center justify-between p-4 rounded-lg border ${
-                        yao.state?.includes('Yang') || yao.type === 'yang' ? 'border-blue-500/20 bg-blue-500/5' : 'border-red-500/20 bg-red-500/5'
-                      }`}>
-                      <div className="flex items-center gap-4">
-                        <span className="text-gray-400 text-sm w-12">第{6-idx}爻</span>
-                        <span className={`text-3xl ${yao.state?.includes('Yang') || yao.type === 'yang' ? 'text-blue-400' : 'text-red-400'}`}>
-                          {yao.state?.includes('Yang') || yao.type === 'yang' ? '⚊' : '⚋'}
-                        </span>
-                        {yao.isShiyao && <span className="text-xs text-amber-400 px-1.5 py-0.5 bg-amber-500/10 rounded">世</span>}
-                        {yao.isYingyao && <span className="text-xs text-blue-400 px-1.5 py-0.5 bg-blue-500/10 rounded">应</span>}
+                <div className="max-w-md mx-auto space-y-2">
+                  {(liuyaoData.benGua?.yaos || []).slice().reverse().map((yao: any, idx: number) => {
+                    const pos = 6 - idx;
+                    const isYang = yao.state?.includes('Yang') || yao.type === 'yang';
+                    const lineSymbol = isYang ? '━━━' : '━ ━';
+                    return (
+                      <div key={idx}
+                        className={`flex items-center justify-between p-3 rounded-lg border ${
+                          yao.isChanging
+                            ? 'border-vermillion-500/30 bg-vermillion-500/5'
+                            : 'border-white/5 bg-white/[0.02]'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="text-gray-500 text-xs w-8">第{pos}爻</span>
+                          <span className={`text-2xl font-bold ${yao.isChanging ? 'text-vermillion-400 animate-pulse' : 'text-gray-300'}`}>
+                            {lineSymbol}
+                          </span>
+                          {yao.isShiyao && <span className="text-xs text-gold-400 px-1.5 py-0.5 bg-gold-500/10 rounded">世</span>}
+                          {yao.isYingyao && <span className="text-xs text-indigo-400 px-1.5 py-0.5 bg-indigo-500/10 rounded">应</span>}
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <Badge variant="gold" size="sm">{yao.liuqin || '—'}</Badge>
+                          <Badge variant="indigo" size="sm">{yao.wuxing || '—'}</Badge>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2 text-xs">
-                        <span className="text-gray-500">{yao.wuxing}</span>
-                        <span className="text-gray-400">{yao.liuqin}</span>
-                        {yao.isChanging && <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 rounded">动</span>}
-                      </div>
-                    </div>
-                  ))}
-                  <div className="flex justify-between text-xs text-gray-500 mt-2">
+                    );
+                  })}
+                  <div className="flex justify-between text-xs text-gray-500 mt-3 font-mono">
                     <span>月建: {liuyaoData.yueJian || liuyaoData.month || '—'}</span>
                     <span>旬空: {liuyaoData.xunKong || '—'}</span>
                   </div>
                 </div>
               )}
 
-              {/* 奇门 */}
+              {/* ---------- 奇门 ---------- */}
               {chartType === 'qimen' && qimenData && (
                 <div className="max-w-lg mx-auto">
                   <div className="grid grid-cols-3 gap-2">
                     {['坎宫','坤宫','震宫','巽宫','中宫','乾宫','兑宫','艮宫','离宫'].map((name, idx) => {
                       const pData = qimenData.palaces?.[name];
                       return (
-                        <div key={idx} className="p-3 bg-[#0a0a0f] border border-amber-500/10 rounded-lg text-center text-xs">
-                          <div className="text-amber-400 mb-1">{name}</div>
+                        <div key={idx} className="p-3 bg-[#0a0a0f] border border-amber-500/10 rounded-lg text-center">
+                          <div className="text-xs text-gray-600 mb-1">{name}</div>
                           {pData ? (
-                            <div className="space-y-0.5">
-                              <div className="text-white">{pData.eightStar || pData.star || '—'}</div>
-                              <div className="text-gray-400">{pData.eightDoor || pData.door || '—'}</div>
-                              {pData.deity && <div className="text-gray-500">{pData.deity}</div>}
+                            <div className="space-y-0.5 text-xs">
+                              <div className="text-gold-400">{pData.eightStar || pData.star || '—'}</div>
+                              <div className="text-indigo-400">{pData.eightDoor || pData.door || '—'}</div>
+                              {pData.deity && <div className="text-vermillion-400">{pData.deity}</div>}
                             </div>
                           ) : (
-                            <div className="text-gray-600">—</div>
+                            <div className="text-gray-600 text-xs">—</div>
                           )}
                         </div>
                       );
                     })}
                   </div>
                   <div className="flex justify-center gap-6 mt-4 text-sm">
-                    <span className="text-gray-400">值符: <span className="text-amber-400">{qimenData.zhiFu?.star || qimenData.zhiFu || '—'}</span></span>
-                    <span className="text-gray-400">值使: <span className="text-amber-400">{qimenData.zhiShi?.door || qimenData.zhiShi || '—'}</span></span>
+                    <span className="text-gold-400">值符: {qimenData.zhiFu?.star || qimenData.zhiFu || '—'}</span>
+                    <span className="text-gold-400">值使: {qimenData.zhiShi?.door || qimenData.zhiShi || '—'}</span>
                   </div>
                 </div>
               )}
 
-              {/* 八字 */}
+              {/* ---------- 八字 ---------- */}
               {chartType === 'bazi' && baziData && (
-                <div className="grid grid-cols-4 gap-4 max-w-2xl mx-auto">
-                  {[
-                    { label: '年柱', gan: (gz.year || baziData?.yearPillar || '—').slice(0, 1), zhi: (gz.year || baziData?.yearPillar || '—').slice(1) },
-                    { label: '月柱', gan: (gz.month || baziData?.monthPillar || '—').slice(0, 1), zhi: (gz.month || baziData?.monthPillar || '—').slice(1) },
-                    { label: '日柱', gan: (gz.day || baziData?.dayPillar || '—').slice(0, 1), zhi: (gz.day || baziData?.dayPillar || '—').slice(1) },
-                    { label: '时柱', gan: (gz.hour || baziData?.hourPillar || '—').slice(0, 1), zhi: (gz.hour || baziData?.hourPillar || '—').slice(1) }
-                  ].map((col, idx) => (
-                    <div key={idx} className="text-center">
-                      <div className="text-gray-500 text-sm mb-2">{col.label}</div>
-                      <div className="bg-[#0a0a0f] border border-amber-500/10 rounded-lg p-4">
-                        <div className="text-2xl text-amber-400 font-serif">{col.gan || '—'}</div>
-                        <div className="text-sm text-gray-400">{col.zhi || '—'}</div>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-4 gap-4 max-w-2xl mx-auto">
+                    {[
+                      { label: '年柱', gan: (gz.year || baziData?.yearPillar || '—').slice(0, 1), zhi: (gz.year || baziData?.yearPillar || '—').slice(1) },
+                      { label: '月柱', gan: (gz.month || baziData?.monthPillar || '—').slice(0, 1), zhi: (gz.month || baziData?.monthPillar || '—').slice(1) },
+                      { label: '日柱', gan: (gz.day || baziData?.dayPillar || '—').slice(0, 1), zhi: (gz.day || baziData?.dayPillar || '—').slice(1), highlight: true },
+                      { label: '时柱', gan: (gz.hour || baziData?.hourPillar || '—').slice(0, 1), zhi: (gz.hour || baziData?.hourPillar || '—').slice(1) }
+                    ].map((col, idx) => (
+                      <div key={idx} className="text-center">
+                        <div className="text-gray-500 text-sm mb-2">{col.label}</div>
+                        <Card variant={(col as any).highlight ? 'highlight' : 'default'} className="p-4 text-center">
+                          <div className="text-3xl text-gold-400 font-serif">{col.gan || '—'}</div>
+                          <div className="text-lg text-gray-400">{col.zhi || '—'}</div>
+                        </Card>
                       </div>
+                    ))}
+                  </div>
+                  {baziData.dayMasterWuxing && (
+                    <div className="flex justify-center">
+                      <Badge variant="gold">日主五行: {baziData.dayMasterWuxing}</Badge>
                     </div>
-                  ))}
+                  )}
                 </div>
               )}
-            </motion.div>
+            </Card>
 
-            {/* 时间干支 */}
-            <motion.div {...fadeInUp} className="bg-[#12121c] border border-amber-500/10 rounded-xl p-6">
-              <h2 className="text-xl font-serif text-white mb-4">时间干支</h2>
+            {/* ---- 时间干支 ---- */}
+            <Card header={<span className="font-serif text-white">时间干支</span>}>
               <div className="space-y-3">
                 {[
                     { label: '年柱', value: gz.year || baziData?.yearPillar || '—' },
@@ -252,11 +282,10 @@ export default function ChartPage() {
               <div className="mt-4 pt-4 border-t border-white/5 text-center text-gray-500 text-sm">
                 {new Date().toLocaleString('zh-CN')}
               </div>
-            </motion.div>
+            </Card>
 
-            {/* 八卦信息 */}
-            <motion.div {...fadeInUp} className="bg-[#12121c] border border-amber-500/10 rounded-xl p-6">
-              <h2 className="text-xl font-serif text-white mb-4">八卦基础</h2>
+            {/* ---- 八卦信息 ---- */}
+            <Card header={<span className="font-serif text-white">八卦基础</span>}>
               <div className="grid grid-cols-4 gap-3">
                 {Object.entries(baguaMap).map(([name, symbol]) => (
                   <div key={name} className="text-center p-3 bg-[#0a0a0f] border border-amber-500/10 rounded-lg">
@@ -266,7 +295,7 @@ export default function ChartPage() {
                   </div>
                 ))}
               </div>
-            </motion.div>
+            </Card>
           </div>
         )}
       </motion.div>

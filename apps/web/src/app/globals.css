@@ -3,15 +3,115 @@
 @tailwind utilities;
 
 :root {
+  --color-ink-50: #f4f4f6;
+  --color-ink-100: #e4e4e8;
+  --color-ink-200: #c8c8d0;
+  --color-ink-300: #a0a0b0;
+  --color-ink-400: #787890;
+  --color-ink-500: #505070;
+  --color-ink-600: #383850;
+  --color-ink-700: #1a1a2e;
+  --color-ink-800: #12121c;
+  --color-ink-900: #0a0a0f;
+  --color-ink-950: #050508;
+
+  --color-gold-50: #fefce8;
+  --color-gold-100: #fef9c3;
+  --color-gold-200: #fef08a;
+  --color-gold-300: #fbbf24;
+  --color-gold-400: #eab308;
+  --color-gold-500: #ca8a04;
+  --color-gold-600: #a16207;
+  --color-gold-700: #854d0e;
+  --color-gold-800: #713f12;
+  --color-gold-900: #422006;
+  --color-gold-950: #281304;
+
+  --color-vermillion-50: #fef2f2;
+  --color-vermillion-100: #fee2e2;
+  --color-vermillion-200: #fecaca;
+  --color-vermillion-300: #fca5a5;
+  --color-vermillion-400: #ef4444;
+  --color-vermillion-500: #dc2626;
+  --color-vermillion-600: #b91c1c;
+  --color-vermillion-700: #991b1b;
+  --color-vermillion-800: #7f1d1d;
+  --color-vermillion-900: #450a0a;
+  --color-vermillion-950: #2d0505;
+
+  --color-indigo-50: #eef2ff;
+  --color-indigo-100: #e0e7ff;
+  --color-indigo-200: #c7d2fe;
+  --color-indigo-300: #a5b4fc;
+  --color-indigo-400: #818cf8;
+  --color-indigo-500: #6366f1;
+  --color-indigo-600: #4f46e5;
+  --color-indigo-700: #4338ca;
+  --color-indigo-800: #3730a3;
+  --color-indigo-900: #1e1b4b;
+  --color-indigo-950: #13112e;
+
+  --color-jade-50: #ecfdf5;
+  --color-jade-100: #d1fae5;
+  --color-jade-200: #a7f3d0;
+  --color-jade-300: #6ee7b7;
+  --color-jade-400: #34d399;
+  --color-jade-500: #10b981;
+  --color-jade-600: #059669;
+  --color-jade-700: #047857;
+  --color-jade-800: #065f46;
+  --color-jade-900: #022c22;
+  --color-jade-950: #011a14;
+
+  --glow-sm: 0 0 8px rgba(202, 138, 4, 0.3);
+  --glow-md: 0 0 16px rgba(202, 138, 4, 0.4);
+  --glow-lg: 0 0 32px rgba(202, 138, 4, 0.5);
+  --glow-text: 0 0 12px rgba(202, 138, 4, 0.5);
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
   --background: #0a0a0f;
   --foreground: #ffffff;
 }
 
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(202, 138, 4, 0.3) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(202, 138, 4, 0.3);
+  border-radius: 3px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(202, 138, 4, 0.5);
+}
+
+::selection {
+  background: rgba(202, 138, 4, 0.35);
+  color: var(--color-ink-950);
+}
+
 body {
   color: var(--foreground);
-  background: var(--background);
-  background-image: radial-gradient(circle at 20% 50%, rgba(76, 29, 149, 0.15) 0%, transparent 50%),
-                    radial-gradient(circle at 80% 80%, rgba(202, 138, 4, 0.1) 0%, transparent 50%);
+  background-color: var(--color-ink-950);
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"),
+    linear-gradient(180deg, var(--color-ink-950) 0%, var(--color-ink-900) 50%, var(--color-ink-800) 100%),
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(202, 138, 4, 0.06) 0%, transparent 60%);
   min-height: 100vh;
 }
 
@@ -19,7 +119,29 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+
   .glow-gold {
     text-shadow: 0 0 10px rgba(202, 138, 4, 0.5), 0 0 20px rgba(202, 138, 4, 0.3);
+  }
+
+  .text-gradient-gold {
+    background: linear-gradient(135deg, #fbbf24 0%, #ca8a04 40%, #a16207 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .card-border {
+    border: 1px solid rgba(202, 138, 4, 0.12);
+    box-shadow:
+      0 0 0 1px rgba(202, 138, 4, 0.06),
+      0 4px 24px rgba(0, 0, 0, 0.4);
+  }
+
+  .ink-wash {
+    background:
+      radial-gradient(ellipse at 30% 20%, rgba(202, 138, 4, 0.04) 0%, transparent 50%),
+      radial-gradient(ellipse at 70% 80%, rgba(99, 102, 241, 0.04) 0%, transparent 50%),
+      linear-gradient(180deg, var(--color-ink-950) 0%, var(--color-ink-900) 100%);
   }
 }

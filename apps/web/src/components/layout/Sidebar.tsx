@@ -4,15 +4,16 @@
 
 'use client';
 
+import { motion } from 'framer-motion';
 import { useUIStore } from '@/stores/uiStore';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const navItems = [
-  { label: '天问殿', href: '/' },
-  { label: '命宫', href: '/destiny-palace' },
-  { label: '推演', href: '/prediction' },
-  { label: '排盘', href: '/chart' },
+  { label: '天问殿', href: '/', icon: '⊙' },
+  { label: '命宫', href: '/destiny-palace', icon: '◎' },
+  { label: '推演', href: '/prediction', icon: '◈' },
+  { label: '排盘', href: '/chart', icon: '◇' },
 ];
 
 export const Sidebar = () => {
@@ -20,29 +21,44 @@ export const Sidebar = () => {
   const { sidebarOpen } = useUIStore();
 
   return (
-    <aside className={`w-64 bg-[#12121c]/90 border-r border-amber-500/10 transition-all duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+    <motion.aside
+      initial={false}
+      animate={sidebarOpen ? { x: 0 } : { x: -256 }}
+      transition={{ duration: 0.3, ease: 'easeInOut' }}
+      className="fixed inset-y-0 left-0 z-40 w-64 bg-ink-800/90 border-r border-gold-500/10 lg:static"
+    >
       <div className="p-6">
-        <h2 className="text-xl font-bold text-amber-400 font-serif tracking-wider">
-          问·道
+        <h2 className="text-2xl font-serif font-bold tracking-widest text-gradient-gold">
+          天问
         </h2>
-        <p className="text-xs text-gray-500 mt-1">TIANWEN OS</p>
+        <p className="text-xs text-gray-600 tracking-[0.3em] uppercase mt-1">
+          TIANWEN OS
+        </p>
       </div>
 
       <nav className="px-4 space-y-1">
-        {navItems.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={`block px-4 py-3 rounded-lg transition-all duration-300 text-sm ${
-              pathname === item.href
-                ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                : 'text-gray-400 hover:bg-white/5 hover:text-white'
-            }`}
-          >
-            {item.label}
-          </Link>
-        ))}
+        {navItems.map((item) => {
+          const isActive = pathname === item.href;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all duration-300 ${
+                isActive
+                  ? 'bg-gold-500/10 text-gold-400 border border-gold-500/20 shadow-glow-sm'
+                  : 'text-gray-500 hover:bg-white/5 hover:text-gray-300'
+              }`}
+            >
+              <span className="text-base">{item.icon}</span>
+              {item.label}
+            </Link>
+          );
+        })}
       </nav>
-    </aside>
+
+      <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gold-500/10">
+        <p className="text-xs text-gray-600">观天之道 · 执天之行</p>
+      </div>
+    </motion.aside>
   );
 };
