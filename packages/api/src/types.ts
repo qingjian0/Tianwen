@@ -1,5 +1,6 @@
 /**
  * API 类型定义
+ * 根据天问系统 API 设计文档 v1.0
  */
 
 export interface ApiResponse<T = any> {
@@ -13,9 +14,9 @@ export interface ApiResponse<T = any> {
 
 export interface PredictionRequest {
   question: string;
-  category: string;
-  system: 'meihua' | 'liuyao' | 'qimen' | 'bazi' | 'ziwei' | 'fusion';
-  mode: 'single' | 'fusion' | 'compare' | 'timeline';
+  category: 'wealth' | 'career' | 'love' | 'market' | string;
+  system: 'meihua' | 'liuyao' | 'bazi' | 'qimen' | 'ziwei' | 'fusion';
+  mode: 'single' | 'batch';
   timestamp?: string;
   birthInfo?: {
     year: number;
@@ -33,7 +34,14 @@ export interface PredictionRequest {
 }
 
 export interface PredictionResponse {
-  predictionId: string;
+  id: string;
+  status: 'processing' | 'completed' | 'failed';
+  submittedAt: string;
+  estimatedCompletion?: string;
+  output?: PredictionOutput;
+}
+
+export interface PredictionOutput {
   summary: string;
   probability: {
     success: number;
@@ -41,7 +49,7 @@ export interface PredictionResponse {
     confidence: number;
   };
   fortune: {
-    level: 'greatFortune' | 'fortune' | 'neutral' | 'warning' | 'danger';
+    level: '大吉' | '吉' | '中吉' | '平' | '小凶' | '凶' | '大凶';
     score: number;
     description: string;
   };
@@ -55,42 +63,38 @@ export interface PredictionResponse {
   knowledgeReferences: KnowledgeReference[];
   calculationTrace: TraceStep[];
   actionableSuggestions: string[];
-  createdAt: string;
 }
 
 export interface SignalData {
-  id: string;
-  description: string;
-  polarity: 'positive' | 'negative' | 'neutral' | 'unstable';
-  strength: 'high' | 'medium' | 'low';
-  source: string;
+  name: string;
+  value: string;
+  confidence: number;
+  polarity?: 'positive' | 'negative' | 'neutral';
 }
 
 export interface RuleData {
   id: string;
   name: string;
-  category: string;
-  priority: string;
-  source: string;
-  confidence: number;
-  matched: boolean;
-  effects: string[];
+  description: string;
+  source?: string;
+  priority?: number;
+  matched?: boolean;
+  effects?: string[];
 }
 
 export interface KnowledgeReference {
-  title: string;
-  author?: string;
+  source: string;
   chapter?: string;
   page?: number;
+  author?: string;
   quote?: string;
 }
 
 export interface TraceStep {
   stage: string;
-  timestamp: string;
-  action: string;
   result: string;
-  duration: number;
+  timestamp?: string;
+  duration?: number;
 }
 
 export interface HistoryQuery {
@@ -114,8 +118,9 @@ export interface HistoryItem {
   question: string;
   system: string;
   category: string;
-  result: string;
-  fortuneLevel: string;
+  status: string;
+  summary?: string;
+  fortuneLevel?: string;
   createdAt: string;
 }
 
@@ -174,4 +179,44 @@ export interface HealthCheckResponse {
     totalRules: number;
     cacheHitRate: number;
   };
+}
+
+export interface VersionResponse {
+  version: string;
+  buildDate: string;
+  phases: string[];
+  modules: string[];
+}
+
+// WebSocket 消息类型
+export interface WebSocketMessage {
+  channel: 'predictions' | 'rules' | 'system';
+  event: string;
+  data: any;
+  timestamp: string;
+}
+
+export interface ProgressUpdate {
+  id: string;
+  stage: string;
+  progress: number;
+  message?: string;
+}
+
+export interface CompletedUpdate {
+  id: string;
+  status: 'completed' | 'failed';
+  outputUrl: string;
+}
+
+export interface SystemStatus {
+  cpuUsage: number;
+  memoryUsage: number;
+  activeConnections: number;
+  totalPredictions: number;
+}
+
+export interface WebSocketError {
+  code: number;
+  message: string;
 }

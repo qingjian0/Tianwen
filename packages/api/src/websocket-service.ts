@@ -1,36 +1,33 @@
 /**
  * WebSocket 服务 - 实时推送
+ * 根据天问系统 API 设计文档 v1.0
  */
 
 import { EventEmitter } from 'events';
-
-export interface WebSocketMessage {
-  type: 'prediction' | 'progress' | 'error' | 'notification';
-  payload: any;
-  timestamp: string;
-  requestId: string;
-}
-
-export interface ProgressUpdate {
-  stage: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
-  progress: number;
-  message?: string;
-}
+import {
+  WebSocketMessage,
+  ProgressUpdate,
+  CompletedUpdate,
+  SystemStatus,
+  WebSocketError
+} from './types';
 
 export class WebSocketService extends EventEmitter {
   private clients: Map<string, any>;
   private subscriptions: Map<string, Set<string>>;
+  private systemStatusInterval: ReturnType<typeof setInterval> | null;
 
   constructor() {
     super();
     this.clients = new Map();
     this.subscriptions = new Map();
+    this.systemStatusInterval = null;
+    this.startSystemStatusLoop();
   }
 
   addClient(clientId: string, socket: any): void {
     this.clients.set(clientId, socket);
-    this.subscriptions.set(clientId, new Set());
+    this.subscriptions.set(clientId, new Set(['system']));
 
     socket.on('close', () => {
       this.removeClient(clientId);
@@ -40,14 +37,19 @@ export class WebSocketService extends EventEmitter {
       console.error(`WebSocket error for client ${clientId}:`, error);
     });
 
+    socket.on('message', (message: string) => {
+      this.handleClientMessage(clientId, message);
+    });
+
     this.sendToClient(clientId, {
-      type: 'notification',
-      payload: {
+      channel: 'system',
+      event: 'connected',
+      data: {
         message: 'Connected to Tianwen WebSocket Server',
-        clientId
+        clientId,
+        channels: this.getChannels()
       },
-      timestamp: new Date().toISOString(),
-      requestId: clientId
+      timestamp: new Date().toISOString()
     });
   }
 
@@ -91,50 +93,84 @@ export class WebSocketService extends EventEmitter {
     }
   }
 
-  sendPredictionProgress(requestId: string, update: ProgressUpdate): void {
-    const message: WebSocketMessage = {
-      type: 'progress',
-      payload: update,
-      timestamp: new Date().toISOString(),
-      requestId
+  sendPredictionProgress(id: string, stage: string, progress: number, message?: string): void {
+    const update: ProgressUpdate = { id, stage, progress, message };
+    const messageObj: WebSocketMessage = {
+      channel: 'predictions',
+      event: 'progress',
+      data: update,
+      timestamp: new Date().toISOString()
     };
 
-    this.broadcast('predictions', message);
-    this.sendToClient(requestId, message);
+    this.broadcast('predictions', messageObj);
   }
 
-  sendPredictionResult(requestId: string, result: any): void {
-    const message: WebSocketMessage = {
-      type: 'prediction',
-      payload: result,
-      timestamp: new Date().toISOString(),
-      requestId
+  sendPredictionCompleted(id: string, status: 'completed' | 'failed'): void {
+    const update: CompletedUpdate = {
+      id,
+      status,
+      outputUrl: `/api/predictions/${id}`
+    };
+    const messageObj: WebSocketMessage = {
+      channel: 'predictions',
+      event: 'completed',
+      data: update,
+      timestamp: new Date().toISOString()
     };
 
-    this.broadcast('predictions', message);
-    this.sendToClient(requestId, message);
+    this.broadcast('predictions', messageObj);
   }
 
-  sendError(requestId: string, error: string): void {
-    const message: WebSocketMessage = {
-      type: 'error',
-      payload: { error },
-      timestamp: new Date().toISOString(),
-      requestId
+  sendSystemStatus(): void {
+    const status: SystemStatus = {
+      cpuUsage: Math.floor(Math.random() * 30) + 20,
+      memoryUsage: Math.floor(Math.random() * 20) + 60,
+      activeConnections: this.clients.size,
+      totalPredictions: 0
     };
 
-    this.sendToClient(requestId, message);
+    const messageObj: WebSocketMessage = {
+      channel: 'system',
+      event: 'status',
+      data: status,
+      timestamp: new Date().toISOString()
+    };
+
+    this.broadcast('system', messageObj);
+  }
+
+  sendError(clientId: string, code: number, message: string): void {
+    const error: WebSocketError = { code, message };
+    const messageObj: WebSocketMessage = {
+      channel: 'system',
+      event: 'error',
+      data: error,
+      timestamp: new Date().toISOString()
+    };
+
+    this.sendToClient(clientId, messageObj);
   }
 
   sendNotification(title: string, content: string): void {
-    const message: WebSocketMessage = {
-      type: 'notification',
-      payload: { title, content },
-      timestamp: new Date().toISOString(),
-      requestId: 'system'
+    const messageObj: WebSocketMessage = {
+      channel: 'system',
+      event: 'notification',
+      data: { title, content },
+      timestamp: new Date().toISOString()
     };
 
-    this.broadcastToAll(message);
+    this.broadcastToAll(messageObj);
+  }
+
+  sendRuleUpdate(): void {
+    const messageObj: WebSocketMessage = {
+      channel: 'rules',
+      event: 'updated',
+      data: { timestamp: new Date().toISOString() },
+      timestamp: new Date().toISOString()
+    };
+
+    this.broadcast('rules', messageObj);
   }
 
   getConnectedClients(): number {
@@ -143,6 +179,37 @@ export class WebSocketService extends EventEmitter {
 
   getChannels(): string[] {
     return ['predictions', 'rules', 'system'];
+  }
+
+  private handleClientMessage(clientId: string, message: string): void {
+    try {
+      const data = JSON.parse(message);
+      
+      if (data.action === 'subscribe') {
+        this.subscribe(clientId, data.channel);
+      } else if (data.action === 'unsubscribe') {
+        this.unsubscribe(clientId, data.channel);
+      }
+    } catch (error) {
+      console.error('Invalid WebSocket message:', error);
+    }
+  }
+
+  private startSystemStatusLoop(): void {
+    this.systemStatusInterval = setInterval(() => {
+      this.sendSystemStatus();
+    }, 10000);
+  }
+
+  shutdown(): void {
+    if (this.systemStatusInterval) {
+      clearInterval(this.systemStatusInterval);
+    }
+    this.clients.forEach((socket) => {
+      socket.close();
+    });
+    this.clients.clear();
+    this.subscriptions.clear();
   }
 }
 

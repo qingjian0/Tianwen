@@ -1,5 +1,6 @@
 /**
  * API 路由 - HTTP 端点定义
+ * 根据天问系统 API 设计文档 v1.0
  */
 
 import { Router, Request, Response } from 'express';
@@ -14,6 +15,11 @@ export function createApiRouter(): Router {
 
   router.get('/health', async (req: Request, res: Response) => {
     const result = await predictionService.healthCheck();
+    res.json(result);
+  });
+
+  router.get('/version', async (req: Request, res: Response) => {
+    const result = await predictionService.getVersion();
     res.json(result);
   });
 
@@ -32,7 +38,7 @@ export function createApiRouter(): Router {
     const result = await predictionService.predict(request);
     
     if (result.success) {
-      res.status(201).json(result);
+      res.status(result.data?.status === 'processing' ? 202 : 200).json(result);
     } else {
       res.status(500).json(result);
     }
@@ -52,8 +58,10 @@ export function createApiRouter(): Router {
   router.get('/predictions', async (req: Request, res: Response) => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 20;
+    const system = req.query.system as string;
+    const category = req.query.category as string;
     
-    const result = await predictionService.getHistory(page, limit);
+    const result = await predictionService.getHistory(page, limit, system, category);
     res.json(result);
   });
 
