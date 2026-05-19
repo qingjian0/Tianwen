@@ -1,0 +1,11 @@
+{
+  "name": "@tianwen/rule-compiler",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "description": "Rule Compiler for Tianwen - JIT compilation for rules",
+  "dependencies": {
+    "@tianwen/rule-dsl": "workspace:*"
+  }
+}
