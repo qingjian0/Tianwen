@@ -9,21 +9,55 @@ import { ProbabilityScore } from '@tianwen/probability-engine';
 import { FortuneLevel } from '@tianwen/fortune-engine';
 
 // 推演系统类型
-export type DivinationSystem = 'meihua' | 'liuyao' | 'qimen' | 'bazi' | 'ziwei';
+export type DivinationSystem =
+  | 'meihua'
+  | 'liuyao'
+  | 'qimen'
+  | 'bazi'
+  | 'ziwei'
+  | 'liuren'
+  | 'huangji'
+  | 'xiaochengtu'
+  | 'cegui'
+  | 'huangli';
 
-// 推演模式
-export type PredictionMode = 'single' | 'fusion' | 'compare' | 'timeline';
+// 随机数输入模式
+export type RandomSourceMode = 'manual' | 'auto' | 'timestamp' | 'digital';
+
+// 随机数来源配置
+export interface RandomSource {
+  mode: RandomSourceMode;
+  values?: number[];
+  diceCount?: number;
+  digitLength?: number;
+  seed?: string;
+}
+
+// 事件时间
+export interface EventTime {
+  year: number;
+  month: number;
+  day: number;
+  hour: number;
+  minute?: number;
+}
 
 // 用户输入
 export interface PredictionInput {
   question: string;
   category: string;
-  system: DivinationSystem | DivinationSystem[];
+  systems: DivinationSystem[];
   mode: PredictionMode;
   timestamp?: Date;
-  birthInfo?: BirthInfo;
+  birth?: BirthInfo;
+  eventTime?: EventTime;
+  randomSource?: RandomSource;
   location?: Location;
+  systemConfig?: Record<string, Record<string, any>>;
 }
+
+// 推演模式
+export type PredictionMode = 'single' | 'fusion' | 'compare' | 'timeline';
 
 // 出生信息
 export interface BirthInfo {
@@ -46,6 +80,7 @@ export interface Location {
 // 流水线阶段
 export type PipelineStage =
   | 'input'
+  | 'random'
   | 'chrono'
   | 'divination'
   | 'signal'
@@ -79,6 +114,7 @@ export interface PipelineContext {
   currentStage: PipelineStage;
   stageResults: Map<PipelineStage, StageResult>;
   signals: Signal[];
+  generatedRandom?: number[];
   ruleContext?: RuleContext;
   conflictResolution?: any;
   probabilityScore?: ProbabilityScore;

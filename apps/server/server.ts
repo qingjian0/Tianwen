@@ -4,6 +4,7 @@
  */
 
 import http from 'http';
+import crypto from 'crypto';
 import { MeihuaEngine } from '@tianwen/meihua';
 import { BaZiEngine } from '@tianwen/bazi-engine';
 import { LiuYaoEngine } from '@tianwen/liuyao';
@@ -82,7 +83,33 @@ const server = http.createServer(async (req, res) => {
     if (path === '/api/health') {
       json(res, 200, {
         success: true,
-        data: { status: 'healthy', uptime: process.uptime(), engines: ['meihua','liuyao','bazi','qimen','ziwei'] }
+        data: { status: 'healthy', uptime: process.uptime(), engines: ['meihua','liuyao','bazi','qimen','ziwei','liuren','xiaochengtu','huangli','huangji','cegui'] }
+      });
+      return;
+    }
+
+    if (path === '/api/random') {
+      const count = parseInt(url.searchParams.get('count') || '3');
+      const min = parseInt(url.searchParams.get('min') || '1');
+      const max = parseInt(url.searchParams.get('max') || '100');
+      const seed = url.searchParams.get('seed') || crypto.randomUUID();
+
+      const numbers: number[] = [];
+      for (let i = 0; i < Math.min(count, 20); i++) {
+        const buf = crypto.randomBytes(4);
+        const val = buf.readUInt32BE(0);
+        numbers.push(min + (val % (max - min + 1)));
+      }
+
+      json(res, 200, {
+        success: true,
+        data: {
+          numbers,
+          seed,
+          timestamp: new Date().toISOString(),
+          count,
+          range: { min, max }
+        }
       });
       return;
     }
@@ -92,11 +119,16 @@ const server = http.createServer(async (req, res) => {
         success: true,
         data: {
           systems: [
-            { id:'meihua', name:'梅花易数', description:'时间/数字/铜钱起卦，体用生克分析' },
-            { id:'liuyao', name:'六爻纳甲', description:'铜钱/数字/时间起卦，本卦变卦六亲六神' },
-            { id:'bazi', name:'八字命理', description:'四柱干支、五行强弱、大运流年、喜用神' },
-            { id:'qimen', name:'奇门遁甲', description:'九宫飞星、八门八神、格局检测' },
-            { id:'ziwei', name:'紫微斗数', description:'十二宫、十四主星、运势预测' }
+            { id:'meihua', name:'梅花易数', description:'时间/数字/铜钱起卦，体用生克分析', inputMode: 'random|time' },
+            { id:'liuyao', name:'六爻纳甲', description:'铜钱/数字/时间起卦，本卦变卦六亲六神', inputMode: 'random|time' },
+            { id:'bazi', name:'八字命理', description:'四柱干支、五行强弱、大运流年、喜用神', inputMode: 'birth' },
+            { id:'qimen', name:'奇门遁甲', description:'九宫飞星、八门八神、格局检测', inputMode: 'time' },
+            { id:'ziwei', name:'紫微斗数', description:'十二宫、十四主星、运势预测', inputMode: 'birth' },
+            { id:'liuren', name:'大六壬', description:'月将加时、天地盘、四课三传', inputMode: 'eventTime' },
+            { id:'xiaochengtu', name:'小成图', description:'归藏法起卦、九宫排列、主客分析', inputMode: 'random|time' },
+            { id:'huangli', name:'老黄历', description:'每日宜忌、冲煞吉神、农历查询', inputMode: 'date' },
+            { id:'huangji', name:'皇极经世', description:'元会运世、卦命推演、时间周期', inputMode: 'birth' },
+            { id:'cegui', name:'策轨数', description:'动植数计算、卦轨推演', inputMode: 'birth' }
           ]
         }
       });
@@ -107,13 +139,20 @@ const server = http.createServer(async (req, res) => {
     if (path === '/api/predict' && req.method === 'POST') {
       const body = await parseBody(req);
 
+      const systemField = body.system || 'meihua';
+      const systems: any[] = Array.isArray(systemField) ? systemField : [systemField];
+
       const input: PredictionInput = {
         question: body.question || '无特定问题',
         category: body.category || 'general',
-        system: body.system || 'meihua',
+        systems,
         mode: body.mode || 'single',
         timestamp: body.timestamp ? new Date(body.timestamp) : new Date(),
-        birthInfo: body.birthInfo || undefined
+        birth: body.birth || body.birthInfo || undefined,
+        eventTime: body.eventTime || undefined,
+        randomSource: body.randomSource || undefined,
+        location: body.location || undefined,
+        systemConfig: body.systemConfig || undefined
       };
 
       const result = await pipeline.execute(input);
@@ -139,15 +178,29 @@ const server = http.createServer(async (req, res) => {
     if (path === '/api/predict' && req.method === 'GET') {
       const question = url.searchParams.get('question') || '今日运势';
       const category = url.searchParams.get('category') || 'general';
-      const system = url.searchParams.get('system') || 'meihua';
+      const systemStr = url.searchParams.get('system') || 'meihua';
+      const systems = systemStr.split(',').filter(Boolean) as any[];
       const mode = url.searchParams.get('mode') || 'single';
+
+      const year = url.searchParams.get('year');
+      const month = url.searchParams.get('month');
+      const day = url.searchParams.get('day');
+      const hour = url.searchParams.get('hour');
 
       const input: PredictionInput = {
         question,
         category,
-        system: system as any,
+        systems,
         mode: mode as any,
-        timestamp: new Date()
+        timestamp: new Date(),
+        birth: (year && month && day) ? {
+          year: parseInt(year),
+          month: parseInt(month),
+          day: parseInt(day),
+          hour: parseInt(hour || '0'),
+          gender: (url.searchParams.get('gender') || 'male') as 'male' | 'female',
+          calendar: (url.searchParams.get('calendar') || 'solar') as 'solar' | 'lunar'
+        } : undefined
       };
 
       const result = await pipeline.execute(input);

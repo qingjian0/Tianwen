@@ -1,0 +1,20 @@
+{
+  "name": "@tianwen/xiaochengtu",
+  "version": "1.0.0",
+  "description": "天问 小成图 - 归藏法起卦、九宫排列、主客分析",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts",
+    "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.5.0"
+  },
+  "dependencies": {
+    "@tianwen/chrono-engine": "workspace:*"
+  }
+}

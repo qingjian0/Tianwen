@@ -61,7 +61,12 @@ export const SYSTEM_PRIORITIES: Record<string, number> = {
   liuyao: 1.1,
   qimen: 1.2,
   bazi: 1.3,
-  ziwei: 1.4
+  ziwei: 1.4,
+  liuren: 1.5,
+  huangji: 1.6,
+  xiaochengtu: 0.9,
+  cegui: 1.5,
+  huangli: 0.5
 };
 
 // 默认权重
@@ -70,7 +75,12 @@ export const DEFAULT_WEIGHTS = {
   liuyao: 0.3,
   qimen: 0.2,
   bazi: 0.2,
-  ziwei: 0.0
+  ziwei: 0.0,
+  liuren: 0.0,
+  huangji: 0.0,
+  xiaochengtu: 0.0,
+  cegui: 0.0,
+  huangli: 0.0
 };
 
 // 吉凶分数范围

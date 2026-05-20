@@ -93,9 +93,7 @@ export class DivinationProcessor implements StageProcessor {
     const startTime = Date.now();
 
     try {
-      const systems = Array.isArray(context.input.system)
-        ? context.input.system
-        : [context.input.system];
+      const systems = context.input.systems;
 
       const results: Record<string, any> = {};
 
@@ -115,16 +113,16 @@ export class DivinationProcessor implements StageProcessor {
             break;
 
           case 'bazi':
-            if (context.input.birthInfo) {
+            if (context.input.birth) {
               const birthDate = new Date(
-                context.input.birthInfo.year,
-                context.input.birthInfo.month - 1,
-                context.input.birthInfo.day,
-                context.input.birthInfo.hour
+                context.input.birth.year,
+                context.input.birth.month - 1,
+                context.input.birth.day,
+                context.input.birth.hour
               );
               results.bazi = this.engines.bazi.calculate(
                 birthDate,
-                context.input.birthInfo.gender
+                context.input.birth.gender
               );
             }
             break;
