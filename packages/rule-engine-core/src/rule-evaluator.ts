@@ -85,6 +85,10 @@ export class ConditionEvaluator {
         return fieldValue === null || fieldValue === undefined;
       case 'isNotNull':
         return fieldValue !== null && fieldValue !== undefined;
+      case 'exists':
+        return fieldValue !== null && fieldValue !== undefined;
+      case 'notExists':
+        return fieldValue === null || fieldValue === undefined;
       case 'wuxingSheng':
         return this.evaluateWuxingSheng(fieldValue, condition.value);
       case 'wuxingKe':

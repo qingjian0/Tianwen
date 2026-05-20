@@ -34,6 +34,8 @@ export type ConditionOperator =
   | 'isFalse'
   | 'isNull'
   | 'isNotNull'
+  | 'exists'
+  | 'notExists'
   | 'wuxingSheng'
   | 'wuxingKe'
   | 'wuxingBihe'

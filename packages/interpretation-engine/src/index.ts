@@ -3,7 +3,7 @@
  * Phase 3: 智能解释与建议生成
  */
 
-export * fromexport * from './constants';
+export * from './constants';
 export * from './interpretation-generator';
 export * from './suggestion-engine';
 export * from './types';

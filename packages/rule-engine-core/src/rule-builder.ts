@@ -236,6 +236,22 @@ export class RuleBuilder {
     });
   }
 
+  // 添加置信度效果
+  confidenceEffect(
+    action: 'add' | 'subtract' | 'multiply' | 'divide' | 'set',
+    value: number,
+    description?: string
+  ): RuleBuilder {
+    return this.effect({
+      id: `effect_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      type: 'confidence',
+      action,
+      target: 'confidence',
+      value,
+      description
+    });
+  }
+
   // 设置权重
   weight(weight: number): RuleBuilder {
     this.rule.weight = weight;

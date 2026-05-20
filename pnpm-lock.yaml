@@ -22,6 +22,30 @@ importers:
         specifier: ^5.5.0
         version: 5.9.3
 
+  apps/server:
+    dependencies:
+      '@tianwen/bazi-engine':
+        specifier: workspace:*
+        version: link:../../packages/bazi-engine
+      '@tianwen/liuyao':
+        specifier: workspace:*
+        version: link:../../packages/liuyao
+      '@tianwen/meihua':
+        specifier: workspace:*
+        version: link:../../packages/meihua
+      '@tianwen/pipeline':
+        specifier: workspace:*
+        version: link:../../packages/pipeline
+      '@tianwen/qimen':
+        specifier: workspace:*
+        version: link:../../packages/qimen
+      '@tianwen/ziwei':
+        specifier: workspace:*
+        version: link:../../packages/ziwei
+      tsx:
+        specifier: ^4.22.3
+        version: 4.22.3
+
   apps/web:
     dependencies:
       '@tianwen/animations':

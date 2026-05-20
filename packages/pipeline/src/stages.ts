@@ -11,14 +11,13 @@ import { BaZiEngine } from '@tianwen/bazi-engine';
 import { SignalExtractor } from '@tianwen/signal-extractor';
 import {
   RuleEngine,
-  RuleContext,
-  ResolutionStrategy
+  RuleContext
 } from '@tianwen/rule-engine-core';
 import { ProbabilityMapper } from '@tianwen/probability-mapping';
 import { FortuneCalculator } from '@tianwen/fortune-engine';
 import { TimingCalculator } from '@tianwen/timing-engine';
 import { RuleBasedInterpreter } from '@tianwen/interpretation-engine';
-import { meihuaRules, liuyaoRules } from '@/knowledge/rules';
+import { allRules } from '../../../knowledge/rules';
 
 /**
  * 阶段处理器接口
@@ -236,9 +235,7 @@ export class RuleProcessor implements StageProcessor {
 
   constructor() {
     this.engine = new RuleEngine();
-    // 加载规则
-    this.engine.addRules(meihuaRules);
-    this.engine.addRules(liuyaoRules);
+    this.engine.addRules(allRules);
   }
 
   async process(context: PipelineContext): Promise<StageResult> {
@@ -254,7 +251,7 @@ export class RuleProcessor implements StageProcessor {
       // 执行规则（包含冲突处理）
       const { result, conflictResolution } = this.engine.executeAndGetResultWithConflictResolution(
         ruleContext,
-        ResolutionStrategy.PRIORITY_BASED
+        'priority_based'
       );
 
       context.ruleContext = ruleContext;
@@ -372,12 +369,6 @@ export class ProbabilityProcessor implements StageProcessor {
  * 吉凶计算阶段处理器
  */
 export class FortuneProcessor implements StageProcessor {
-  private calculator: FortuneCalculator;
-
-  constructor() {
-    this.calculator = new FortuneCalculator();
-  }
-
   async process(context: PipelineContext): Promise<StageResult> {
     const startTime = Date.now();
 
@@ -387,9 +378,9 @@ export class FortuneProcessor implements StageProcessor {
         throw new Error('缺少概率分数');
       }
 
-      const fortuneLevel = this.calculator.calculateFortuneLevel(probabilityScore);
+      const fortuneScore = FortuneCalculator.calculateFromProbability(probabilityScore);
 
-      context.fortuneLevel = fortuneLevel;
+      context.fortuneLevel = fortuneScore.level;
 
       const duration = Date.now() - startTime;
 
@@ -397,8 +388,9 @@ export class FortuneProcessor implements StageProcessor {
         stage: 'fortune',
         status: 'completed',
         data: {
-          level: fortuneLevel,
-          description: this.getFortuneDescription(fortuneLevel)
+          level: fortuneScore.level,
+          score: fortuneScore.score,
+          description: fortuneScore.description
         },
         startTime: new Date(startTime),
         endTime: new Date(),
@@ -414,17 +406,6 @@ export class FortuneProcessor implements StageProcessor {
         duration: Date.now() - startTime
       };
     }
-  }
-
-  private getFortuneDescription(level: string): string {
-    const descriptions: Record<string, string> = {
-      greatFortune: '大吉，诸事顺遂，吉祥如意',
-      fortune: '吉，事事顺利，有贵人相助',
-      neutral: '平，中规中矩，需要努力',
-      warning: '凶，需谨慎行事，防患未然',
-      danger: '大凶，形势严峻，宜静不宜动'
-    };
-    return descriptions[level] || '平';
   }
 }
 
@@ -462,7 +443,8 @@ export class InterpretationProcessor implements StageProcessor {
               rule: match.rule,
               executed: true,
               matched: true,
-              appliedEffects: match.rule.effects
+              appliedEffects: match.rule.effects || [],
+              skippedEffects: []
             });
           }
         }
@@ -470,7 +452,7 @@ export class InterpretationProcessor implements StageProcessor {
 
       const interpretation = this.interpreter.generateInterpretation(
         ruleExecutionResults,
-        context.signals,
+        context.signals || [],
         probabilityScore,
         fortuneLevel as any,
         context.ruleContext
@@ -489,7 +471,7 @@ export class InterpretationProcessor implements StageProcessor {
         duration,
         metadata: {
           hasSummary: !!interpretation.summary,
-          hasSuggestions: interpretation.actionableSuggestions.length > 0
+          hasSuggestions: (interpretation.actionableSuggestions?.length || 0) > 0
         }
       };
     } catch (error) {

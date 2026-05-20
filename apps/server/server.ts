@@ -9,8 +9,31 @@ import { BaZiEngine } from '@tianwen/bazi-engine';
 import { LiuYaoEngine } from '@tianwen/liuyao';
 import { QimenEngine } from '@tianwen/qimen';
 import { ZiweiEngine } from '@tianwen/ziwei';
+import { TianwenPipeline, PredictionInput } from '@tianwen/pipeline';
 
 const PORT = parseInt(process.env.PORT || '4000');
+
+const pipeline = new TianwenPipeline({
+  enableCache: false,
+  enableConflictResolution: true,
+  enableMultiSystemFusion: false,
+  maxExecutionTimeMs: 30000,
+  stages: [
+    { name: 'input', enabled: true },
+    { name: 'chrono', enabled: true },
+    { name: 'divination', enabled: true },
+    { name: 'signal', enabled: true },
+    { name: 'rule', enabled: true },
+    { name: 'conflict', enabled: true },
+    { name: 'probability', enabled: true },
+    { name: 'fortune', enabled: true },
+    { name: 'timing', enabled: true },
+    { name: 'interpretation', enabled: true },
+    { name: 'output', enabled: true }
+  ],
+  rules: { enabled: true },
+  interpretation: { enabled: true, style: 'detailed', includeTrace: true }
+});
 
 interface ApiResponse {
   success: boolean;
@@ -75,6 +98,73 @@ const server = http.createServer(async (req, res) => {
             { id:'qimen', name:'奇门遁甲', description:'九宫飞星、八门八神、格局检测' },
             { id:'ziwei', name:'紫微斗数', description:'十二宫、十四主星、运势预测' }
           ]
+        }
+      });
+      return;
+    }
+
+    // === 统一预测接口（Pipeline）===
+    if (path === '/api/predict' && req.method === 'POST') {
+      const body = await parseBody(req);
+
+      const input: PredictionInput = {
+        question: body.question || '无特定问题',
+        category: body.category || 'general',
+        system: body.system || 'meihua',
+        mode: body.mode || 'single',
+        timestamp: body.timestamp ? new Date(body.timestamp) : new Date(),
+        birthInfo: body.birthInfo || undefined
+      };
+
+      const result = await pipeline.execute(input);
+
+      json(res, 200, {
+        success: result.success,
+        data: {
+          summary: result.output.summary,
+          probability: result.output.probability,
+          fortune: result.output.fortune,
+          signals: result.output.signals,
+          appliedRules: result.output.appliedRules,
+          knowledgeReferences: result.output.knowledgeReferences,
+          actionableSuggestions: result.output.actionableSuggestions,
+          calculationTrace: result.output.calculationTrace,
+          warnings: result.warnings,
+          errors: result.errors
+        }
+      });
+      return;
+    }
+
+    if (path === '/api/predict' && req.method === 'GET') {
+      const question = url.searchParams.get('question') || '今日运势';
+      const category = url.searchParams.get('category') || 'general';
+      const system = url.searchParams.get('system') || 'meihua';
+      const mode = url.searchParams.get('mode') || 'single';
+
+      const input: PredictionInput = {
+        question,
+        category,
+        system: system as any,
+        mode: mode as any,
+        timestamp: new Date()
+      };
+
+      const result = await pipeline.execute(input);
+
+      json(res, 200, {
+        success: result.success,
+        data: {
+          summary: result.output.summary,
+          probability: result.output.probability,
+          fortune: result.output.fortune,
+          signals: result.output.signals,
+          appliedRules: result.output.appliedRules,
+          knowledgeReferences: result.output.knowledgeReferences,
+          actionableSuggestions: result.output.actionableSuggestions,
+          calculationTrace: result.output.calculationTrace,
+          warnings: result.warnings,
+          errors: result.errors
         }
       });
       return;
@@ -172,9 +262,10 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`\n  天问后端服务已启动: http://localhost:${PORT}`);
-  console.log(`  梅花易数: http://localhost:${PORT}/api/meihua/divinate`);
-  console.log(`  六爻:     http://localhost:${PORT}/api/liuyao/divinate`);
-  console.log(`  八字:     http://localhost:${PORT}/api/bazi/calculate?year=1990&month=1&day=1&gender=male`);
-  console.log(`  奇门:     http://localhost:${PORT}/api/qimen/layout`);
-  console.log(`  紫微:     http://localhost:${PORT}/api/ziwei/layout?year=1990&month=1&day=1\n`);
+  console.log(`  Pipeline:  http://localhost:${PORT}/api/predict?question=今日运势&system=meihua`);
+  console.log(`  梅花易数:  http://localhost:${PORT}/api/meihua/divinate`);
+  console.log(`  六爻:      http://localhost:${PORT}/api/liuyao/divinate`);
+  console.log(`  八字:      http://localhost:${PORT}/api/bazi/calculate?year=1990&month=1&day=1&gender=male`);
+  console.log(`  奇门:      http://localhost:${PORT}/api/qimen/layout`);
+  console.log(`  紫微:      http://localhost:${PORT}/api/ziwei/layout?year=1990&month=1&day=1\n`);
 });

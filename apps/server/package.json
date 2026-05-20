@@ -1,0 +1,19 @@
+{
+  "name": "@tianwen/server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "天问后端服务",
+  "main": "server.ts",
+  "scripts": {
+    "dev": "tsx server.ts"
+  },
+  "dependencies": {
+    "@tianwen/meihua": "workspace:*",
+    "@tianwen/bazi-engine": "workspace:*",
+    "@tianwen/liuyao": "workspace:*",
+    "@tianwen/qimen": "workspace:*",
+    "@tianwen/ziwei": "workspace:*",
+    "@tianwen/pipeline": "workspace:*",
+    "tsx": "^4.22.3"
+  }
+}
