@@ -2,112 +2,132 @@
 
 import { motion } from 'framer-motion';
 
-const NEBULA_ANIMATION = {
-  duration: 25,
+const INK_CLOUD_ANIMATION = {
+  duration: 35,
   repeat: Infinity,
   ease: 'easeInOut' as const,
 };
 
-const DOT_PULSE = {
-  duration: 3,
+const CLOUD_FLOAT = {
+  duration: 22,
   repeat: Infinity,
   ease: 'easeInOut' as const,
 };
 
-const dots = [
-  { id: 1, x: 15, y: 18, size: 3 },
-  { id: 2, x: 28, y: 20, size: 2 },
-  { id: 3, x: 40, y: 14, size: 4 },
-  { id: 4, x: 55, y: 17, size: 2 },
-  { id: 5, x: 72, y: 22, size: 3 },
-  { id: 6, x: 85, y: 20, size: 2 },
-  { id: 7, x: 20, y: 38, size: 3 },
-  { id: 8, x: 42, y: 42, size: 5 },
-  { id: 9, x: 58, y: 40, size: 2 },
-  { id: 10, x: 78, y: 36, size: 3 },
-  { id: 11, x: 25, y: 62, size: 2 },
-  { id: 12, x: 45, y: 68, size: 3 },
-  { id: 13, x: 65, y: 65, size: 2 },
-  { id: 14, x: 80, y: 58, size: 4 },
-];
+const BaguaSymbol = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="50" cy="50" r="46" stroke="rgba(199,138,6,0.15)" strokeWidth="1" />
+    <path
+      d="M50 4 C75.4 4 96 24.6 96 50 C96 75.4 75.4 96 50 96 C24.6 96 4 75.4 4 50 C4 24.6 24.6 4 50 4 Z"
+      fill="url(#taijiGrad)"
+      opacity="0.35"
+    />
+    <defs>
+      <radialGradient id="taijiGrad" cx="50%" cy="40%" r="60%">
+        <stop offset="0%" stopColor="rgba(199,138,6,0.25)" />
+        <stop offset="100%" stopColor="rgba(8,7,6,0)" />
+      </radialGradient>
+    </defs>
+  </svg>
+);
 
-const connections = [
-  [1, 2], [2, 3], [3, 4], [4, 5], [5, 6],
-  [7, 8], [8, 9], [9, 10],
-  [11, 12], [12, 13], [13, 14],
-  [2, 7], [3, 8], [8, 12], [5, 10],
-];
+const InkCloud = ({ delay = 0, size = 280, x = '30%', y = '25%' }: { delay?: number; size?: number; x?: string; y?: string }) => (
+  <motion.div
+    className="absolute rounded-full"
+    style={{
+      left: x,
+      top: y,
+      width: size,
+      height: size * 0.7,
+      background: 'radial-gradient(ellipse at center, rgba(8,7,6,0.5) 0%, transparent 70%)',
+    }}
+    animate={{
+      x: [0, 40, 0, -30, 0],
+      y: [0, -25, 30, 0],
+      opacity: [0.35, 0.55, 0.3],
+    }}
+    transition={{
+      ...INK_CLOUD_ANIMATION,
+      delay,
+    }}
+  />
+);
 
-function getDotById(id: number) {
-  return dots.find((d) => d.id === id)!;
-}
+const AuspiciousCloud = ({ delay = 0, x = '10%', y = '15%', scale = 1 }: { delay?: number; x?: string; y?: string; scale?: number }) => (
+  <motion.div
+    className="absolute opacity-10"
+    style={{
+      left: x,
+      top: y,
+    }}
+    animate={{
+      y: [0, -18, 0, 12, 0],
+      opacity: [0.06, 0.14, 0.08],
+    }}
+    transition={{
+      ...CLOUD_FLOAT,
+      delay,
+    }}
+  >
+    <svg
+      width={160 * scale}
+      height={90 * scale}
+      viewBox="0 0 160 90"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M80 85C55 85 35 72 35 55C35 38 50 28 70 30C55 15 70 5 85 15C95 22 92 38 105 40C125 43 135 58 125 70C118 78 100 85 80 85Z"
+        fill="rgba(199,138,6,0.4)"
+      />
+    </svg>
+  </motion.div>
+);
 
 export const CosmicBackground = () => {
   return (
     <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-ink-950 via-ink-900 to-ink-800" />
+      <div className="absolute inset-0 ink-wash-bg" />
+
+      <InkCloud delay={0} size={340} x="15%" y="20%" />
+      <InkCloud delay={5} size={260} x="70%" y="60%" />
+      <InkCloud delay={11} size={300} x="50%" y="75%" />
+      <InkCloud delay={17} size={220} x="85%" y="25%" />
+
+      <AuspiciousCloud delay={0} x="8%" y="12%" scale={1.2} />
+      <AuspiciousCloud delay={7} x="65%" y="8%" scale={0.85} />
+      <AuspiciousCloud delay={13} x="78%" y="68%" scale={1.1} />
+      <AuspiciousCloud delay={19} x="25%" y="72%" scale={0.95} />
 
       <motion.div
-        className="absolute -top-20 -left-20 w-[40vw] h-[40vw] rounded-full bg-gradient-to-br from-amber-500/[0.04] to-amber-600/[0.02] blur-3xl"
-        animate={{ x: [0, 30, 0], y: [0, 20, 0] }}
-        transition={{ ...NEBULA_ANIMATION, duration: 28 }}
-      />
-
-      <motion.div
-        className="absolute -bottom-32 -right-16 w-[35vw] h-[35vw] rounded-full bg-gradient-to-tl from-indigo-500/[0.04] to-indigo-400/[0.02] blur-3xl"
-        animate={{ x: [0, -25, 0], y: [0, -18, 0] }}
-        transition={{ ...NEBULA_ANIMATION, duration: 24 }}
-      />
-
-      <motion.div
-        className="absolute top-1/4 left-1/3 w-[30vw] h-[20vw] rounded-full bg-gradient-to-b from-amber-400/[0.03] to-transparent blur-3xl"
-        animate={{ x: [0, -15, 0], y: [0, 10, 0] }}
-        transition={{ ...NEBULA_ANIMATION, duration: 22 }}
-      />
-
-      <motion.div
-        className="absolute inset-0"
-        animate={{ rotate: 360 }}
-        transition={{ duration: 120, repeat: Infinity, ease: 'linear' }}
-        style={{ transformOrigin: '50% 50%' }}
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-10"
+        animate={{
+          rotate: 360,
+        }}
+        transition={{
+          duration: 180,
+          repeat: Infinity,
+          ease: 'linear',
+        }}
       >
-        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-          {connections.map(([from, to]) => {
-            const a = getDotById(from);
-            const b = getDotById(to);
-            return (
-              <line
-                key={`${from}-${to}`}
-                x1={a.x}
-                y1={a.y}
-                x2={b.x}
-                y2={b.y}
-                stroke="rgba(202,138,4,0.08)"
-                strokeWidth={0.15}
-              />
-            );
-          })}
-        </svg>
-
-        {dots.map((dot) => (
-          <motion.div
-            key={dot.id}
-            className="absolute rounded-full bg-gold-500/50"
-            style={{
-              left: `${dot.x}%`,
-              top: `${dot.y}%`,
-              width: dot.size,
-              height: dot.size,
-              transform: 'translate(-50%, -50%)',
-            }}
-            animate={{ opacity: [0.15, 0.55, 0.15] }}
-            transition={{ ...DOT_PULSE, delay: dot.id * 0.3 }}
-          />
-        ))}
+        <BaguaSymbol className="w-[480px] h-[480px]" />
       </motion.div>
 
-      <div className="absolute left-8 top-0 h-full w-px bg-gradient-to-b from-transparent via-gold-500/10 to-transparent" />
-      <div className="absolute right-8 top-0 h-full w-px bg-gradient-to-b from-transparent via-gold-500/10 to-transparent" />
+      <div className="absolute left-12 top-0 h-full w-px bg-gradient-to-b from-transparent via-ji-500/20 to-transparent" />
+      <div className="absolute right-12 top-0 h-full w-px bg-gradient-to-b from-transparent via-ji-500/20 to-transparent" />
+
+      <motion.div
+        className="absolute top-16 left-24 w-40 h-px bg-gradient-to-r from-transparent via-ji-500/15 to-transparent"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: [0, 0.7, 0] }}
+        transition={{ duration: 4, repeat: Infinity, delay: 1 }}
+      />
+      <motion.div
+        className="absolute bottom-24 right-24 w-52 h-px bg-gradient-to-r from-transparent via-ji-500/15 to-transparent"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: [0, 0.7, 0] }}
+        transition={{ duration: 5, repeat: Infinity, delay: 2.5 }}
+      />
     </div>
   );
 };
