@@ -13,6 +13,7 @@ export const DEFAULT_PIPELINE_CONFIG = {
 // 阶段顺序
 export const PIPELINE_STAGE_ORDER: string[] = [
   'input',
+  'random',
   'chrono',
   'divination',
   'signal',
@@ -28,6 +29,7 @@ export const PIPELINE_STAGE_ORDER: string[] = [
 // 阶段超时（毫秒）
 export const STAGE_TIMEOUTS: Record<string, number> = {
   input: 1000,
+  random: 1000,
   chrono: 2000,
   divination: 5000,
   signal: 3000,
@@ -43,6 +45,7 @@ export const STAGE_TIMEOUTS: Record<string, number> = {
 // 阶段重试次数
 export const STAGE_RETRIES: Record<string, number> = {
   input: 0,
+  random: 1,
   chrono: 1,
   divination: 2,
   signal: 1,

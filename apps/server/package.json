@@ -13,6 +13,11 @@
     "@tianwen/liuyao": "workspace:*",
     "@tianwen/qimen": "workspace:*",
     "@tianwen/ziwei": "workspace:*",
+    "@tianwen/liuren": "workspace:*",
+    "@tianwen/xiaochengtu": "workspace:*",
+    "@tianwen/huangli": "workspace:*",
+    "@tianwen/huangji": "workspace:*",
+    "@tianwen/cegui": "workspace:*",
     "@tianwen/pipeline": "workspace:*",
     "tsx": "^4.22.3"
   }

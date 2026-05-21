@@ -15,6 +15,7 @@ import {
 } from './types';
 import { PipelineContextManager } from './pipeline-context';
 import {
+  RandomProcessor,
   ChronoProcessor,
   DivinationProcessor,
   SignalProcessor,
@@ -47,6 +48,7 @@ export class TianwenPipeline {
    * 初始化阶段处理器
    */
   private initializeProcessors(): void {
+    this.processors.set('random', new RandomProcessor());
     this.processors.set('chrono', new ChronoProcessor());
     this.processors.set('divination', new DivinationProcessor());
     this.processors.set('signal', new SignalProcessor());
@@ -199,6 +201,9 @@ export class TianwenPipeline {
    */
   private shouldSkipStage(context: PipelineContext, stage: PipelineStage): boolean {
     switch (stage) {
+      case 'random':
+        return false;
+
       case 'chrono':
         return false;
 
@@ -351,6 +356,7 @@ export class TianwenPipeline {
   private getStageAction(stage: PipelineStage, result: StageResult): string {
     const actions: Record<PipelineStage, string> = {
       input: '接收用户输入',
+      random: '生成随机数',
       chrono: '计算时间干支',
       divination: '起卦排盘',
       signal: '提取信号',
@@ -380,6 +386,8 @@ export class TianwenPipeline {
     if (!stageResult) return '完成';
 
     switch (stage) {
+      case 'random':
+        return `生成 ${stageResult.numbers?.length || 0} 个随机数`;
       case 'chrono':
         return '时间计算完成';
       case 'divination':

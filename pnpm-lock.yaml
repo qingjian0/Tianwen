@@ -27,6 +27,18 @@ importers:
       '@tianwen/bazi-engine':
         specifier: workspace:*
         version: link:../../packages/bazi-engine
+      '@tianwen/cegui':
+        specifier: workspace:*
+        version: link:../../packages/cegui
+      '@tianwen/huangji':
+        specifier: workspace:*
+        version: link:../../packages/huangji
+      '@tianwen/huangli':
+        specifier: workspace:*
+        version: link:../../packages/huangli
+      '@tianwen/liuren':
+        specifier: workspace:*
+        version: link:../../packages/liuren
       '@tianwen/liuyao':
         specifier: workspace:*
         version: link:../../packages/liuyao
@@ -39,6 +51,9 @@ importers:
       '@tianwen/qimen':
         specifier: workspace:*
         version: link:../../packages/qimen
+      '@tianwen/xiaochengtu':
+        specifier: workspace:*
+        version: link:../../packages/xiaochengtu
       '@tianwen/ziwei':
         specifier: workspace:*
         version: link:../../packages/ziwei
@@ -162,6 +177,19 @@ importers:
         specifier: ^9.0.0
         version: 9.0.1
 
+  packages/cegui:
+    dependencies:
+      '@tianwen/chrono-engine':
+        specifier: workspace:*
+        version: link:../chrono-engine
+    devDependencies:
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(jiti@1.21.7)(postcss@8.5.14)(tsx@4.22.3)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.5.0
+        version: 5.9.3
+
   packages/chrono-engine:
     dependencies:
       date-fns:
@@ -224,6 +252,32 @@ importers:
         specifier: ^3.23.0
         version: 3.25.76
 
+  packages/huangji:
+    dependencies:
+      '@tianwen/chrono-engine':
+        specifier: workspace:*
+        version: link:../chrono-engine
+    devDependencies:
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(jiti@1.21.7)(postcss@8.5.14)(tsx@4.22.3)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.5.0
+        version: 5.9.3
+
+  packages/huangli:
+    dependencies:
+      '@tianwen/chrono-engine':
+        specifier: workspace:*
+        version: link:../chrono-engine
+    devDependencies:
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(jiti@1.21.7)(postcss@8.5.14)(tsx@4.22.3)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.5.0
+        version: 5.9.3
+
   packages/interpretation-engine:
     dependencies:
       '@tianwen/fortune-engine':
@@ -242,6 +296,19 @@ importers:
       zod:
         specifier: ^3.23.0
         version: 3.25.76
+
+  packages/liuren:
+    dependencies:
+      '@tianwen/chrono-engine':
+        specifier: workspace:*
+        version: link:../chrono-engine
+    devDependencies:
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(jiti@1.21.7)(postcss@8.5.14)(tsx@4.22.3)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.5.0
+        version: 5.9.3
 
   packages/liuyao:
     dependencies:
@@ -289,15 +356,27 @@ importers:
       '@tianwen/bazi-engine':
         specifier: workspace:*
         version: link:../bazi-engine
+      '@tianwen/cegui':
+        specifier: workspace:*
+        version: link:../cegui
       '@tianwen/chrono-engine':
         specifier: workspace:*
         version: link:../chrono-engine
       '@tianwen/fortune-engine':
         specifier: workspace:*
         version: link:../fortune-engine
+      '@tianwen/huangji':
+        specifier: workspace:*
+        version: link:../huangji
+      '@tianwen/huangli':
+        specifier: workspace:*
+        version: link:../huangli
       '@tianwen/interpretation-engine':
         specifier: workspace:*
         version: link:../interpretation-engine
+      '@tianwen/liuren':
+        specifier: workspace:*
+        version: link:../liuren
       '@tianwen/liuyao':
         specifier: workspace:*
         version: link:../liuyao
@@ -322,6 +401,9 @@ importers:
       '@tianwen/timing-engine':
         specifier: workspace:*
         version: link:../timing-engine
+      '@tianwen/xiaochengtu':
+        specifier: workspace:*
+        version: link:../xiaochengtu
 
   packages/prediction-core:
     dependencies:
@@ -518,6 +600,19 @@ importers:
       zod:
         specifier: ^3.23.0
         version: 3.25.76
+
+  packages/xiaochengtu:
+    dependencies:
+      '@tianwen/chrono-engine':
+        specifier: workspace:*
+        version: link:../chrono-engine
+    devDependencies:
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(jiti@1.21.7)(postcss@8.5.14)(tsx@4.22.3)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.5.0
+        version: 5.9.3
 
   packages/ziwei: {}
 

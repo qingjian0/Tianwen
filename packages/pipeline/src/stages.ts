@@ -8,6 +8,11 @@ import { ChronoEngine } from '@tianwen/chrono-engine';
 import { MeihuaEngine } from '@tianwen/meihua';
 import { LiuYaoEngine } from '@tianwen/liuyao';
 import { BaZiEngine } from '@tianwen/bazi-engine';
+import { LiuRenEngine } from '@tianwen/liuren';
+import { XiaoChengTuEngine } from '@tianwen/xiaochengtu';
+import { HuangLiEngine } from '@tianwen/huangli';
+import { HuangJiEngine } from '@tianwen/huangji';
+import { CeGuiEngine } from '@tianwen/cegui';
 import { SignalExtractor } from '@tianwen/signal-extractor';
 import {
   RuleEngine,
@@ -25,6 +30,94 @@ import { allRules } from '../../../knowledge/rules';
 export interface StageProcessor {
   process(context: PipelineContext): Promise<StageResult>;
   validate?(context: PipelineContext): boolean;
+}
+
+/**
+ * 随机数生成阶段处理器
+ */
+export class RandomProcessor implements StageProcessor {
+  async process(context: PipelineContext): Promise<StageResult> {
+    const startTime = Date.now();
+
+    try {
+      const randomSource = context.input.randomSource;
+
+      if (!randomSource) {
+        return {
+          stage: 'random',
+          status: 'skipped',
+          startTime: new Date(startTime),
+          endTime: new Date(),
+          duration: 0
+        };
+      }
+
+      let numbers: number[];
+
+      switch (randomSource.mode) {
+        case 'manual':
+          numbers = randomSource.values || [];
+          break;
+
+        case 'auto': {
+          const count = randomSource.diceCount || 3;
+          const maxVal = 50;
+          numbers = Array.from({ length: count }, () => {
+            const buf = crypto.getRandomValues?.(new Uint32Array(1)) as any;
+            if (buf) {
+              return 1 + (buf[0] % maxVal);
+            }
+            return Math.floor(Math.random() * maxVal) + 1;
+          });
+          break;
+        }
+
+        case 'timestamp': {
+          const digitLength = randomSource.digitLength || 2;
+          const modulus = Math.pow(10, digitLength);
+          numbers = [Date.now() % modulus];
+          break;
+        }
+
+        case 'digital': {
+          const source = randomSource.values?.[0]
+            ? String(randomSource.values[0])
+            : String(Date.now());
+          const digits = source.replace(/\D/g, '');
+          const segments = digits.match(/.{1,3}/g);
+          numbers = segments ? segments.map(Number) : [Number(digits.slice(0, 3))];
+          break;
+        }
+
+        default:
+          numbers = [];
+      }
+
+      context.generatedRandom = numbers;
+
+      return {
+        stage: 'random',
+        status: 'completed',
+        data: { numbers },
+        startTime: new Date(startTime),
+        endTime: new Date(),
+        duration: Date.now() - startTime,
+        metadata: {
+          mode: randomSource.mode,
+          count: numbers.length
+        }
+      };
+    } catch (error) {
+      return {
+        stage: 'random',
+        status: 'failed',
+        error: error instanceof Error ? error.message : '随机数生成失败',
+        startTime: new Date(startTime),
+        endTime: new Date(),
+        duration: Date.now() - startTime
+      };
+    }
+  }
 }
 
 /**
@@ -79,13 +172,23 @@ export class DivinationProcessor implements StageProcessor {
     meihua: MeihuaEngine;
     liuyao: LiuYaoEngine;
     bazi: BaZiEngine;
+    liuren: LiuRenEngine;
+    xiaochengtu: XiaoChengTuEngine;
+    huangli: HuangLiEngine;
+    huangji: HuangJiEngine;
+    cegui: CeGuiEngine;
   };
 
   constructor() {
     this.engines = {
       meihua: new MeihuaEngine(),
       liuyao: new LiuYaoEngine(),
-      bazi: new BaZiEngine()
+      bazi: new BaZiEngine(),
+      liuren: new LiuRenEngine(),
+      xiaochengtu: new XiaoChengTuEngine(),
+      huangli: new HuangLiEngine(),
+      huangji: new HuangJiEngine(),
+      cegui: new CeGuiEngine()
     };
   }
 
@@ -124,6 +227,65 @@ export class DivinationProcessor implements StageProcessor {
                 birthDate,
                 context.input.birth.gender
               );
+            }
+            break;
+
+          case 'liuren':
+            if (context.input.eventTime) {
+              results.liuren = this.engines.liuren.calculate({
+                eventTime: context.input.eventTime
+              });
+            } else {
+              results.liuren = this.engines.liuren.calculate({
+                eventTime: {
+                  year: new Date().getFullYear(),
+                  month: new Date().getMonth() + 1,
+                  day: new Date().getDate(),
+                  hour: new Date().getHours()
+                }
+              });
+            }
+            break;
+
+          case 'xiaochengtu':
+            {
+              const randomNums = context.generatedRandom;
+              const date = context.input.timestamp || new Date();
+              results.xiaochengtu = this.engines.xiaochengtu.calculate(
+                randomNums && randomNums.length >= 3
+                  ? { numbers: randomNums }
+                  : { date }
+              );
+            }
+            break;
+
+          case 'huangli':
+            results.huangli = this.engines.huangli.query(
+              context.input.timestamp
+            );
+            break;
+
+          case 'huangji':
+            {
+              const evt = context.input.eventTime || context.input.birth;
+              results.huangji = this.engines.huangji.calculate({
+                year: evt?.year || new Date().getFullYear(),
+                month: evt?.month || (new Date().getMonth() + 1),
+                day: evt?.day || new Date().getDate(),
+                hour: evt?.hour || 0
+              });
+            }
+            break;
+
+          case 'cegui':
+            {
+              const evt = context.input.eventTime || context.input.birth;
+              results.cegui = this.engines.cegui.calculate({
+                year: evt?.year || new Date().getFullYear(),
+                month: evt?.month || (new Date().getMonth() + 1),
+                day: evt?.day || new Date().getDate(),
+                hour: evt?.hour || 0
+              });
             }
             break;
 

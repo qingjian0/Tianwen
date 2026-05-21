@@ -10,6 +10,11 @@ import { BaZiEngine } from '@tianwen/bazi-engine';
 import { LiuYaoEngine } from '@tianwen/liuyao';
 import { QimenEngine } from '@tianwen/qimen';
 import { ZiweiEngine } from '@tianwen/ziwei';
+import { LiuRenEngine } from '@tianwen/liuren';
+import { XiaoChengTuEngine } from '@tianwen/xiaochengtu';
+import { HuangLiEngine } from '@tianwen/huangli';
+import { HuangJiEngine } from '@tianwen/huangji';
+import { CeGuiEngine } from '@tianwen/cegui';
 import { TianwenPipeline, PredictionInput } from '@tianwen/pipeline';
 
 const PORT = parseInt(process.env.PORT || '4000');
@@ -21,6 +26,7 @@ const pipeline = new TianwenPipeline({
   maxExecutionTimeMs: 30000,
   stages: [
     { name: 'input', enabled: true },
+    { name: 'random', enabled: true },
     { name: 'chrono', enabled: true },
     { name: 'divination', enabled: true },
     { name: 'signal', enabled: true },
@@ -300,6 +306,80 @@ const server = http.createServer(async (req, res) => {
 
       const engine = new ZiweiEngine();
       const result = engine.calculate(new Date(year, month-1, day), gender);
+
+      json(res, 200, { success: true, data: result });
+      return;
+    }
+
+    // === 大六壬 ===
+    if (path === '/api/liuren/calculate') {
+      const year = parseInt(url.searchParams.get('year') || String(new Date().getFullYear()));
+      const month = parseInt(url.searchParams.get('month') || String(new Date().getMonth()+1));
+      const day = parseInt(url.searchParams.get('day') || String(new Date().getDate()));
+      const hour = parseInt(url.searchParams.get('hour') || String(new Date().getHours()));
+
+      const engine = new LiuRenEngine();
+      const result = engine.calculate({
+        eventTime: { year, month, day, hour }
+      });
+
+      json(res, 200, { success: true, data: result });
+      return;
+    }
+
+    // === 小成图 ===
+    if (path === '/api/xiaochengtu/calculate') {
+      const n1 = url.searchParams.get('n1');
+      const n2 = url.searchParams.get('n2');
+      const n3 = url.searchParams.get('n3');
+
+      const engine = new XiaoChengTuEngine();
+      const result = n1 && n2 && n3
+        ? engine.calculate({ numbers: [parseInt(n1), parseInt(n2), parseInt(n3)] })
+        : engine.calculate({ date: new Date() });
+
+      json(res, 200, { success: true, data: result });
+      return;
+    }
+
+    // === 老黄历 ===
+    if (path === '/api/huangli') {
+      const year = url.searchParams.get('year');
+      const month = url.searchParams.get('month');
+      const day = url.searchParams.get('day');
+
+      const engine = new HuangLiEngine();
+      const result = (year && month && day)
+        ? engine.queryByDate(parseInt(year), parseInt(month), parseInt(day))
+        : engine.query();
+
+      json(res, 200, { success: true, data: result });
+      return;
+    }
+
+    // === 皇极经世 ===
+    if (path === '/api/huangji/calculate') {
+      const year = parseInt(url.searchParams.get('year') || String(new Date().getFullYear()));
+      const month = parseInt(url.searchParams.get('month') || String(new Date().getMonth()+1));
+      const day = parseInt(url.searchParams.get('day') || String(new Date().getDate()));
+      const hour = parseInt(url.searchParams.get('hour') || '0');
+
+      const engine = new HuangJiEngine();
+      const result = engine.calculate({ year, month, day, hour });
+
+      json(res, 200, { success: true, data: result });
+      return;
+    }
+
+    // === 策轨数 ===
+    if (path === '/api/cegui/calculate') {
+      const year = parseInt(url.searchParams.get('year') || String(new Date().getFullYear()));
+      const month = parseInt(url.searchParams.get('month') || String(new Date().getMonth()+1));
+      const day = parseInt(url.searchParams.get('day') || String(new Date().getDate()));
+      const hour = parseInt(url.searchParams.get('hour') || '0');
+
+      const engine = new CeGuiEngine();
+      const result = engine.calculate({ year, month, day, hour });
 
       json(res, 200, { success: true, data: result });
       return;
