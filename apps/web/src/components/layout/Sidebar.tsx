@@ -11,9 +11,16 @@ import { usePathname } from 'next/navigation';
 
 const navItems = [
   { label: '天问殿', href: '/', icon: '⊙' },
-  { label: '命宫', href: '/destiny-palace', icon: '◎' },
-  { label: '推演', href: '/prediction', icon: '◈' },
-  { label: '排盘', href: '/chart', icon: '◇' },
+  { label: '梅花易数', href: '/meihua', icon: '☰' },
+  { label: '六爻纳甲', href: '/prediction', icon: '☷' },
+  { label: '八字命理', href: '/destiny-palace', icon: '☯' },
+  { label: '奇门遁甲', href: '/chart', icon: '☲' },
+  { label: '紫微斗数', href: '/destiny-palace', icon: '◎' },
+  { label: '大六壬', href: '/prediction', icon: '☴' },
+  { label: '小成图', href: '/prediction', icon: '☶' },
+  { label: '皇极经世', href: '/prediction', icon: '☵' },
+  { label: '策轨数', href: '/prediction', icon: '☱' },
+  { label: '老黄历', href: '/prediction', icon: '📅' },
 ];
 
 export const Sidebar = () => {
