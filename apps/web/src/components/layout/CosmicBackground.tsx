@@ -2,131 +2,142 @@
 
 import { motion } from 'framer-motion';
 
-const INK_CLOUD_ANIMATION = {
-  duration: 35,
-  repeat: Infinity,
-  ease: 'easeInOut' as const,
-};
-
-const CLOUD_FLOAT = {
-  duration: 22,
-  repeat: Infinity,
-  ease: 'easeInOut' as const,
-};
-
-const BaguaSymbol = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="50" cy="50" r="46" stroke="rgba(199,138,6,0.15)" strokeWidth="1" />
+const PalaceRoof = ({ className = '' }: { className?: string }) => (
+  <svg viewBox="0 0 400 120" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
-      d="M50 4 C75.4 4 96 24.6 96 50 C96 75.4 75.4 96 50 96 C24.6 96 4 75.4 4 50 C4 24.6 24.6 4 50 4 Z"
-      fill="url(#taijiGrad)"
-      opacity="0.35"
+      d="M0 120L60 40L100 80L140 30L180 70L220 25L260 65L300 35L340 75L380 45L400 120H0Z"
+      fill="url(#roofGradient)"
+      stroke="rgba(212, 175, 55, 0.6)"
+      strokeWidth="2"
+    />
+    <path
+      d="M100 80V120M180 70V120M260 65V120M340 75V120"
+      stroke="rgba(212, 175, 55, 0.4)"
+      strokeWidth="1"
     />
     <defs>
-      <radialGradient id="taijiGrad" cx="50%" cy="40%" r="60%">
-        <stop offset="0%" stopColor="rgba(199,138,6,0.25)" />
-        <stop offset="100%" stopColor="rgba(8,7,6,0)" />
-      </radialGradient>
+      <linearGradient id="roofGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="rgba(212, 175, 55, 0.15)" />
+        <stop offset="100%" stopColor="rgba(212, 175, 55, 0.05)" />
+      </linearGradient>
     </defs>
   </svg>
 );
 
-const InkCloud = ({ delay = 0, size = 280, x = '30%', y = '25%' }: { delay?: number; size?: number; x?: string; y?: string }) => (
-  <motion.div
-    className="absolute rounded-full"
-    style={{
-      left: x,
-      top: y,
-      width: size,
-      height: size * 0.7,
-      background: 'radial-gradient(ellipse at center, rgba(8,7,6,0.5) 0%, transparent 70%)',
-    }}
-    animate={{
-      x: [0, 40, 0, -30, 0],
-      y: [0, -25, 30, 0],
-      opacity: [0.35, 0.55, 0.3],
-    }}
-    transition={{
-      ...INK_CLOUD_ANIMATION,
-      delay,
-    }}
-  />
-);
-
 const AuspiciousCloud = ({ delay = 0, x = '10%', y = '15%', scale = 1 }: { delay?: number; x?: string; y?: string; scale?: number }) => (
   <motion.div
-    className="absolute opacity-10"
-    style={{
-      left: x,
-      top: y,
-    }}
+    className="absolute opacity-15"
+    style={{ left: x, top: y }}
     animate={{
-      y: [0, -18, 0, 12, 0],
-      opacity: [0.06, 0.14, 0.08],
+      y: [0, -15, 0, 10, 0],
+      opacity: [0.08, 0.18, 0.1],
     }}
-    transition={{
-      ...CLOUD_FLOAT,
-      delay,
-    }}
+    transition={{ duration: 22, repeat: Infinity, delay, ease: 'easeInOut' }}
   >
-    <svg
-      width={160 * scale}
-      height={90 * scale}
-      viewBox="0 0 160 90"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg width={200 * scale} height={100 * scale} viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
-        d="M80 85C55 85 35 72 35 55C35 38 50 28 70 30C55 15 70 5 85 15C95 22 92 38 105 40C125 43 135 58 125 70C118 78 100 85 80 85Z"
-        fill="rgba(199,138,6,0.4)"
+        d="M100 90C60 90 30 70 30 50C30 30 55 20 85 22C65 5 85 0 105 10C120 18 115 38 135 42C165 48 180 68 165 82C155 90 125 95 100 90Z"
+        fill="rgba(212, 175, 55, 0.5)"
       />
     </svg>
   </motion.div>
 );
 
+const DragonPattern = ({ className = '' }: { className?: string }) => (
+  <svg viewBox="0 0 200 200" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M100 20 Q140 40 130 80 Q120 120 100 140 Q80 160 60 140 Q40 120 50 80 Q60 40 100 20"
+      stroke="rgba(212, 175, 55, 0.12)"
+      strokeWidth="1"
+      fill="none"
+    />
+    <circle cx="100" cy="100" r="30" stroke="rgba(212, 175, 55, 0.08)" strokeWidth="1" />
+    <circle cx="100" cy="100" r="20" stroke="rgba(212, 175, 55, 0.06)" strokeWidth="1" />
+    <circle cx="100" cy="100" r="10" fill="rgba(212, 175, 55, 0.1)" />
+  </svg>
+);
+
+const CelestialStars = () => {
+  const stars = Array.from({ length: 40 }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    size: Math.random() * 2 + 1,
+    delay: Math.random() * 4,
+  }));
+
+  return (
+    <>
+      {stars.map((star) => (
+        <motion.div
+          key={star.id}
+          className="absolute rounded-full bg-imperial-gold/60"
+          style={{
+            left: `${star.x}%`,
+            top: `${star.y}%`,
+            width: star.size,
+            height: star.size,
+          }}
+          animate={{ opacity: [0.2, 0.8, 0.2] }}
+          transition={{ duration: 3, repeat: Infinity, delay: star.delay }}
+        />
+      ))}
+    </>
+  );
+};
+
 export const CosmicBackground = () => {
   return (
     <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-      <div className="absolute inset-0 ink-wash-bg" />
+      <div className="absolute inset-0 bg-gradient-to-b from-celestial-blue-dark via-ink-black to-ink-dark" />
+      
+      <div className="absolute inset-0">
+        <div 
+          className="absolute inset-0 opacity-30"
+          style={{
+            backgroundImage: `radial-gradient(circle at 30% 20%, rgba(212, 175, 55, 0.12) 0%, transparent 40%),
+                             radial-gradient(circle at 70% 80%, rgba(196, 30, 58, 0.08) 0%, transparent 35%),
+                             radial-gradient(circle at 50% 50%, rgba(30, 58, 95, 0.15) 0%, transparent 50%)`
+          }}
+        />
+      </div>
 
-      <InkCloud delay={0} size={340} x="15%" y="20%" />
-      <InkCloud delay={5} size={260} x="70%" y="60%" />
-      <InkCloud delay={11} size={300} x="50%" y="75%" />
-      <InkCloud delay={17} size={220} x="85%" y="25%" />
+      <CelestialStars />
 
-      <AuspiciousCloud delay={0} x="8%" y="12%" scale={1.2} />
-      <AuspiciousCloud delay={7} x="65%" y="8%" scale={0.85} />
-      <AuspiciousCloud delay={13} x="78%" y="68%" scale={1.1} />
-      <AuspiciousCloud delay={19} x="25%" y="72%" scale={0.95} />
+      <AuspiciousCloud delay={0} x="8%" y="10%" scale={1.3} />
+      <AuspiciousCloud delay={7} x="65%" y="5%" scale={0.9} />
+      <AuspiciousCloud delay={13} x="75%" y="70%" scale={1.1} />
+      <AuspiciousCloud delay={19} x="20%" y="65%" scale={0.85} />
 
       <motion.div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-10"
-        animate={{
-          rotate: 360,
-        }}
-        transition={{
-          duration: 180,
-          repeat: Infinity,
-          ease: 'linear',
-        }}
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-8"
+        animate={{ rotate: 360 }}
+        transition={{ duration: 200, repeat: Infinity, ease: 'linear' }}
       >
-        <BaguaSymbol className="w-[480px] h-[480px]" />
+        <DragonPattern className="w-[500px] h-[500px]" />
       </motion.div>
 
-      <div className="absolute left-12 top-0 h-full w-px bg-gradient-to-b from-transparent via-ji-500/20 to-transparent" />
-      <div className="absolute right-12 top-0 h-full w-px bg-gradient-to-b from-transparent via-ji-500/20 to-transparent" />
+      <motion.div
+        className="absolute top-0 left-0 right-0"
+        initial={{ y: -40 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 1.5, delay: 0.3 }}
+      >
+        <PalaceRoof className="w-full h-32" />
+      </motion.div>
+
+      <div className="absolute left-8 top-0 h-full w-px bg-gradient-to-b from-transparent via-imperial-gold/15 to-transparent" />
+      <div className="absolute right-8 top-0 h-full w-px bg-gradient-to-b from-transparent via-imperial-gold/15 to-transparent" />
 
       <motion.div
-        className="absolute top-16 left-24 w-40 h-px bg-gradient-to-r from-transparent via-ji-500/15 to-transparent"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: [0, 0.7, 0] }}
-        transition={{ duration: 4, repeat: Infinity, delay: 1 }}
+        className="absolute top-20 left-20 w-48 h-px bg-gradient-to-r from-transparent via-imperial-gold/20 to-transparent"
+        animate={{ opacity: [0, 0.8, 0] }}
+        transition={{ duration: 5, repeat: Infinity, delay: 1 }}
       />
       <motion.div
-        className="absolute bottom-24 right-24 w-52 h-px bg-gradient-to-r from-transparent via-ji-500/15 to-transparent"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: [0, 0.7, 0] }}
-        transition={{ duration: 5, repeat: Infinity, delay: 2.5 }}
+        className="absolute bottom-32 right-20 w-56 h-px bg-gradient-to-r from-transparent via-imperial-gold/20 to-transparent"
+        animate={{ opacity: [0, 0.8, 0] }}
+        transition={{ duration: 6, repeat: Infinity, delay: 2.5 }}
       />
     </div>
   );
