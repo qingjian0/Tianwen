@@ -14,9 +14,9 @@ interface CardProps {
 }
 
 const variantStyles: Record<NonNullable<CardProps['variant']>, string> = {
-  default: 'bg-ink-800/60 border border-gold-500/10 rounded-xl',
-  highlight: 'bg-ink-800/60 border border-gold-500/30 rounded-xl shadow-glow-sm',
-  subtle: 'bg-transparent border border-white/5 rounded-xl',
+  default: 'bg-xuan-900/70 border border-ji-500/15',
+  highlight: 'bg-gradient-to-br from-xuan-900/80 to-mo-900/60 border-2 border-ji-500/30 shadow-glow-ji',
+  subtle: 'bg-transparent border border-xuan-700/30',
 };
 
 export const Card = ({
@@ -29,7 +29,7 @@ export const Card = ({
   onClick,
 }: CardProps) => {
   const base = variantStyles[variant];
-  const hoverClass = hover ? 'hover:border-gold-500/30 hover:shadow-glow-sm transition-all duration-300' : '';
+  const hoverClass = hover ? 'hover:border-ji-500/40 hover:-translate-y-1 transition-all duration-300' : '';
   const clickClass = onClick ? 'cursor-pointer' : '';
 
   return (
@@ -40,13 +40,13 @@ export const Card = ({
       onClick={onClick}
     >
       {header && (
-        <div className="border-b border-gold-500/10 px-6 py-4 text-gold-400 font-serif">
+        <div className="border-b border-ji-500/10 px-6 py-4 text-ji-400 font-song tracking-wider">
           {header}
         </div>
       )}
       <div className="p-6">{children}</div>
       {footer && (
-        <div className="border-t border-gold-500/10 px-6 py-3">
+        <div className="border-t border-ji-500/10 px-6 py-3">
           {footer}
         </div>
       )}
