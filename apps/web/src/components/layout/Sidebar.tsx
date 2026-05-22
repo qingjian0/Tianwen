@@ -1,107 +1,184 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { useUIStore } from '@/stores/uiStore';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-const navItems = [
-  { label: '天问殿', href: '/', icon: '⊙', color: 'gold' },
-  { label: '梅花易数', href: '/meihua', icon: '☰', color: 'gold' },
-  { label: '六爻纳甲', href: '/liuyao', icon: '☷', color: 'red' },
-  { label: '四柱命理', href: '/bazi', icon: '☯', color: 'jade' },
-  { label: '奇门遁甲', href: '/qimen', icon: '☲', color: 'gold' },
-  { label: '紫微斗数', href: '/ziwei', icon: '◎', color: 'red' },
-  { label: '大六壬', href: '/liuren', icon: '☴', color: 'jade' },
-  { label: '小成图', href: '/xiaochengtu', icon: '☶', color: 'gold' },
-  { label: '皇极经世', href: '/huangji', icon: '☵', color: 'red' },
-  { label: '策轨数', href: '/cegui', icon: '☱', color: 'jade' },
-  { label: '老黄历', href: '/huangli', icon: '📜', color: 'gold' },
+const highFreqModules = [
+  { id: 'liuren', name: '大六壬', icon: '☴', desc: '三传四课，七政三式之首', color: 'gold' },
+  { id: 'meihua', name: '梅花易数', icon: '☰', desc: '观梅占数，心易妙法', color: 'red' },
+  { id: 'qimen', name: '奇门遁甲', icon: '☲', desc: '九宫八卦，帝王之学', color: 'gold' },
 ];
 
-const PalaceHeader = () => (
-  <div className="relative">
-    <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-full h-2 bg-gradient-to-b from-imperial-gold/30 to-transparent" />
-    <div className="flex items-center gap-4 p-6 border-b border-imperial-gold/10">
-      <div className="relative w-14 h-14">
-        <div className="absolute inset-0 border-2 border-vermillion-500/60 transform rotate-[-3deg]">
-          <div className="absolute inset-1.5 border border-vermillion-400/40" />
-        </div>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="font-kai text-xl text-vermillion-400 font-bold">
-            天
-          </span>
-        </div>
-      </div>
-      <div>
-        <h2 className="text-xl font-song font-bold text-gradient-gold tracking-wider">
-          天问
-        </h2>
-        <p className="text-xs text-parchment/40 tracking-[0.2em]">
-          TIANWEN
-        </p>
-      </div>
-    </div>
-    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-full h-2 bg-gradient-to-t from-imperial-gold/20 to-transparent" />
-  </div>
-);
+const lowFreqModules = [
+  { id: 'bazi', name: '八字排盘', icon: '☯', desc: '四柱命理，子平之术' },
+  { id: 'fengshui', name: '风水辅助', icon: '🗺', desc: '地理风水，方位布局' },
+  { id: 'other', name: '其他术数', icon: '⊕', desc: '紫微斗数、六爻纳甲等' },
+];
 
-const PalaceFooter = () => (
-  <div className="relative">
-    <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-full h-2 bg-gradient-to-b from-imperial-gold/20 to-transparent" />
-    <div className="p-6 border-t border-imperial-gold/10 text-center">
-      <p className="text-xs text-parchment/40 font-kai tracking-[0.25em] mb-3">
-        观天之道 · 执天之行
-      </p>
-      <div className="flex justify-center gap-1.5">
-        <div className="w-1.5 h-1.5 rounded-full bg-imperial-gold/40" />
-        <div className="w-1.5 h-1.5 rounded-full bg-imperial-gold/60" />
-        <div className="w-1.5 h-1.5 rounded-full bg-imperial-gold/40" />
-      </div>
-    </div>
-    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-full h-2 bg-gradient-to-t from-imperial-gold/30 to-transparent" />
-  </div>
-);
+const historyItems = [
+  { id: 1, module: '大六壬', time: '10分钟前', type: '排盘' },
+  { id: 2, module: '梅花易数', time: '30分钟前', type: '起卦' },
+  { id: 3, module: '奇门遁甲', time: '1小时前', type: '布局' },
+];
 
 export const Sidebar = () => {
   const pathname = usePathname();
-  const { sidebarOpen } = useUIStore();
+  const [expandedLowFreq, setExpandedLowFreq] = useState(false);
+  const [expandedHistory, setExpandedHistory] = useState(true);
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
   return (
-    <motion.aside
-      initial={false}
-      animate={sidebarOpen ? { x: 0 } : { x: -256 }}
-      transition={{ duration: 0.3, ease: 'easeInOut' }}
-      className="fixed inset-y-0 left-0 z-40 w-64 bg-gradient-to-b from-ink-dark/98 via-ink-medium/95 to-ink-dark/98 backdrop-blur-md border-r border-imperial-gold/15 lg:static"
-    >
-      <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-transparent via-imperial-gold/20 to-transparent" />
-      <div className="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-transparent via-imperial-gold/10 to-transparent" />
-
-      <PalaceHeader />
-
-      <nav className="px-4 py-6 space-y-1">
-        {navItems.map((item, idx) => (
-          <motion.div
-            key={item.href}
-            className={`group flex items-center gap-3 px-4 py-3 text-sm font-kai tracking-wide transition-all duration-300 ${
-              pathname === item.href
-                ? `${item.color === 'gold' ? 'bg-imperial-gold/10 text-imperial-gold' : ''} ${item.color === 'red' ? 'bg-vermillion-500/10 text-vermillion-400' : ''} ${item.color === 'jade' ? 'bg-jade-500/10 text-jade-400' : ''} border-l-2 ${item.color === 'gold' ? 'border-imperial-gold' : ''} ${item.color === 'red' ? 'border-vermillion-500' : ''} ${item.color === 'jade' ? 'border-jade-500' : ''}`
-                : 'text-parchment/50 hover:text-parchment/80 hover:bg-ink-light/30 border-l-2 border-transparent hover:border-imperial-gold/30'
-            }`}
-          >
-            <Link href={item.href} className="flex items-center gap-3 w-full">
-              <span className={`text-lg transition-transform duration-300 ${pathname === item.href ? 'scale-110' : 'group-hover:scale-105'}`}>
-                {item.icon}
-              </span>
-              <span className="flex-1">{item.label}</span>
-            </Link>
-          </motion.div>
-        ))}
-      </nav>
-
-      <div className="absolute bottom-0 left-0 right-0">
-        <PalaceFooter />
+    <aside className="w-64 bg-bg-dark border-r border-border flex flex-col h-screen sticky top-0">
+      <div className="p-5 border-b border-border">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-sm bg-gradient-primary flex items-center justify-center">
+            <span className="text-white font-song text-xl font-bold">天</span>
+          </div>
+          <div>
+            <h1 className="font-song text-lg font-bold text-text-primary">天问</h1>
+            <p className="text-xs text-text-muted">TIANWEN</p>
+          </div>
+        </div>
       </div>
-    </motion.aside>
+
+      <div className="flex-1 overflow-y-auto scrollbar-thin">
+        <div className="p-4">
+          <div className="text-xs text-text-muted mb-3 font-kai tracking-wider">高频功能</div>
+          <nav className="space-y-1">
+            {highFreqModules.map((item) => (
+              <motion.div
+                key={item.id}
+                className="relative"
+                onMouseEnter={() => setHoveredItem(item.id)}
+                onMouseLeave={() => setHoveredItem(null)}
+              >
+                <Link
+                  href={`/${item.id}`}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-sm transition-all duration-200 ${
+                    pathname === `/${item.id}`
+                      ? `${item.color === 'gold' ? 'bg-gold/10 text-gold' : 'bg-primary/10 text-primary-light'}`
+                      : 'text-text-secondary hover:bg-bg-light hover:text-text-primary'
+                  }`}
+                >
+                  <span className="text-lg">{item.icon}</span>
+                  <span className="font-kai">{item.name}</span>
+                  {pathname === `/${item.id}` && (
+                    <div className="ml-auto w-1.5 h-1.5 rounded-full bg-current" />
+                  )}
+                </Link>
+                <AnimatePresence>
+                  {hoveredItem === item.id && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -5, x: 10 }}
+                      animate={{ opacity: 1, y: 0, x: 0 }}
+                      exit={{ opacity: 0, y: -5, x: 10 }}
+                      className="absolute left-full top-0 ml-2 px-3 py-2 bg-bg-light border border-border rounded-sm shadow-card z-50 whitespace-nowrap text-xs text-text-secondary"
+                    >
+                      {item.desc}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            ))}
+          </nav>
+        </div>
+
+        <div className="p-4 pt-0">
+          <button
+            onClick={() => setExpandedLowFreq(!expandedLowFreq)}
+            className="flex items-center justify-between w-full text-xs text-text-muted mb-3 font-kai tracking-wider hover:text-text-secondary transition-colors"
+          >
+            <span>更多功能</span>
+            <motion.span
+              animate={{ rotate: expandedLowFreq ? 90 : 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              ▶
+            </motion.span>
+          </button>
+          <AnimatePresence>
+            {expandedLowFreq && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                <nav className="space-y-1">
+                  {lowFreqModules.map((item) => (
+                    <Link
+                      key={item.id}
+                      href={`/${item.id}`}
+                      className="flex items-center gap-3 px-3 py-2 rounded-sm text-text-muted hover:bg-bg-light hover:text-text-secondary transition-all duration-200"
+                      onMouseEnter={() => setHoveredItem('low-' + item.id)}
+                      onMouseLeave={() => setHoveredItem(null)}
+                    >
+                      <span className="text-base">{item.icon}</span>
+                      <span className="font-kai text-sm">{item.name}</span>
+                    </Link>
+                  ))}
+                </nav>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        <div className="p-4 pt-0">
+          <button
+            onClick={() => setExpandedHistory(!expandedHistory)}
+            className="flex items-center justify-between w-full text-xs text-text-muted mb-3 font-kai tracking-wider hover:text-text-secondary transition-colors"
+          >
+            <span>历史记录</span>
+            <span className="text-primary-light text-xs">{historyItems.length}</span>
+          </button>
+          <AnimatePresence>
+            {expandedHistory && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                <div className="space-y-1">
+                  {historyItems.map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex items-center gap-3 px-3 py-2 rounded-sm hover:bg-bg-light transition-colors cursor-pointer"
+                    >
+                      <div className="w-6 h-6 rounded-full bg-bg-medium flex items-center justify-center">
+                        <span className="text-xs">{item.module[0]}</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-kai text-text-secondary truncate">
+                          {item.module}
+                        </div>
+                        <div className="text-xs text-text-muted">{item.type}</div>
+                      </div>
+                      <div className="text-xs text-text-muted">{item.time}</div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+
+      <div className="p-4 border-t border-border">
+        <div className="flex items-center gap-3 px-3 py-2 rounded-sm bg-bg-medium">
+          <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+            <span className="text-primary font-kai">用</span>
+          </div>
+          <div className="flex-1">
+            <div className="text-sm font-kai text-text-primary">天机子</div>
+            <div className="text-xs text-text-muted">VIP</div>
+          </div>
+        </div>
+      </div>
+    </aside>
   );
 };
