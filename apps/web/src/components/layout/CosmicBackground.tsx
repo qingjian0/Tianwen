@@ -1,70 +1,104 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 
-const PalaceRoof = ({ className = '' }: { className?: string }) => (
-  <svg viewBox="0 0 400 120" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+const INK_CLOUD_ANIMATION = {
+  duration: 35,
+  repeat: Infinity,
+  ease: 'easeInOut' as const,
+};
+
+const CLOUD_FLOAT = {
+  duration: 22,
+  repeat: Infinity,
+  ease: 'easeInOut' as const,
+};
+
+const BaguaSymbol = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="50" cy="50" r="46" stroke="rgba(212,175,55,0.15)" strokeWidth="1" />
     <path
-      d="M0 120L60 40L100 80L140 30L180 70L220 25L260 65L300 35L340 75L380 45L400 120H0Z"
-      fill="url(#roofGradient)"
-      stroke="rgba(212, 175, 55, 0.6)"
-      strokeWidth="2"
-    />
-    <path
-      d="M100 80V120M180 70V120M260 65V120M340 75V120"
-      stroke="rgba(212, 175, 55, 0.4)"
-      strokeWidth="1"
+      d="M50 4 C75.4 4 96 24.6 96 50 C96 75.4 75.4 96 50 96 C24.6 96 4 75.4 4 50 C4 24.6 24.6 4 50 4 Z"
+      fill="url(#taijiGrad)"
+      opacity="0.35"
     />
     <defs>
-      <linearGradient id="roofGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stopColor="rgba(212, 175, 55, 0.15)" />
-        <stop offset="100%" stopColor="rgba(212, 175, 55, 0.05)" />
-      </linearGradient>
+      <radialGradient id="taijiGrad" cx="50%" cy="40%" r="60%">
+        <stop offset="0%" stopColor="rgba(212,175,55,0.25)" />
+        <stop offset="100%" stopColor="rgba(8,7,6,0)" />
+      </radialGradient>
     </defs>
   </svg>
 );
 
+const InkCloud = ({ delay = 0, size = 280, x = '30%', y = '25%' }: { delay?: number; size?: number; x?: string; y?: string }) => (
+  <motion.div
+    className="absolute rounded-full"
+    style={{
+      left: x,
+      top: y,
+      width: size,
+      height: size * 0.7,
+      background: 'radial-gradient(ellipse at center, rgba(8,7,6,0.5) 0%, transparent 70%)',
+    }}
+    animate={{
+      x: [0, 40, 0, -30, 0],
+      y: [0, -25, 30, 0],
+      opacity: [0.35, 0.55, 0.3],
+    }}
+    transition={{
+      ...INK_CLOUD_ANIMATION,
+      delay,
+    }}
+  />
+);
+
 const AuspiciousCloud = ({ delay = 0, x = '10%', y = '15%', scale = 1 }: { delay?: number; x?: string; y?: string; scale?: number }) => (
   <motion.div
-    className="absolute opacity-15"
-    style={{ left: x, top: y }}
-    animate={{
-      y: [0, -15, 0, 10, 0],
-      opacity: [0.08, 0.18, 0.1],
+    className="absolute opacity-10"
+    style={{
+      left: x,
+      top: y,
     }}
-    transition={{ duration: 22, repeat: Infinity, delay, ease: 'easeInOut' }}
+    animate={{
+      y: [0, -18, 0, 12, 0],
+      opacity: [0.06, 0.14, 0.08],
+    }}
+    transition={{
+      ...CLOUD_FLOAT,
+      delay,
+    }}
   >
-    <svg width={200 * scale} height={100 * scale} viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      width={160 * scale}
+      height={90 * scale}
+      viewBox="0 0 160 90"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <path
-        d="M100 90C60 90 30 70 30 50C30 30 55 20 85 22C65 5 85 0 105 10C120 18 115 38 135 42C165 48 180 68 165 82C155 90 125 95 100 90Z"
-        fill="rgba(212, 175, 55, 0.5)"
+        d="M80 85C55 85 35 72 35 55C35 38 50 28 70 30C55 15 70 5 85 15C95 22 92 38 105 40C125 43 135 58 125 70C118 78 100 85 80 85Z"
+        fill="rgba(212,175,55,0.4)"
       />
     </svg>
   </motion.div>
 );
 
-const DragonPattern = ({ className = '' }: { className?: string }) => (
-  <svg viewBox="0 0 200 200" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path
-      d="M100 20 Q140 40 130 80 Q120 120 100 140 Q80 160 60 140 Q40 120 50 80 Q60 40 100 20"
-      stroke="rgba(212, 175, 55, 0.12)"
-      strokeWidth="1"
-      fill="none"
-    />
-    <circle cx="100" cy="100" r="30" stroke="rgba(212, 175, 55, 0.08)" strokeWidth="1" />
-    <circle cx="100" cy="100" r="20" stroke="rgba(212, 175, 55, 0.06)" strokeWidth="1" />
-    <circle cx="100" cy="100" r="10" fill="rgba(212, 175, 55, 0.1)" />
-  </svg>
-);
-
 const CelestialStars = () => {
-  const stars = Array.from({ length: 40 }, (_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    size: Math.random() * 2 + 1,
-    delay: Math.random() * 4,
-  }));
+  const [stars, setStars] = useState<Array<{ id: number; x: number; y: number; size: number; delay: number }>>([]);
+
+  useEffect(() => {
+    setStars(
+      Array.from({ length: 40 }, (_, i) => ({
+        id: i,
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        size: Math.random() * 2 + 1,
+        delay: Math.random() * 4,
+      }))
+    );
+  }, []);
 
   return (
     <>
@@ -114,16 +148,7 @@ export const CosmicBackground = () => {
         animate={{ rotate: 360 }}
         transition={{ duration: 200, repeat: Infinity, ease: 'linear' }}
       >
-        <DragonPattern className="w-[500px] h-[500px]" />
-      </motion.div>
-
-      <motion.div
-        className="absolute top-0 left-0 right-0"
-        initial={{ y: -40 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 1.5, delay: 0.3 }}
-      >
-        <PalaceRoof className="w-full h-32" />
+        <BaguaSymbol className="w-[500px] h-[500px]" />
       </motion.div>
 
       <div className="absolute left-8 top-0 h-full w-px bg-gradient-to-b from-transparent via-imperial-gold/15 to-transparent" />

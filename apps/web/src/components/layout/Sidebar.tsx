@@ -81,23 +81,21 @@ export const Sidebar = () => {
 
       <nav className="px-4 py-6 space-y-1">
         {navItems.map((item, idx) => (
-          <motion.Link
+          <motion.div
             key={item.href}
-            href={item.href}
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: idx * 0.05 }}
             className={`group flex items-center gap-3 px-4 py-3 text-sm font-kai tracking-wide transition-all duration-300 ${
               pathname === item.href
                 ? `${item.color === 'gold' ? 'bg-imperial-gold/10 text-imperial-gold' : ''} ${item.color === 'red' ? 'bg-vermillion-500/10 text-vermillion-400' : ''} ${item.color === 'jade' ? 'bg-jade-500/10 text-jade-400' : ''} border-l-2 ${item.color === 'gold' ? 'border-imperial-gold' : ''} ${item.color === 'red' ? 'border-vermillion-500' : ''} ${item.color === 'jade' ? 'border-jade-500' : ''}`
                 : 'text-parchment/50 hover:text-parchment/80 hover:bg-ink-light/30 border-l-2 border-transparent hover:border-imperial-gold/30'
             }`}
           >
-            <span className={`text-lg transition-transform duration-300 ${pathname === item.href ? 'scale-110' : 'group-hover:scale-105'}`}>
-              {item.icon}
-            </span>
-            <span className="flex-1 text-left">{item.label}</span>
-          </motion.Link>
+            <Link href={item.href} className="flex items-center gap-3 w-full">
+              <span className={`text-lg transition-transform duration-300 ${pathname === item.href ? 'scale-110' : 'group-hover:scale-105'}`}>
+                {item.icon}
+              </span>
+              <span className="flex-1">{item.label}</span>
+            </Link>
+          </motion.div>
         ))}
       </nav>
 
