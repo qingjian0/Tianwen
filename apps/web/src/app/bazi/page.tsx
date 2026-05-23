@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { BaziPanel } from "@/components/divination/BaziPanel";
+import { Card } from "@/components/ui/Card";
 
 export default function BaziPage() {
   return (
