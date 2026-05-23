@@ -1,11 +1,16 @@
-export interface LiuRenInput {
-  eventTime: {
-    year: number;
-    month: number;
-    day: number;
-    hour: number;
-    minute?: number;
-  };
+import { ChronoData, Coordinates } from '@tianwen/chrono-engine';
+
+export interface LiuRenConfig {
+  useTrueSun?: boolean;
+  coordinates?: Coordinates;
+  // 换将方式：月将/时将
+  jiangMethod?: 'yue' | 'shi';
+  // 起课方式：天盘/地盘
+  keMethod?: 'tian' | 'di';
+  // 涉害方法：孟仲季/深浅
+  shehaiMethod?: 'mengzhongji' | 'shenqian';
+  // 昼夜选择
+  dayNight?: 'day' | 'night';
 }
 
 export interface TianPan {
@@ -26,6 +31,8 @@ export interface SanChuan {
 }
 
 export interface LiuRenResult {
+  config: LiuRenConfig;
+  chronoData: ChronoData;
   tianPan: TianPan;
   diPan: string[];
   siKe: SiKe;

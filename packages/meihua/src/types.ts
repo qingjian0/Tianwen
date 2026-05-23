@@ -1,4 +1,4 @@
-import { Bagua, Wuxing } from '@tianwen/chrono-engine';
+import { Bagua, Wuxing, ChronoData, Coordinates } from '@tianwen/chrono-engine';
 
 // 八卦基础信息
 export interface Guaxiang {
@@ -19,14 +19,26 @@ export interface Yao {
 // 起卦方法
 export type DivinationMethod = 
   | 'time' // 时间起卦
-  | 'number' // 数字起卦
+  | 'number' // 单数字起卦
+  | 'number2' // 双数字起卦
+  | 'number3' // 三数字起卦
   | 'random' // 随机起卦
   | 'coin' // 铜钱起卦
+  | 'manual' // 手动起卦
   | 'image'; // 图像取象
+
+// 梅花易数配置
+export interface MeihuaConfig {
+  useTrueSun?: boolean;
+  coordinates?: Coordinates;
+  addShichen?: boolean; // 是否加时辰
+}
 
 // 梅花易数卦象结果
 export interface MeihuaResult {
   method: DivinationMethod;
+  config: MeihuaConfig;
+  chronoData?: ChronoData;
   benGua: Guaxiang & { yao: Yao[] }; // 本卦
   huGua?: Guaxiang & { yao: Yao[] }; // 互卦
   bianGua?: Guaxiang & { yao: Yao[] }; // 变卦

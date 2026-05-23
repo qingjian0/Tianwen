@@ -2,7 +2,16 @@
  * 奇门遁甲类型定义
  */
 
-import { Tiangan, Dizhi, Wuxing, ChronoData } from '@tianwen/chrono-engine';
+import { Tiangan, Dizhi, Wuxing, ChronoData, Coordinates } from '@tianwen/chrono-engine';
+
+// 盘式类型
+export type PanType = 'chaibu' | 'zhirun' | 'maoshan'; // 拆补、置闰、茅山
+
+// 盘局类型
+export type PanJuType = 'zhuan' | 'fei'; // 转盘、飞盘
+
+// 值使起法
+export type ZhiShiMethod = 'men' | 'dizhi'; // 值使门起、门起地盘
 
 // 九宫格
 export interface NinePalace {
@@ -31,7 +40,7 @@ export type EightDoor = '休门' | '生门' | '伤门' | '杜门' | '景门' | '
 export type EightStar = '天蓬' | '天任' | '天冲' | '天辅' | '天英' | '天芮' | '天柱' | '天心' | '天禽';
 
 // 八神
-export type EightDeity = '八神' | '九天' | '九地' | '九地' | '九地' | '朱雀' | '勾陈' | '腾蛇';
+export type EightDeity = '值符' | '腾蛇' | '太阴' | '六合' | '白虎' | '玄武' | '九地' | '九天';
 
 // 格局类型
 export type QimenPattern = 
@@ -49,6 +58,9 @@ export interface QimenResult {
   type: 'dunjia';
   ju: number;           // 局数（1-60）
   yinYang: '阴' | '阳'; // 阴阳
+  panType: PanType;     // 盘式
+  panJuType: PanJuType; // 盘局类型
+  zhiShiMethod: ZhiShiMethod; // 值使起法
   palaces: NinePalace;
   zhiFu: {
     palace: string;
@@ -65,11 +77,16 @@ export interface QimenResult {
   chronoData: ChronoData;
   interpretation?: string;
   luck: number;         // 综合运势（0-100）
+  config: QimenConfig;
 }
 
 // 奇门遁甲配置
 export interface QimenConfig {
-  useTrueSun: boolean;
-  includeDeity: boolean;
-  includePatterns: boolean;
+  useTrueSun?: boolean;
+  coordinates?: Coordinates;
+  includeDeity?: boolean;
+  includePatterns?: boolean;
+  panType?: PanType;
+  panJuType?: PanJuType;
+  zhiShiMethod?: ZhiShiMethod;
 }

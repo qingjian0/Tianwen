@@ -1,5 +1,5 @@
-import { ChronoEngine } from '@tianwen/chrono-engine';
-import { DivinationMethod, MeihuaResult, Yao, Guaxiang } from './types';
+import { ChronoEngine, Coordinates } from '@tianwen/chrono-engine';
+import { DivinationMethod, MeihuaResult, Yao, Guaxiang, MeihuaConfig } from './types';
 import { BAGUA_INFO, BAGUA_BY_INDEX } from './constants';
 import {
   getBaguaByNumber,
@@ -17,10 +17,22 @@ import {
  * 梅花易数核心引擎
  */
 export class MeihuaEngine {
+  private config: MeihuaConfig;
   private chronoData;
 
-  constructor() {
-    this.chronoData = ChronoEngine.now();
+  constructor(config?: MeihuaConfig) {
+    this.config = config || {
+      useTrueSun: false,
+      addShichen: true
+    };
+    this.chronoData = ChronoEngine.now(this.config.coordinates, this.config.useTrueSun);
+  }
+
+  /**
+   * 设置配置
+   */
+  setConfig(config: MeihuaConfig): void {
+    this.config = { ...this.config, ...config };
   }
 
   /**
@@ -28,7 +40,7 @@ export class MeihuaEngine {
    */
   divinateByTime(date?: Date): MeihuaResult {
     const time = date || new Date();
-    const chrono = ChronoEngine.at(time);
+    const chrono = ChronoEngine.at(time, this.config.coordinates, this.config.useTrueSun);
     
     const lunar = chrono.lunar;
     const yearIndex = (lunar.year - 4) % 12;
@@ -37,29 +49,102 @@ export class MeihuaEngine {
     const hour = this.getHourIndex(chrono.shichen.dizhi);
     
     // 上卦：(年+月+日) % 8
-    const shangNum = (yearIndex + month + day) % 8;
-    const shangGua = getBaguaByNumber(shangNum === 0 ? 8 : shangNum);
+    let shangNum = (yearIndex + month + day) % 8;
+    shangNum = shangNum === 0 ? 8 : shangNum;
+    const shangGua = getBaguaByNumber(shangNum);
     
-    // 下卦：(年+月+日+时) % 8
-    const xiaNum = (yearIndex + month + day + hour) % 8;
-    const xiaGua = getBaguaByNumber(xiaNum === 0 ? 8 : xiaNum);
+    // 下卦：(年+月+日+时) % 8 (如果加时辰开关开启)
+    let xiaNum;
+    if (this.config.addShichen) {
+      xiaNum = (yearIndex + month + day + hour) % 8;
+    } else {
+      xiaNum = (yearIndex + month + day) % 8;
+    }
+    xiaNum = xiaNum === 0 ? 8 : xiaNum;
+    const xiaGua = getBaguaByNumber(xiaNum);
     
-    // 动爻：(年+月+日+时) % 6
-    let dongYao = (yearIndex + month + day + hour) % 6;
+    // 动爻：(年+月+日+时) % 6 (如果加时辰开关开启)
+    let dongYao;
+    if (this.config.addShichen) {
+      dongYao = (yearIndex + month + day + hour) % 6;
+    } else {
+      dongYao = (yearIndex + month + day) % 6;
+    }
     if (dongYao === 0) dongYao = 6;
     
-    return this.buildResult('time', shangGua, xiaGua, [dongYao]);
+    return this.buildResult('time', shangGua, xiaGua, [dongYao], undefined, chrono);
   }
 
   /**
-   * 数字起卦
+   * 单数字起卦
+   */
+  divinateBySingleNumber(num: number): MeihuaResult {
+    // 数字起卦：一位数直接用，多位数拆分为上卦下卦
+    let shangNum, xiaNum, dongYao;
+    
+    const numStr = num.toString();
+    if (numStr.length === 1) {
+      // 一位数：上卦为数字，下卦为数字+时辰
+      const chrono = ChronoEngine.now(this.config.coordinates, this.config.useTrueSun);
+      const hour = this.getHourIndex(chrono.shichen.dizhi);
+      shangNum = num % 8 || 8;
+      xiaNum = (num + hour) % 8 || 8;
+      dongYao = (num + hour) % 6 || 6;
+    } else {
+      // 多位数：前半为上卦，后半为下卦，全体为动爻
+      const mid = Math.floor(numStr.length / 2);
+      const shangStr = numStr.substring(0, mid);
+      const xiaStr = numStr.substring(mid);
+      
+      shangNum = (parseInt(shangStr) % 8) || 8;
+      xiaNum = (parseInt(xiaStr) % 8) || 8;
+      dongYao = (num % 6) || 6;
+    }
+    
+    const shangGua = getBaguaByNumber(shangNum);
+    const xiaGua = getBaguaByNumber(xiaNum);
+    
+    return this.buildResult('number', shangGua, xiaGua, [dongYao]);
+  }
+
+  /**
+   * 双数字起卦
+   */
+  divinateByDoubleNumber(num1: number, num2: number): MeihuaResult {
+    const shangGua = getBaguaByNumber(num1 % 8 || 8);
+    const xiaGua = getBaguaByNumber(num2 % 8 || 8);
+    
+    let dongYao;
+    if (this.config.addShichen) {
+      const chrono = ChronoEngine.now(this.config.coordinates, this.config.useTrueSun);
+      const hour = this.getHourIndex(chrono.shichen.dizhi);
+      dongYao = ((num1 + num2 + hour) % 6) || 6;
+    } else {
+      dongYao = ((num1 + num2) % 6) || 6;
+    }
+    
+    return this.buildResult('number2', shangGua, xiaGua, [dongYao]);
+  }
+
+  /**
+   * 三数字起卦
+   */
+  divinateByTripleNumber(num1: number, num2: number, num3: number): MeihuaResult {
+    const shangGua = getBaguaByNumber(num1 % 8 || 8);
+    const xiaGua = getBaguaByNumber(num2 % 8 || 8);
+    const dongYao = num3 % 6 || 6;
+    
+    return this.buildResult('number3', shangGua, xiaGua, [dongYao]);
+  }
+
+  /**
+   * 数字起卦（兼容旧接口）
    */
   divinateByNumber(num1: number, num2: number, num3?: number): MeihuaResult {
-    const shangGua = getBaguaByNumber(num1);
-    const xiaGua = getBaguaByNumber(num2);
-    const dongYao = num3 ? num3 % 6 : this.getRandomNumber(1, 6);
-    
-    return this.buildResult('number', shangGua, xiaGua, [dongYao === 0 ? 6 : dongYao]);
+    if (num3 !== undefined) {
+      return this.divinateByTripleNumber(num1, num2, num3);
+    }
+    return this.divinateByDoubleNumber(num1, num2);
   }
 
   /**
@@ -114,6 +199,14 @@ export class MeihuaEngine {
   }
 
   /**
+   * 手动起卦
+   */
+  divinateByManual(shangGua: string, xiaGua: string, dongYao?: number | number[]): MeihuaResult {
+    const dongYaoArray = Array.isArray(dongYao) ? dongYao : (dongYao ? [dongYao] : []);
+    return this.buildResult('manual', shangGua as any, xiaGua as any, dongYaoArray);
+  }
+
+  /**
    * 构建完整结果
    */
   private buildResult(
@@ -121,9 +214,11 @@ export class MeihuaEngine {
     shangGua: any,
     xiaGua: any,
     dongYaoPositions: number[],
-    customBinary?: string
+    customBinary?: string,
+    customChrono?: any
   ): MeihuaResult {
     const binary = customBinary || generateBinary(shangGua, xiaGua);
+    const chrono = customChrono || ChronoEngine.now(this.config.coordinates, this.config.useTrueSun);
     
     // 本卦
     const benGuaYao = generateYao(binary, dongYaoPositions);
@@ -178,6 +273,8 @@ export class MeihuaEngine {
     
     return {
       method,
+      config: this.config,
+      chronoData: chrono,
       benGua: benGua as any,
       huGua: huGua as any,
       bianGua: bianGua as any,
@@ -211,9 +308,12 @@ export class MeihuaEngine {
   private getMethodText(method: DivinationMethod): string {
     const texts: Record<DivinationMethod, string> = {
       'time': '时间起卦',
-      'number': '数字起卦',
+      'number': '单数字起卦',
+      'number2': '双数字起卦',
+      'number3': '三数字起卦',
       'random': '随机起卦',
       'coin': '铜钱起卦',
+      'manual': '手动起卦',
       'image': '图像取象'
     };
     return texts[method];

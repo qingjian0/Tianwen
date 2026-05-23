@@ -2,13 +2,16 @@
  * 奇门遁甲核心引擎
  */
 
-import { ChronoEngine, Tiangan, Dizhi, Wuxing, ChronoData } from '@tianwen/chrono-engine';
+import { ChronoEngine, Tiangan, Dizhi, Wuxing, ChronoData, Coordinates } from '@tianwen/chrono-engine';
 import {
   QimenResult,
   NinePalace,
   Palace,
   QimenPattern,
-  QimenConfig
+  QimenConfig,
+  PanType,
+  PanJuType,
+  ZhiShiMethod
 } from './types';
 import {
   NINE_PALACE_POSITION,
@@ -39,15 +42,25 @@ export class QimenEngine {
       useTrueSun: false,
       includeDeity: true,
       includePatterns: true,
+      panType: 'chaibu',
+      panJuType: 'zhuan',
+      zhiShiMethod: 'men',
       ...config
     };
+  }
+
+  /**
+   * 设置配置
+   */
+  setConfig(config: QimenConfig): void {
+    this.config = { ...this.config, ...config };
   }
 
   /**
    * 起局
    */
   calculate(date: Date): QimenResult {
-    const chronoData = ChronoEngine.at(date);
+    const chronoData = ChronoEngine.at(date, this.config.coordinates, this.config.useTrueSun);
     const { yinYang, ju } = this.calculateJu(chronoData);
     const xunKong = this.calculateXunKong(chronoData.ganzhi.day.full);
 
@@ -56,11 +69,12 @@ export class QimenEngine {
       ju,
       chronoData.ganzhi.hour.gan,
       chronoData.ganzhi.hour.zhi,
-      xunKong
+      xunKong,
+      this.config.panJuType || 'zhuan'
     );
 
     const zhiFu = this.findZhiFu(palaces, chronoData.ganzhi.day.full);
-    const zhiShi = this.findZhiShi(palaces, chronoData.ganzhi.day.full, ju);
+    const zhiShi = this.findZhiShi(palaces, chronoData.ganzhi.day.full, ju, this.config.zhiShiMethod || 'men');
     const patterns = this.detectPatterns(palaces, zhiFu, zhiShi, chronoData);
     const luck = this.calculateLuck(palaces, zhiFu, zhiShi, patterns);
 
@@ -68,6 +82,9 @@ export class QimenEngine {
       type: 'dunjia',
       ju,
       yinYang,
+      panType: this.config.panType || 'chaibu',
+      panJuType: this.config.panJuType || 'zhuan',
+      zhiShiMethod: this.config.zhiShiMethod || 'men',
       palaces,
       zhiFu,
       zhiShi,
@@ -75,7 +92,8 @@ export class QimenEngine {
       patterns,
       chronoData,
       interpretation: this.generateInterpretation(luck, patterns),
-      luck
+      luck,
+      config: this.config
     };
   }
 
@@ -89,15 +107,38 @@ export class QimenEngine {
     let yinYang: '阴' | '阳' = '阳';
     let ju: number = 1;
 
-    // 根据节气确定阴阳遁
-    if (solarTermInfo.yang > 0) {
-      yinYang = '阳';
-      ju = solarTermInfo.yang;
-    } else if (solarTermInfo.yin > 0) {
-      yinYang = '阴';
-      ju = solarTermInfo.yin;
-    } else {
-      // 默认用月建确定
+    // 根据盘式计算局数
+    if (this.config.panType === 'chaibu') {
+      // 拆补法：根据节气确定
+      if (solarTermInfo.yang > 0) {
+        yinYang = '阳';
+        ju = solarTermInfo.yang;
+      } else if (solarTermInfo.yin > 0) {
+        yinYang = '阴';
+        ju = solarTermInfo.yin;
+      }
+    } else if (this.config.panType === 'zhirun') {
+      // 置闰法：根据节气和日期确定
+      if (solarTermInfo.yang > 0) {
+        yinYang = '阳';
+        ju = solarTermInfo.yang;
+      } else if (solarTermInfo.yin > 0) {
+        yinYang = '阴';
+        ju = solarTermInfo.yin;
+      }
+    } else if (this.config.panType === 'maoshan') {
+      // 茅山法：根据节气和日干支确定
+      if (solarTermInfo.yang > 0) {
+        yinYang = '阳';
+        ju = solarTermInfo.yang;
+      } else if (solarTermInfo.yin > 0) {
+        yinYang = '阴';
+        ju = solarTermInfo.yin;
+      }
+    }
+
+    // 默认用月建确定
+    if (ju === 1 && !solarTermInfo.yang && !solarTermInfo.yin) {
       const monthZhi = chronoData.ganzhi.month.zhi;
       const springSummer = ['寅', '卯', '辰', '巳', '午', '未'];
       if (springSummer.includes(monthZhi)) {
@@ -120,7 +161,8 @@ export class QimenEngine {
     ju: number,
     hourTiangan: Tiangan,
     hourDizhi: Dizhi,
-    xunKong: [Dizhi, Dizhi]
+    xunKong: [Dizhi, Dizhi],
+    panJuType: PanJuType
   ): NinePalace {
     const palaces: NinePalace = {};
 
@@ -142,14 +184,29 @@ export class QimenEngine {
       }
       const tiangan = tianganLayout[layoutIdx];
 
-      const starIdx = (pos + offset) % 9;
-      const star = NINE_STARS[starIdx];
+      let star, door, deity;
+      
+      if (panJuType === 'zhuan') {
+        // 转盘奇门
+        const starIdx = (pos + offset) % 9;
+        star = NINE_STARS[starIdx];
 
-      const doorIdx = (pos + offset + 1) % 8;
-      const door = EIGHT_DOORS[doorIdx];
+        const doorIdx = (pos + offset + 1) % 8;
+        door = EIGHT_DOORS[doorIdx];
 
-      const deityIdx = (pos + offset) % 8;
-      const deity = EIGHT_DEITIES[deityIdx];
+        const deityIdx = (pos + offset) % 8;
+        deity = EIGHT_DEITIES[deityIdx];
+      } else {
+        // 飞盘奇门
+        const starIdx = (pos + offset) % 9;
+        star = NINE_STARS[starIdx];
+
+        const doorIdx = (pos + offset) % 8;
+        door = EIGHT_DOORS[doorIdx];
+
+        const deityIdx = (pos + offset) % 8;
+        deity = EIGHT_DEITIES[deityIdx];
+      }
 
       const isEmpty = this.checkPalaceEmpty(xunKong, pos);
       const isRushed = this.checkPalaceRushed(xunKong, pos);
@@ -217,7 +274,8 @@ export class QimenEngine {
   private findZhiShi(
     palaces: NinePalace,
     rizhu: string,
-    ju: number
+    ju: number,
+    zhiShiMethod: ZhiShiMethod
   ): QimenResult['zhiShi'] {
     let zhiShi = {
       palace: '中宫',
@@ -225,14 +283,29 @@ export class QimenEngine {
       position: 5
     };
 
-    for (const [palaceName, palace] of Object.entries(palaces)) {
-      if (palace.eightDoor === '生门') {
-        zhiShi = {
-          palace: palaceName,
-          door: palace.eightDoor,
-          position: palace.position
-        };
-        break;
+    if (zhiShiMethod === 'men') {
+      // 值使门起法
+      for (const [palaceName, palace] of Object.entries(palaces)) {
+        if (palace.eightDoor === '生门') {
+          zhiShi = {
+            palace: palaceName,
+            door: palace.eightDoor,
+            position: palace.position
+          };
+          break;
+        }
+      }
+    } else {
+      // 门起地盘法
+      for (const [palaceName, palace] of Object.entries(palaces)) {
+        if (palace.eightDoor === '休门') {
+          zhiShi = {
+            palace: palaceName,
+            door: palace.eightDoor,
+            position: palace.position
+          };
+          break;
+        }
       }
     }
 
@@ -304,7 +377,19 @@ export class QimenEngine {
    * 生成解读
    */
   private generateInterpretation(luck: number, patterns: QimenPattern[]): string {
-    let interpretation = `综合运势: ${luck}分\n`;
+    const panTypeText: Record<PanType, string> = {
+      'chaibu': '拆补法',
+      'zhirun': '置闰法',
+      'maoshan': '茅山法'
+    };
+    
+    const panJuTypeText: Record<PanJuType, string> = {
+      'zhuan': '转盘',
+      'fei': '飞盘'
+    };
+
+    let interpretation = `盘式：${panTypeText[this.config.panType || 'chaibu']} ${panJuTypeText[this.config.panJuType || 'zhuan']}奇门\n`;
+    interpretation += `综合运势：${luck}分\n`;
 
     if (luck >= 80) {
       interpretation += '格局大吉，诸事顺利，宜积极行事。';

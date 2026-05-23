@@ -6,6 +6,10 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { PageLayout } from '@/components/layout/PageLayout';
+import { MeihuaEngine } from '@tianwen/meihua';
+
+// 初始化引擎
+const meihuaEngine = new MeihuaEngine();
 
 const TRIGRAMS = [
   { name: '乾', symbol: '☰', element: '金', palace: '乾' },
@@ -19,10 +23,12 @@ const TRIGRAMS = [
 ];
 
 const DivinationMethods = [
-  { id: 'dice', name: '骰子起卦', icon: '🎲', description: '抛掷三枚铜钱或骰子，以阴阳数起卦' },
-  { id: 'number', name: '报数起卦', icon: '🔢', description: '随心报数，上卦下卦随意而成' },
-  { id: 'double', name: '双数起卦', icon: '✨', description: '两个数字，定上下卦与动爻' },
+  { id: 'time', name: '时间起卦', icon: '⏰', description: '根据年日月时数起卦' },
+  { id: 'number', name: '单数字起卦', icon: '🔢', description: '单个数字，拆为上下卦' },
+  { id: 'number2', name: '双数字起卦', icon: '✨', description: '两个数字，定上下卦与动爻' },
+  { id: 'number3', name: '三数字起卦', icon: '🎲', description: '三个数字，上卦下卦动爻' },
   { id: 'random', name: '随机起卦', icon: '🌟', description: '至诚之道，感而遂通' },
+  { id: 'manual', name: '手动起卦', icon: '✍️', description: '手动选择上下卦和动爻' },
 ];
 
 const HexagramDisplay = ({
@@ -96,6 +102,11 @@ export default function MeihuaPage() {
   const [upperNum, setUpperNum] = useState<string>('');
   const [lowerNum, setLowerNum] = useState<string>('');
   const [changingNum, setChangingNum] = useState<string>('');
+  // 新添加的配置
+  const [addShichen, setAddShichen] = useState<boolean>(true);
+  const [useTrueSun, setUseTrueSun] = useState<boolean>(false);
+  const [longitude, setLongitude] = useState<string>('116.4');
+  const [latitude, setLatitude] = useState<string>('39.9');
   const [result, setResult] = useState<{
     original: number[];
     mutual: number[];
@@ -296,108 +307,183 @@ export default function MeihuaPage() {
         )}
 
         {/* Form Section */}
-        {step === 'form' && (
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="mb-20"
-          >
-            <Card className="max-w-3xl mx-auto">
-              <div className="text-center mb-10">
-                <h2 className="text-3xl font-song font-bold text-text-primary mb-4">
-                  选择起卦方式
-                </h2>
-                <p className="text-text-muted font-kai">
-                  请选择一种方式开始起卦
-                </p>
-              </div>
+      {step === 'form' && (
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-20"
+        >
+          <Card className="max-w-4xl mx-auto">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl font-song font-bold text-text-primary mb-4">
+                选择起卦方式
+              </h2>
+              <p className="text-text-muted font-kai">
+                请选择一种方式开始起卦
+              </p>
+            </div>
 
-              {/* Method Selection */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-                {DivinationMethods.map((m, idx) => (
-                  <motion.button
-                    key={m.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.1 }}
-                    onClick={() => setMethod(m.id)}
-                    className={`p-6 rounded-xl border-2 transition-all duration-300 ${
-                      method === m.id
-                        ? 'border-imperial-gold bg-imperial-gold/10'
-                        : 'border-border hover:border-imperial-gold/40 bg-bg-secondary'
+            {/* Method Selection */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-10">
+              {DivinationMethods.map((m, idx) => (
+                <motion.button
+                  key={m.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.1 }}
+                  onClick={() => setMethod(m.id)}
+                  className={`p-6 rounded-xl border-2 transition-all duration-300 ${
+                    method === m.id
+                      ? 'border-imperial-gold bg-imperial-gold/10'
+                      : 'border-border hover:border-imperial-gold/40 bg-bg-secondary'
+                  }`}
+                >
+                  <div className="text-3xl mb-3">{m.icon}</div>
+                  <div className="text-sm font-song font-bold text-text-primary">
+                    {m.name}
+                  </div>
+                </motion.button>
+              ))}
+            </div>
+
+            {/* Configuration Options */}
+            <div className="mb-8 p-6 bg-bg-secondary rounded-xl border border-border">
+              <h3 className="text-xl font-song font-bold text-text-primary mb-4">配置选项</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-kai text-text-primary">加时辰起卦</p>
+                    <p className="text-sm text-text-muted">是否在计算时加入时辰</p>
+                  </div>
+                  <button
+                    onClick={() => setAddShichen(!addShichen)}
+                    className={`w-14 h-7 rounded-full transition-colors ${
+                      addShichen ? 'bg-imperial-gold' : 'bg-gray-300'
                     }`}
                   >
-                    <div className="text-3xl mb-3">{m.icon}</div>
-                    <div className="text-sm font-song font-bold text-text-primary">
-                      {m.name}
-                    </div>
-                  </motion.button>
-                ))}
+                    <div
+                      className={`w-5 h-5 rounded-full bg-white shadow transition-transform ${
+                        addShichen ? 'translate-x-7' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-kai text-text-primary">真太阳时</p>
+                    <p className="text-sm text-text-muted">是否使用真太阳时</p>
+                  </div>
+                  <button
+                    onClick={() => setUseTrueSun(!useTrueSun)}
+                    className={`w-14 h-7 rounded-full transition-colors ${
+                      useTrueSun ? 'bg-imperial-gold' : 'bg-gray-300'
+                    }`}
+                  >
+                    <div
+                      className={`w-5 h-5 rounded-full bg-white shadow transition-transform ${
+                        useTrueSun ? 'translate-x-7' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
               </div>
+              {useTrueSun && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                  <div>
+                    <Input
+                      label="经度"
+                      type="number"
+                      step="0.1"
+                      placeholder="例如：116.4"
+                      value={longitude}
+                      onChange={(e) => setLongitude(e.target.value)}
+                      inputSize="lg"
+                    />
+                  </div>
+                  <div>
+                    <Input
+                      label="纬度"
+                      type="number"
+                      step="0.1"
+                      placeholder="例如：39.9"
+                      value={latitude}
+                      onChange={(e) => setLatitude(e.target.value)}
+                      inputSize="lg"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
 
-              {/* Input Fields */}
-              {(method === 'number' || method === 'double') && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  className="space-y-6 mb-8"
-                >
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Input Fields */}
+            {(method === 'number' || method === 'number2' || method === 'number3') && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                className="space-y-6 mb-8"
+              >
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {(method === 'number' || method === 'number2' || method === 'number3') && (
                     <div>
                       <Input
-                        label="上卦数字"
+                        label="第一个数字"
                         type="number"
-                        placeholder="请输入上卦数字"
+                        placeholder="请输入数字"
                         value={upperNum}
                         onChange={(e) => setUpperNum(e.target.value)}
                         inputSize="lg"
                       />
                     </div>
+                  )}
+                  {(method === 'number2' || method === 'number3') && (
                     <div>
                       <Input
-                        label="下卦数字"
+                        label="第二个数字"
                         type="number"
-                        placeholder="请输入下卦数字"
+                        placeholder="请输入数字"
                         value={lowerNum}
                         onChange={(e) => setLowerNum(e.target.value)}
                         inputSize="lg"
                       />
                     </div>
+                  )}
+                  {method === 'number3' && (
                     <div>
                       <Input
-                        label="动爻数字（可选）"
+                        label="第三个数字（动爻）"
                         type="number"
-                        placeholder="动爻数字"
+                        placeholder="请输入数字"
                         value={changingNum}
                         onChange={(e) => setChangingNum(e.target.value)}
                         inputSize="lg"
                       />
                     </div>
-                  </div>
-                </motion.div>
-              )}
+                  )}
+                </div>
+              </motion.div>
+            )}
 
-              {/* Action Buttons */}
-              <div className="flex justify-center gap-4 pt-6 border-t border-border">
-                <Button
-                  variant="secondary"
-                  size="lg"
-                  onClick={reset}
-                >
-                  返回
-                </Button>
-                <Button
-                  size="lg"
-                  onClick={handleDivination}
-                  disabled={!method}
-                >
-                  起卦
-                </Button>
-              </div>
-            </Card>
-          </motion.div>
-        )}
+            {/* Action Buttons */}
+            <div className="flex justify-center gap-4 pt-6 border-t border-border">
+              <Button
+                variant="secondary"
+                size="lg"
+                onClick={reset}
+              >
+                返回
+              </Button>
+              <Button
+                size="lg"
+                onClick={handleDivination}
+                disabled={!method}
+              >
+                起卦
+              </Button>
+            </div>
+          </Card>
+        </motion.div>
+      )}
 
         {/* Result Section */}
         {step === 'result' && result && (
