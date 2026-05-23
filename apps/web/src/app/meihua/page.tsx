@@ -133,6 +133,23 @@ export default function MeihuaPage() {
   const [useTrueSun, setUseTrueSun] = useState<boolean>(false);
   const [longitude, setLongitude] = useState<string>("116.4");
   const [latitude, setLatitude] = useState<string>("39.9");
+  // 日期输入
+  const [calendarType, setCalendarType] = useState<"gregorian" | "lunar">("gregorian");
+  const [year, setYear] = useState<string>(new Date().getFullYear().toString());
+  const [month, setMonth] = useState<string>((new Date().getMonth() + 1).toString());
+  const [day, setDay] = useState<string>(new Date().getDate().toString());
+  const [hour, setHour] = useState<string>(new Date().getHours().toString());
+  // 手动起卦
+  const [selectedUpperTrigram, setSelectedUpperTrigram] = useState<number>(0);
+  const [selectedLowerTrigram, setSelectedLowerTrigram] = useState<number>(0);
+  const [selectedChangingLine, setSelectedChangingLine] = useState<string>("");
+  // 天干地支选择
+  const [useGanZhi, setUseGanZhi] = useState<boolean>(false);
+  const [yearGanZhi, setYearGanZhi] = useState<string>("");
+  const [monthGanZhi, setMonthGanZhi] = useState<string>("");
+  const [dayGanZhi, setDayGanZhi] = useState<string>("");
+  const [hourGanZhi, setHourGanZhi] = useState<string>("");
+  
   const [result, setResult] = useState<{
     original: number[];
     mutual: number[];
@@ -201,8 +218,81 @@ export default function MeihuaPage() {
     let changingLine: number | null = null;
 
     switch (method) {
-      case "dice":
+      case "time":
+        // 时间起卦
+        if (useGanZhi) {
+          // 使用天干地支起卦
+          // 简单实现：年地支序数 + 月日 + 时
+          const zhiMap: Record<string, number> = {
+            "子": 1, "丑": 2, "寅": 3, "卯": 4, "辰": 5, "巳": 6,
+            "午": 7, "未": 8, "申": 9, "酉": 10, "戌": 11, "亥": 12
+          };
+          const yearZhi = yearGanZhi ? zhiMap[yearGanZhi.charAt(1)] || 1 : 1;
+          const monthNum = parseInt(month) || 1;
+          const dayNum = parseInt(day) || 1;
+          const hourNum = parseInt(hour) || 1;
+          
+          upper = ((yearZhi + monthNum + dayNum) % 8) || 8;
+          lower = addShichen ? ((yearZhi + monthNum + dayNum + hourNum) % 8) || 8 : upper;
+          changingLine = addShichen ? ((yearZhi + monthNum + dayNum + hourNum) % 6) || 6 : ((yearZhi + monthNum + dayNum) % 6) || 6;
+        } else {
+          // 使用日期起卦
+          const yearNum = parseInt(year) || new Date().getFullYear();
+          const monthNum = parseInt(month) || 1;
+          const dayNum = parseInt(day) || 1;
+          const hourNum = parseInt(hour) || 0;
+          
+          const yearIndex = (yearNum - 4) % 12;
+          upper = ((yearIndex + monthNum + dayNum) % 8) || 8;
+          lower = addShichen ? ((yearIndex + monthNum + dayNum + hourNum) % 8) || 8 : upper;
+          changingLine = addShichen ? ((yearIndex + monthNum + dayNum + hourNum) % 6) || 6 : ((yearIndex + monthNum + dayNum) % 6) || 6;
+        }
+        hexagram = getHexagramFromTrigrams(upper - 1, lower - 1);
+        if (changingLine) {
+          const lineIndex = 6 - changingLine;
+          hexagram[lineIndex] = hexagram[lineIndex] === 0 ? 2 : 3;
+        }
+        break;
+
+      case "number":
+        // 单数字起卦
+        upper = upperNum ? (parseInt(upperNum) - 1) % 8 : generateTrigram();
+        lower = generateTrigram();
+        const cl1 = Math.floor(Math.random() * 6) + 1;
+        hexagram = getHexagramFromTrigrams(upper, lower);
+        const lineIndex1 = 6 - cl1;
+        hexagram[lineIndex1] = hexagram[lineIndex1] === 0 ? 2 : 3;
+        changingLine = cl1;
+        break;
+
+      case "number2":
+        // 双数字起卦
+        upper = upperNum ? (parseInt(upperNum) - 1) % 8 : generateTrigram();
+        lower = lowerNum ? (parseInt(lowerNum) - 1) % 8 : generateTrigram();
+        const cl2 = changingNum
+          ? parseInt(changingNum) % 6
+          : Math.floor(Math.random() * 6) + 1;
+        hexagram = getHexagramFromTrigrams(upper, lower);
+        if (cl2 !== 0) {
+          const lineIndex = 6 - cl2;
+          hexagram[lineIndex] = hexagram[lineIndex] === 0 ? 2 : 3;
+        }
+        changingLine = cl2 === 0 ? null : cl2;
+        break;
+
+      case "number3":
+        // 三数字起卦
+        upper = upperNum ? (parseInt(upperNum) - 1) % 8 : generateTrigram();
+        lower = lowerNum ? (parseInt(lowerNum) - 1) % 8 : generateTrigram();
+        const cl3 = changingNum ? parseInt(changingNum) % 6 : Math.floor(Math.random() * 6) + 1;
+        hexagram = getHexagramFromTrigrams(upper, lower);
+        const lineIndex3 = 6 - (cl3 || 1);
+        hexagram[lineIndex3] = hexagram[lineIndex3] === 0 ? 2 : 3;
+        changingLine = cl3;
+        break;
+
       case "random":
+        // 随机起卦
         hexagram = [];
         for (let i = 0; i < 6; i++) {
           hexagram.push(generateLine());
@@ -212,19 +302,19 @@ export default function MeihuaPage() {
         changingLine = getChangingLine(hexagram);
         break;
 
-      case "number":
-      case "double":
-        upper = upperNum ? (parseInt(upperNum) - 1) % 8 : generateTrigram();
-        lower = lowerNum ? (parseInt(lowerNum) - 1) % 8 : generateTrigram();
-        const cl = changingNum
-          ? parseInt(changingNum) % 6
-          : Math.floor(Math.random() * 6) + 1;
+      case "manual":
+        // 手动起卦
+        upper = selectedUpperTrigram;
+        lower = selectedLowerTrigram;
         hexagram = getHexagramFromTrigrams(upper, lower);
-        if (cl !== 0) {
-          const lineIndex = 6 - cl;
-          hexagram[lineIndex] = hexagram[lineIndex] === 0 ? 2 : 3;
+        if (selectedChangingLine) {
+          const cl4 = parseInt(selectedChangingLine);
+          if (cl4 >= 1 && cl4 <= 6) {
+            changingLine = cl4;
+            const lineIndex = 6 - cl4;
+            hexagram[lineIndex] = hexagram[lineIndex] === 0 ? 2 : 3;
+          }
         }
-        changingLine = cl === 0 ? null : cl;
         break;
 
       default:
@@ -240,8 +330,8 @@ export default function MeihuaPage() {
       original: hexagram,
       mutual: getMutualHexagram(hexagram),
       changed: getChangedHexagram(hexagram),
-      upperTrigram: TRIGRAMS[upper < 0 ? 7 : upper],
-      lowerTrigram: TRIGRAMS[lower < 0 ? 7 : lower],
+      upperTrigram: TRIGRAMS[upper < 0 ? 7 : upper % 8],
+      lowerTrigram: TRIGRAMS[lower < 0 ? 7 : lower % 8],
       changingLine,
     });
     setStep("result");
@@ -254,6 +344,19 @@ export default function MeihuaPage() {
     setUpperNum("");
     setLowerNum("");
     setChangingNum("");
+    setCalendarType("gregorian");
+    setYear(new Date().getFullYear().toString());
+    setMonth((new Date().getMonth() + 1).toString());
+    setDay(new Date().getDate().toString());
+    setHour(new Date().getHours().toString());
+    setSelectedUpperTrigram(0);
+    setSelectedLowerTrigram(0);
+    setSelectedChangingLine("");
+    setUseGanZhi(false);
+    setYearGanZhi("");
+    setMonthGanZhi("");
+    setDayGanZhi("");
+    setHourGanZhi("");
   };
 
   return (
@@ -456,7 +559,192 @@ export default function MeihuaPage() {
                 )}
               </div>
 
-              {/* Input Fields */}
+              {/* 时间起卦输入 */}
+              {method === "time" && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  className="space-y-6 mb-8"
+                >
+                  {/* 日历类型选择 */}
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-kai text-text-primary">日历类型</p>
+                      <p className="text-sm text-text-muted">选择公历或农历</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setCalendarType("gregorian")}
+                        className={`px-4 py-2 rounded-lg transition-colors ${
+                          calendarType === "gregorian"
+                            ? "bg-imperial-gold text-white"
+                            : "bg-bg-secondary border border-border"
+                        }`}
+                      >
+                        公历
+                      </button>
+                      <button
+                        onClick={() => setCalendarType("lunar")}
+                        className={`px-4 py-2 rounded-lg transition-colors ${
+                          calendarType === "lunar"
+                            ? "bg-imperial-gold text-white"
+                            : "bg-bg-secondary border border-border"
+                        }`}
+                      >
+                        农历
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* 日期输入 */}
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div>
+                      <Input
+                        label="年"
+                        type="number"
+                        placeholder="2024"
+                        value={year}
+                        onChange={(e) => setYear(e.target.value)}
+                        inputSize="lg"
+                      />
+                    </div>
+                    <div>
+                      <Input
+                        label="月"
+                        type="number"
+                        min="1"
+                        max="12"
+                        placeholder="1"
+                        value={month}
+                        onChange={(e) => setMonth(e.target.value)}
+                        inputSize="lg"
+                      />
+                    </div>
+                    <div>
+                      <Input
+                        label="日"
+                        type="number"
+                        min="1"
+                        max="31"
+                        placeholder="1"
+                        value={day}
+                        onChange={(e) => setDay(e.target.value)}
+                        inputSize="lg"
+                      />
+                    </div>
+                    <div>
+                      <Input
+                        label="时 (0-23)"
+                        type="number"
+                        min="0"
+                        max="23"
+                        placeholder="12"
+                        value={hour}
+                        onChange={(e) => setHour(e.target.value)}
+                        inputSize="lg"
+                      />
+                    </div>
+                  </div>
+
+                  {/* 天干地支选择开关 */}
+                  <div className="flex items-center justify-between pt-4 border-t border-border">
+                    <div>
+                      <p className="font-kai text-text-primary">使用天干地支</p>
+                      <p className="text-sm text-text-muted">选择干支直接起卦</p>
+                    </div>
+                    <button
+                      onClick={() => setUseGanZhi(!useGanZhi)}
+                      className={`w-14 h-7 rounded-full transition-colors ${
+                        useGanZhi ? "bg-imperial-gold" : "bg-gray-300"
+                      }`}
+                    >
+                      <div
+                        className={`w-5 h-5 rounded-full bg-white shadow transition-transform ${
+                          useGanZhi ? "translate-x-7" : "translate-x-1"
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  {/* 天干地支选择 */}
+                  {useGanZhi && (
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pt-4">
+                      <div>
+                        <label className="block text-sm font-kai text-text-primary mb-2">年干支</label>
+                        <select
+                          value={yearGanZhi}
+                          onChange={(e) => setYearGanZhi(e.target.value)}
+                          className="w-full px-4 py-3 rounded-lg bg-bg-secondary border border-border focus:border-imperial-gold"
+                        >
+                          <option value="">选择...</option>
+                          {["甲子", "乙丑", "丙寅", "丁卯", "戊辰", "己巳", "庚午", "辛未", "壬申", "癸酉",
+                            "甲戌", "乙亥", "丙子", "丁丑", "戊寅", "己卯", "庚辰", "辛巳", "壬午", "癸未",
+                            "甲申", "乙酉", "丙戌", "丁亥", "戊子", "己丑", "庚寅", "辛卯", "壬辰", "癸巳",
+                            "甲午", "乙未", "丙申", "丁酉", "戊戌", "己亥", "庚子", "辛丑", "壬寅", "癸卯",
+                            "甲辰", "乙巳", "丙午", "丁未", "戊申", "己酉", "庚戌", "辛亥", "壬子", "癸丑",
+                            "甲寅", "乙卯", "丙辰", "丁巳", "戊午", "己未", "庚申", "辛酉", "壬戌", "癸亥"
+                          ].map((gz) => (
+                            <option key={gz} value={gz}>{gz}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-kai text-text-primary mb-2">月干支</label>
+                        <select
+                          value={monthGanZhi}
+                          onChange={(e) => setMonthGanZhi(e.target.value)}
+                          className="w-full px-4 py-3 rounded-lg bg-bg-secondary border border-border focus:border-imperial-gold"
+                        >
+                          <option value="">选择...</option>
+                          {["丙寅", "丁卯", "戊辰", "己巳", "庚午", "辛未", "壬申", "癸酉", "甲戌", "乙亥", "丙子", "丁丑"].map((gz) => (
+                            <option key={gz} value={gz}>{gz}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-kai text-text-primary mb-2">日干支</label>
+                        <select
+                          value={dayGanZhi}
+                          onChange={(e) => setDayGanZhi(e.target.value)}
+                          className="w-full px-4 py-3 rounded-lg bg-bg-secondary border border-border focus:border-imperial-gold"
+                        >
+                          <option value="">选择...</option>
+                          {["甲子", "乙丑", "丙寅", "丁卯", "戊辰", "己巳", "庚午", "辛未", "壬申", "癸酉",
+                            "甲戌", "乙亥", "丙子", "丁丑", "戊寅", "己卯", "庚辰", "辛巳", "壬午", "癸未",
+                            "甲申", "乙酉", "丙戌", "丁亥", "戊子", "己丑", "庚寅", "辛卯", "壬辰", "癸巳",
+                            "甲午", "乙未", "丙申", "丁酉", "戊戌", "己亥", "庚子", "辛丑", "壬寅", "癸卯",
+                            "甲辰", "乙巳", "丙午", "丁未", "戊申", "己酉", "庚戌", "辛亥", "壬子", "癸丑",
+                            "甲寅", "乙卯", "丙辰", "丁巳", "戊午", "己未", "庚申", "辛酉", "壬戌", "癸亥"
+                          ].map((gz) => (
+                            <option key={gz} value={gz}>{gz}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-kai text-text-primary mb-2">时干支</label>
+                        <select
+                          value={hourGanZhi}
+                          onChange={(e) => setHourGanZhi(e.target.value)}
+                          className="w-full px-4 py-3 rounded-lg bg-bg-secondary border border-border focus:border-imperial-gold"
+                        >
+                          <option value="">选择...</option>
+                          {["甲子", "乙丑", "丙寅", "丁卯", "戊辰", "己巳", "庚午", "辛未", "壬申", "癸酉",
+                            "甲戌", "乙亥", "丙子", "丁丑", "戊寅", "己卯", "庚辰", "辛巳", "壬午", "癸未",
+                            "甲申", "乙酉", "丙戌", "丁亥", "戊子", "己丑", "庚寅", "辛卯", "壬辰", "癸巳",
+                            "甲午", "乙未", "丙申", "丁酉", "戊戌", "己亥", "庚子", "辛丑", "壬寅", "癸卯",
+                            "甲辰", "乙巳", "丙午", "丁未", "戊申", "己酉", "庚戌", "辛亥", "壬子", "癸丑",
+                            "甲寅", "乙卯", "丙辰", "丁巳", "戊午", "己未", "庚申", "辛酉", "壬戌", "癸亥"
+                          ].map((gz) => (
+                            <option key={gz} value={gz}>{gz}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+
+              {/* 数字起卦输入 */}
               {(method === "number" ||
                 method === "number2" ||
                 method === "number3") && (
@@ -471,7 +759,7 @@ export default function MeihuaPage() {
                       method === "number3") && (
                       <div>
                         <Input
-                          label="第一个数字"
+                          label={method === "number" ? "数字" : "第一个数字"}
                           type="number"
                           placeholder="请输入数字"
                           value={upperNum}
@@ -504,6 +792,85 @@ export default function MeihuaPage() {
                         />
                       </div>
                     )}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* 手动起卦 */}
+              {method === "manual" && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  className="space-y-6 mb-8"
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* 上卦选择 */}
+                    <div>
+                      <label className="block text-sm font-kai text-text-primary mb-4 text-center">上卦</label>
+                      <div className="grid grid-cols-4 gap-3">
+                        {TRIGRAMS.map((trigram, idx) => (
+                          <button
+                            key={trigram.name}
+                            onClick={() => setSelectedUpperTrigram(idx)}
+                            className={`p-4 rounded-lg text-center transition-all ${
+                              selectedUpperTrigram === idx
+                                ? "bg-imperial-gold/20 border-2 border-imperial-gold"
+                                : "bg-bg-secondary border border-border hover:border-imperial-gold/50"
+                            }`}
+                          >
+                            <div className="text-3xl mb-1">{trigram.symbol}</div>
+                            <div className="text-xs font-kai">{trigram.name}</div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* 下卦选择 */}
+                    <div>
+                      <label className="block text-sm font-kai text-text-primary mb-4 text-center">下卦</label>
+                      <div className="grid grid-cols-4 gap-3">
+                        {TRIGRAMS.map((trigram, idx) => (
+                          <button
+                            key={trigram.name}
+                            onClick={() => setSelectedLowerTrigram(idx)}
+                            className={`p-4 rounded-lg text-center transition-all ${
+                              selectedLowerTrigram === idx
+                                ? "bg-imperial-gold/20 border-2 border-imperial-gold"
+                                : "bg-bg-secondary border border-border hover:border-imperial-gold/50"
+                            }`}
+                          >
+                            <div className="text-3xl mb-1">{trigram.symbol}</div>
+                            <div className="text-xs font-kai">{trigram.name}</div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 动爻选择 */}
+                  <div className="pt-4 border-t border-border">
+                    <label className="block text-sm font-kai text-text-primary mb-4">动爻（可选）</label>
+                    <div className="flex gap-3 justify-center">
+                      {[1, 2, 3, 4, 5, 6].map((num) => (
+                        <button
+                          key={num}
+                          onClick={() => setSelectedChangingLine(selectedChangingLine === num.toString() ? "" : num.toString())}
+                          className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
+                            selectedChangingLine === num.toString()
+                              ? "bg-vermillion text-white"
+                              : "bg-bg-secondary border border-border hover:border-vermillion/50"
+                          }`}
+                        >
+                          {num}
+                        </button>
+                      ))}
+                      <button
+                        onClick={() => setSelectedChangingLine("")}
+                        className="px-4 py-2 text-sm text-text-muted border border-border rounded-lg hover:bg-bg-secondary"
+                      >
+                        无动爻
+                      </button>
+                    </div>
                   </div>
                 </motion.div>
               )}

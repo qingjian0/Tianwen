@@ -104,6 +104,18 @@ export default function QimenPage() {
   const [dateTime, setDateTime] = useState("");
   const [showResult, setShowResult] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  // 奇门配置
+  const [panType, setPanType] = useState<"chaibu" | "zhirun" | "maoshan">("chaibu");
+  const [panJuType, setPanJuType] = useState<"zhuan" | "fei">("zhuan");
+  const [zhiShiMethod, setZhiShiMethod] = useState<"men" | "dizhi">("men");
+  const [useTrueSun, setUseTrueSun] = useState(false);
+  const [longitude, setLongitude] = useState("116.4");
+  const [latitude, setLatitude] = useState("39.9");
+  const [calendarType, setCalendarType] = useState<"gregorian" | "lunar">("gregorian");
+  const [year, setYear] = useState(new Date().getFullYear().toString());
+  const [month, setMonth] = useState((new Date().getMonth() + 1).toString());
+  const [day, setDay] = useState(new Date().getDate().toString());
+  const [hour, setHour] = useState(new Date().getHours().toString());
 
   // 模拟排盘数据
   const mockPalaceData = NINE_PALACES.map((palace, index) => ({
@@ -127,6 +139,17 @@ export default function QimenPage() {
   const reset = () => {
     setShowResult(false);
     setDateTime("");
+    setPanType("chaibu");
+    setPanJuType("zhuan");
+    setZhiShiMethod("men");
+    setUseTrueSun(false);
+    setLongitude("116.4");
+    setLatitude("39.9");
+    setCalendarType("gregorian");
+    setYear(new Date().getFullYear().toString());
+    setMonth((new Date().getMonth() + 1).toString());
+    setDay(new Date().getDate().toString());
+    setHour(new Date().getHours().toString());
   };
 
   return (
@@ -228,39 +251,212 @@ export default function QimenPage() {
                 </p>
               </div>
 
-              <div className="max-w-md mx-auto space-y-6">
-                <div>
-                  <Input
-                    label="日期时间"
-                    type="datetime-local"
-                    value={dateTime}
-                    onChange={(e) => setDateTime(e.target.value)}
-                    inputSize="lg"
-                  />
+              <div className="max-w-2xl mx-auto space-y-6">
+                {/* 日历类型选择 */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-kai text-text-primary">日历类型</p>
+                    <p className="text-sm text-text-muted">选择公历或农历</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setCalendarType("gregorian")}
+                      className={`px-4 py-2 rounded-lg transition-colors ${
+                        calendarType === "gregorian"
+                          ? "bg-imperial-gold text-white"
+                          : "bg-bg-secondary border border-border"
+                      }`}
+                    >
+                      公历
+                    </button>
+                    <button
+                      onClick={() => setCalendarType("lunar")}
+                      className={`px-4 py-2 rounded-lg transition-colors ${
+                        calendarType === "lunar"
+                          ? "bg-imperial-gold text-white"
+                          : "bg-bg-secondary border border-border"
+                      }`}
+                    >
+                      农历
+                    </button>
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                {/* 日期时间输入 */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-text-primary mb-2">
-                      排盘类型
-                    </label>
-                    <select className="w-full bg-bg-card border border-imperial-gold/20 px-4 py-2.5 text-text-primary rounded-lg focus:outline-none focus:border-imperial-gold/60">
-                      <option>时家奇门</option>
-                      <option>日家奇门</option>
-                      <option>月家奇门</option>
-                    </select>
+                    <Input
+                      label="年"
+                      type="number"
+                      placeholder="2024"
+                      value={year}
+                      onChange={(e) => setYear(e.target.value)}
+                      inputSize="lg"
+                    />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-text-primary mb-2">
-                      局数
-                    </label>
-                    <select className="w-full bg-bg-card border border-imperial-gold/20 px-4 py-2.5 text-text-primary rounded-lg focus:outline-none focus:border-imperial-gold/60">
-                      <option>自动选择</option>
-                      <option>阳遁一局</option>
-                      <option>阳遁二局</option>
-                      <option>...</option>
-                    </select>
+                    <Input
+                      label="月"
+                      type="number"
+                      min="1"
+                      max="12"
+                      placeholder="1"
+                      value={month}
+                      onChange={(e) => setMonth(e.target.value)}
+                      inputSize="lg"
+                    />
                   </div>
+                  <div>
+                    <Input
+                      label="日"
+                      type="number"
+                      min="1"
+                      max="31"
+                      placeholder="1"
+                      value={day}
+                      onChange={(e) => setDay(e.target.value)}
+                      inputSize="lg"
+                    />
+                  </div>
+                  <div>
+                    <Input
+                      label="时 (0-23)"
+                      type="number"
+                      min="0"
+                      max="23"
+                      placeholder="12"
+                      value={hour}
+                      onChange={(e) => setHour(e.target.value)}
+                      inputSize="lg"
+                    />
+                  </div>
+                </div>
+
+                {/* 盘式选择 */}
+                <div className="pt-4 border-t border-border">
+                  <label className="block text-sm font-medium text-text-primary mb-4">
+                    盘式（拆补/置闰/茅山）
+                  </label>
+                  <div className="grid grid-cols-3 gap-3">
+                    {[
+                      { id: "chaibu", name: "拆补法", desc: "拆补置闰" },
+                      { id: "zhirun", name: "置闰法", desc: "超神接气" },
+                      { id: "maoshan", name: "茅山法", desc: "茅山道派" }
+                    ].map((type) => (
+                      <button
+                        key={type.id}
+                        onClick={() => setPanType(type.id as any)}
+                        className={`p-4 rounded-lg text-center transition-all border-2 ${
+                          panType === type.id
+                            ? "border-imperial-gold bg-imperial-gold/10"
+                            : "border-border bg-bg-secondary hover:border-imperial-gold/50"
+                        }`}
+                      >
+                        <div className="font-song font-bold text-text-primary">{type.name}</div>
+                        <div className="text-xs text-text-muted mt-1">{type.desc}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 转盘/飞盘 */}
+                <div>
+                  <label className="block text-sm font-medium text-text-primary mb-4">
+                    盘局类型（转盘/飞盘）
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { id: "zhuan", name: "转盘奇门", desc: "天盘转动" },
+                      { id: "fei", name: "飞盘奇门", desc: "星门飞布" }
+                    ].map((type) => (
+                      <button
+                        key={type.id}
+                        onClick={() => setPanJuType(type.id as any)}
+                        className={`p-4 rounded-lg text-center transition-all border-2 ${
+                          panJuType === type.id
+                            ? "border-imperial-gold bg-imperial-gold/10"
+                            : "border-border bg-bg-secondary hover:border-imperial-gold/50"
+                        }`}
+                      >
+                        <div className="font-song font-bold text-text-primary">{type.name}</div>
+                        <div className="text-xs text-text-muted mt-1">{type.desc}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 值使起法 */}
+                <div>
+                  <label className="block text-sm font-medium text-text-primary mb-4">
+                    值使起法
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { id: "men", name: "值使门起", desc: "门宫对应" },
+                      { id: "dizhi", name: "门起地盘", desc: "地盘落宫" }
+                    ].map((method) => (
+                      <button
+                        key={method.id}
+                        onClick={() => setZhiShiMethod(method.id as any)}
+                        className={`p-4 rounded-lg text-center transition-all border-2 ${
+                          zhiShiMethod === method.id
+                            ? "border-imperial-gold bg-imperial-gold/10"
+                            : "border-border bg-bg-secondary hover:border-imperial-gold/50"
+                        }`}
+                      >
+                        <div className="font-song font-bold text-text-primary">{method.name}</div>
+                        <div className="text-xs text-text-muted mt-1">{method.desc}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 真太阳时 */}
+                <div className="pt-4 border-t border-border">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <p className="font-kai text-text-primary">真太阳时</p>
+                      <p className="text-sm text-text-muted">使用经纬度计算真太阳时</p>
+                    </div>
+                    <button
+                      onClick={() => setUseTrueSun(!useTrueSun)}
+                      className={`w-14 h-7 rounded-full transition-colors ${
+                        useTrueSun ? "bg-imperial-gold" : "bg-gray-300"
+                      }`}
+                    >
+                      <div
+                        className={`w-5 h-5 rounded-full bg-white shadow transition-transform ${
+                          useTrueSun ? "translate-x-7" : "translate-x-1"
+                        }`}
+                      />
+                    </button>
+                  </div>
+                  {useTrueSun && (
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Input
+                          label="经度"
+                          type="number"
+                          step="0.1"
+                          placeholder="116.4"
+                          value={longitude}
+                          onChange={(e) => setLongitude(e.target.value)}
+                          inputSize="lg"
+                        />
+                      </div>
+                      <div>
+                        <Input
+                          label="纬度"
+                          type="number"
+                          step="0.1"
+                          placeholder="39.9"
+                          value={latitude}
+                          onChange={(e) => setLatitude(e.target.value)}
+                          inputSize="lg"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="pt-4">
@@ -293,10 +489,25 @@ export default function QimenPage() {
                 <h2 className="font-song text-2xl font-bold text-text-primary mb-2">
                   九宫排盘
                 </h2>
-                <p className="text-text-secondary font-kai">
-                  {new Date(dateTime || Date.now()).toLocaleString("zh-CN")} ·
-                  时家奇门
+                <p className="text-text-secondary font-kai mb-2">
+                  {calendarType === "gregorian" ? "公历" : "农历"} {year}年{month}月{day}日{hour}时
                 </p>
+                <div className="flex justify-center gap-4 flex-wrap">
+                  <span className="text-xs bg-bg-secondary px-2 py-1 rounded">
+                    {panType === "chaibu" ? "拆补法" : panType === "zhirun" ? "置闰法" : "茅山法"}
+                  </span>
+                  <span className="text-xs bg-bg-secondary px-2 py-1 rounded">
+                    {panJuType === "zhuan" ? "转盘奇门" : "飞盘奇门"}
+                  </span>
+                  <span className="text-xs bg-bg-secondary px-2 py-1 rounded">
+                    {zhiShiMethod === "men" ? "值使门起" : "门起地盘"}
+                  </span>
+                  {useTrueSun && (
+                    <span className="text-xs bg-bg-secondary px-2 py-1 rounded">
+                      真太阳时 {longitude}°E, {latitude}°N
+                    </span>
+                  )}
+                </div>
               </div>
 
               <NinePalaceGrid data={mockPalaceData} />
