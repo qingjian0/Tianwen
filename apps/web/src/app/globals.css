@@ -20,22 +20,22 @@
     --color-jade-light: #32CD32;
     --color-jade-dark: #006400;
 
-    --color-text-primary: #1A1A1A;
-    --color-text-secondary: #666666;
-    --color-text-muted: #999999;
+    --color-text-primary: #E8E6E3;
+    --color-text-secondary: #A8A5A0;
+    --color-text-muted: #6B6966;
 
-    --color-bg-primary: #FFFFFF;
-    --color-bg-secondary: #FAFAFA;
-    --color-bg-tertiary: #F5F5F5;
-    --color-bg-card: #FFFFFF;
-    --color-bg-elevated: #FFFFFF;
+    --color-bg-primary: #0A0A0A;
+    --color-bg-secondary: #141414;
+    --color-bg-tertiary: #1A1A1A;
+    --color-bg-card: #141414;
+    --color-bg-elevated: #1F1F1F;
 
-    --color-border: #E5E5E5;
-    --color-border-light: #D0D0D0;
+    --color-border: #2A2A2A;
+    --color-border-light: #333333;
 
-    --gradient-imperial-gold: linear-gradient(135deg, var(--color-imperial-gold-100) 0%, var(--color-imperial-gold-200) 50%, var(--color-imperial-gold-300) 100%);
-    --gradient-deep-space: linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 50%, #F5F5F5 100%);
-    --gradient-card: linear-gradient(145deg, #FFFFFF 0%, #FAFAFA 100%);
+    --gradient-imperial-gold: linear-gradient(135deg, #F4D03F 0%, #D4AF37 50%, #B8860B 100%);
+    --gradient-deep-space: linear-gradient(180deg, #0A0A0A 0%, #111111 50%, #141414 100%);
+    --gradient-card: linear-gradient(145deg, #1A1A1A 0%, #141414 100%);
 
     --space-1: 0.25rem;
     --space-2: 0.5rem;
