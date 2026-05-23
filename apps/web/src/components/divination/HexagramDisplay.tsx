@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 interface HexagramDisplayProps {
@@ -47,7 +47,8 @@ export const HexagramDisplay = ({ upperTrigram, lowerTrigram, changingLine }: He
   const upper = TRIGRAMS[upperTrigram];
   const lower = TRIGRAMS[lowerTrigram];
 
-  const hexagram = HEXAGRAMS[Math.floor(Math.random() * HEXAGRAMS.length)];
+  // 固定使用第一个卦象，避免 hydration mismatch
+  const hexagram = HEXAGRAMS[0];
 
   const lines = [];
   for (let i = 5; i >= 0; i--) {
@@ -137,11 +138,17 @@ export const HexagramDisplay = ({ upperTrigram, lowerTrigram, changingLine }: He
           </div>
         </div>
 
-        {changingLine && (
+        {changingLine && changingLine >= 1 && changingLine <= 6 && (
           <div className="mt-4 p-3 bg-primary/10 border border-primary/30 rounded-sm">
             <div className="text-sm font-kai text-primary-light mb-2">动爻 · 第{changingLine}爻</div>
             <div className="text-text-secondary text-sm">
-              {LINE_TEXT[changingLine as keyof typeof LINE_TEXT][lines[6 - changingLine].isYang ? 'yang' : 'yin']}
+              {(() => {
+                // 找到对应动爻的 line 对象
+                const changingLineData = lines.find(l => l.number === changingLine);
+                if (!changingLineData) return '';
+                const lineText = LINE_TEXT[changingLine as keyof typeof LINE_TEXT];
+                return lineText[changingLineData.isYang ? 'yang' : 'yin'];
+              })()}
             </div>
           </div>
         )}
