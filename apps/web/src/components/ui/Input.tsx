@@ -40,13 +40,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="w-full">
         {label && (
-          <label className="block text-sm font-medium text-[#F5F5F5] mb-2">
+          <label className="block text-sm font-medium text-text-primary mb-2">
             {label}
           </label>
         )}
         <div className="relative">
           {prefixIcon && (
-            <div className={`absolute left-0 top-0 flex items-center justify-center ${iconSizes[inputSize]} text-[#D4AF37]/70`}>
+            <div className={`absolute left-0 top-0 flex items-center justify-center ${iconSizes[inputSize]} text-imperial-gold`}>
               {prefixIcon}
             </div>
           )}
@@ -54,13 +54,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             disabled={disabled}
             className={[
-              'w-full bg-[#12121A] border rounded-lg text-[#F5F5F5] placeholder:text-[#6B6B7B] transition-all duration-300',
+              'w-full bg-white border rounded-lg text-text-primary placeholder:text-text-muted transition-all duration-300',
               'focus:outline-none',
               sizeStyles[inputSize],
               hasError 
-                ? 'border-[#EF4444] focus:border-[#EF4444] focus:ring-1 focus:ring-[#EF4444]/50' 
-                : 'border-[#D4AF37]/20 focus:border-[#D4AF37]/60 focus:ring-1 focus:ring-[#D4AF37]/30',
-              disabled ? 'opacity-50 cursor-not-allowed' : '',
+                ? 'border-vermillion focus:border-vermillion focus:ring-1 focus:ring-vermillion/30' 
+                : 'border-border focus:border-imperial-gold/60 focus:ring-1 focus:ring-imperial-gold/20',
+              disabled ? 'opacity-50 cursor-not-allowed bg-bg-secondary' : '',
               prefixIcon ? 'pl-10' : '',
               suffixIcon ? 'pr-10' : '',
               className,
@@ -70,13 +70,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             {...props}
           />
           {suffixIcon && (
-            <div className="absolute right-0 top-0 flex items-center justify-center h-full pr-3 text-[#D4AF37]/70">
+            <div className="absolute right-0 top-0 flex items-center justify-center h-full pr-3 text-imperial-gold">
               {suffixIcon}
             </div>
           )}
         </div>
         {error && (
-          <p className="mt-1.5 text-xs text-[#EF4444]">
+          <p className="mt-1.5 text-xs text-vermillion">
             {error}
           </p>
         )}
@@ -106,4 +106,3 @@ export const IconInput = forwardRef<HTMLInputElement, IconInputProps>(
 );
 
 IconInput.displayName = 'IconInput';
-

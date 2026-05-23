@@ -15,11 +15,11 @@ interface ButtonProps extends ComponentPropsWithoutRef<typeof motion.button> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    'bg-gradient-to-r from-[#F4D03F] via-[#D4AF37] to-[#B8860B] text-[#000000] font-semibold border border-[#D4AF37]/80',
+    'bg-gradient-to-r from-[#F4D03F] via-[#D4AF37] to-[#B8860B] text-white font-semibold border border-[#D4AF37]/80',
   secondary:
-    'bg-transparent border border-[#D4AF37]/40 text-[#D4AF37] font-semibold',
+    'bg-white border border-border text-text-primary font-semibold',
   ghost:
-    'bg-transparent border border-transparent text-[#A0A0B0] font-medium',
+    'bg-transparent border border-transparent text-text-secondary font-medium',
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
@@ -29,9 +29,9 @@ const sizeStyles: Record<ButtonSize, string> = {
 };
 
 const hoverStyles: Record<ButtonVariant, string> = {
-  primary: 'hover:border-[#D4AF37]',
-  secondary: 'hover:border-[#D4AF37]/60 hover:text-[#F4D03F]',
-  ghost: 'hover:text-[#D4AF37] hover:bg-[#1A1A25]/50',
+  primary: 'hover:border-[#D4AF37] hover:shadow-card',
+  secondary: 'hover:border-imperial-gold/40 hover:text-imperial-gold',
+  ghost: 'hover:text-imperial-gold hover:bg-bg-secondary',
 };
 
 export const Button = ({
@@ -107,4 +107,3 @@ export const RoyalButton = ({
     />
   );
 }
-

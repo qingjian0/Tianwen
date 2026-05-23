@@ -15,12 +15,12 @@ interface CardProps {
 }
 
 const variantStyles: Record<NonNullable<CardProps['variant']>, string> = {
-  default: 'bg-[#12121A] border border-[#D4AF37]/10',
-  highlight: 'bg-[#12121A] border-2 border-[#D4AF37]/30',
-  plain: 'bg-transparent border border-[#D4AF37]/10',
+  default: 'bg-white border border-border shadow-subtle',
+  highlight: 'bg-white border-2 border-imperial-gold/40 shadow-card',
+  plain: 'bg-transparent border border-border',
 };
 
-const hoverStyles = 'hover:-translate-y-1 hover:border-[#D4AF37]/20 transition-all duration-300';
+const hoverStyles = 'hover:-translate-y-1 hover:shadow-hover hover:border-imperial-gold/30 transition-all duration-300';
 
 export const Card = ({
   variant = 'default',
@@ -44,15 +44,15 @@ export const Card = ({
       onClick={onClick}
     >
       {(header || icon) && (
-        <div className="border-b border-[#D4AF37]/10 px-8 py-6">
+        <div className="border-b border-border px-8 py-6">
           <div className="flex items-center gap-3">
             {icon && (
-              <div className="text-[#D4AF37]">
+              <div className="text-imperial-gold">
                 {icon}
               </div>
             )}
             {header && (
-              <div className="text-[#D4AF37] font-semibold tracking-wider">
+              <div className="text-imperial-gold font-semibold tracking-wider">
                 {header}
               </div>
             )}
@@ -61,7 +61,7 @@ export const Card = ({
       )}
       <div className="p-8">{children}</div>
       {footer && (
-        <div className="border-t border-[#D4AF37]/10 px-8 py-4">
+        <div className="border-t border-border px-8 py-4">
           {footer}
         </div>
       )}
