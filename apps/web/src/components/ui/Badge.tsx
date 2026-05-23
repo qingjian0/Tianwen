@@ -14,11 +14,11 @@ interface BadgeProps {
 }
 
 const variantStyles: Record<BadgeProps['variant'], string> = {
-  gold: 'bg-gold-500/15 text-gold-400 border border-gold-500/20',
-  vermillion: 'bg-vermillion-500/15 text-vermillion-400 border border-vermillion-500/20',
-  jade: 'bg-jade-500/15 text-jade-400 border border-jade-500/20',
-  indigo: 'bg-indigo-500/15 text-indigo-400 border border-indigo-500/20',
-  ghost: 'bg-white/5 text-gray-400 border border-white/10',
+  gold: 'bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/20',
+  vermillion: 'bg-[#EF4444]/10 text-[#EF4444] border border-[#EF4444]/20',
+  jade: 'bg-[#22C55E]/10 text-[#22C55E] border border-[#22C55E]/20',
+  indigo: 'bg-[#3B82F6]/10 text-[#3B82F6] border border-[#3B82F6]/20',
+  ghost: 'bg-white/5 text-[#6B6B7B] border border-white/10',
 };
 
 const sizeStyles: Record<NonNullable<BadgeProps['size']>, string> = {

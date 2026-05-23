@@ -15,11 +15,11 @@ interface ButtonProps extends ComponentPropsWithoutRef<typeof motion.button> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    'bg-gradient-to-r from-[#F4D03F] via-[#D4AF37] to-[#B8860B] text-[#000000] font-semibold border-2 border-[#D4AF37]/60 shadow-[0_0_20px_rgba(212,175,55,0.4)]',
+    'bg-gradient-to-r from-[#F4D03F] via-[#D4AF37] to-[#B8860B] text-[#000000] font-semibold border border-[#D4AF37]/80',
   secondary:
-    'bg-transparent border-2 border-[#D4AF37]/50 text-[#D4AF37] font-semibold shadow-[0_0_10px_rgba(212,175,55,0.15)]',
+    'bg-transparent border border-[#D4AF37]/40 text-[#D4AF37] font-semibold',
   ghost:
-    'bg-transparent border-2 border-transparent text-[#A0A0B0] font-medium',
+    'bg-transparent border border-transparent text-[#A0A0B0] font-medium',
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
@@ -29,8 +29,8 @@ const sizeStyles: Record<ButtonSize, string> = {
 };
 
 const hoverStyles: Record<ButtonVariant, string> = {
-  primary: 'hover:shadow-[0_0_30px_rgba(212,175,55,0.6),0_0_50px_rgba(212,175,55,0.4)]',
-  secondary: 'hover:shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:border-[#D4AF37]/70 hover:text-[#F4D03F]',
+  primary: 'hover:border-[#D4AF37]',
+  secondary: 'hover:border-[#D4AF37]/60 hover:text-[#F4D03F]',
   ghost: 'hover:text-[#D4AF37] hover:bg-[#1A1A25]/50',
 };
 
@@ -62,8 +62,8 @@ export const Button = ({
       ]
         .filter(Boolean)
         .join(' ')}
-      whileHover={isDisabled ? undefined : { y: -2, scale: 1.02 }}
-      whileTap={isDisabled ? undefined : { y: 0, scale: 0.98 }}
+      whileHover={isDisabled ? undefined : { y: -1 }}
+      whileTap={isDisabled ? undefined : { scale: 0.98 }}
       {...props}
     >
       {loading && (
@@ -91,7 +91,7 @@ export const Button = ({
       {children}
     </motion.button>
   );
-};
+}
 
 interface RoyalButtonProps extends Omit<ButtonProps, 'variant'> {}
 
@@ -103,11 +103,8 @@ export const RoyalButton = ({
     <Button
       variant="primary"
       size={size}
-      className={[
-        'shadow-[0_0_30px_rgba(212,175,55,0.5),0_0_60px_rgba(212,175,55,0.3)]',
-        props.className || '',
-      ].join(' ')}
       {...props}
     />
   );
-};
+}
+

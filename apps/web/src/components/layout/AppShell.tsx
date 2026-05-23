@@ -1,8 +1,8 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { Sidebar } from './Sidebar';
 import { Header } from './Header';
+import { CosmicBackground } from './CosmicBackground';
 
 interface AppShellProps {
   children: ReactNode;
@@ -10,14 +10,14 @@ interface AppShellProps {
 
 export const AppShell = ({ children }: AppShellProps) => {
   return (
-    <div className="min-h-screen bg-bg-dark text-text-primary">
-      <div className="flex min-h-screen">
-        <Sidebar />
-        
-        <div className="flex-1 flex flex-col">
-          <Header />
-          <main className="flex-1">{children}</main>
-        </div>
+    <div className="min-h-screen bg-bg-primary text-text-primary relative">
+      <CosmicBackground />
+      
+      <div className="relative z-10 flex flex-col min-h-screen">
+        <Header />
+        <main className="flex-1">
+          {children}
+        </main>
       </div>
     </div>
   );
