@@ -4,20 +4,23 @@ import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 
 interface CardProps {
-  variant?: 'default' | 'highlight' | 'subtle';
+  variant?: 'default' | 'highlight' | 'plain';
   children: ReactNode;
   className?: string;
   header?: ReactNode;
   footer?: ReactNode;
+  icon?: ReactNode;
   hover?: boolean;
   onClick?: () => void;
 }
 
 const variantStyles: Record<NonNullable<CardProps['variant']>, string> = {
-  default: 'bg-gradient-to-br from-ink-dark/80 via-ink-medium/50 to-ink-dark/90 border border-imperial-gold/15',
-  highlight: 'bg-gradient-to-br from-ink-dark/90 via-celestial-blue-dark/30 to-ink-dark/90 border-2 border-imperial-gold/30 shadow-gold-glow',
-  subtle: 'bg-transparent border border-imperial-gold/10',
+  default: 'bg-[#12121A]/80 border border-[#D4AF37]/15 shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]',
+  highlight: 'bg-[#12121A]/90 border-2 border-[#D4AF37]/30 shadow-[0_0_20px_rgba(212,175,55,0.2)]',
+  plain: 'bg-transparent border border-[#D4AF37]/10',
 };
+
+const hoverStyles = 'hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(212,175,55,0.3)] hover:border-[#D4AF37]/40 transition-all duration-300';
 
 export const Card = ({
   variant = 'default',
@@ -25,11 +28,12 @@ export const Card = ({
   className,
   header,
   footer,
+  icon,
   hover = false,
   onClick,
 }: CardProps) => {
   const base = variantStyles[variant];
-  const hoverClass = hover ? 'hover:border-imperial-gold/40 hover:-translate-y-1 hover:shadow-gold-glow transition-all duration-300' : '';
+  const hoverClass = hover ? hoverStyles : '';
   const clickClass = onClick ? 'cursor-pointer' : '';
 
   return (
@@ -39,14 +43,25 @@ export const Card = ({
       className={[base, hoverClass, clickClass, className].filter(Boolean).join(' ')}
       onClick={onClick}
     >
-      {header && (
-        <div className="border-b border-imperial-gold/10 px-6 py-4 text-imperial-gold font-song tracking-wider">
-          {header}
+      {(header || icon) && (
+        <div className="border-b border-[#D4AF37]/10 px-6 py-4">
+          <div className="flex items-center gap-3">
+            {icon && (
+              <div className="text-[#D4AF37]">
+                {icon}
+              </div>
+            )}
+            {header && (
+              <div className="text-[#D4AF37] font-semibold tracking-wider">
+                {header}
+              </div>
+            )}
+          </div>
         </div>
       )}
       <div className="p-6">{children}</div>
       {footer && (
-        <div className="border-t border-imperial-gold/10 px-6 py-3">
+        <div className="border-t border-[#D4AF37]/10 px-6 py-3">
           {footer}
         </div>
       )}

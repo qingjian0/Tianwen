@@ -2,6 +2,9 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Button, RoyalButton } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Card } from '@/components/ui/Card';
 
 interface DivinationFormProps {
   onSubmit: (data: FormData) => void;
@@ -23,10 +26,10 @@ interface FormData {
 }
 
 const divinationMethods = [
-  { id: 'dice', name: '骰子摇卦', icon: '🎲', desc: '随机起卦' },
-  { id: 'number', name: '报数起卦', icon: '🔢', desc: '输入数字' },
-  { id: 'double', name: '双数起卦', icon: '⚖️', desc: '两个数字' },
-  { id: 'random', name: '随机起卦', icon: '✨', desc: '系统随机' },
+  { id: 'dice', name: '骰子', icon: '🎲', desc: '随机起卦' },
+  { id: 'number', name: '报数', icon: '🔢', desc: '输入数字' },
+  { id: 'double', name: '双数', icon: '⚖️', desc: '两个数字' },
+  { id: 'random', name: '随机', icon: '✨', desc: '系统随机' },
 ];
 
 export const DivinationForm = ({ onSubmit }: DivinationFormProps) => {
@@ -70,87 +73,87 @@ export const DivinationForm = ({ onSubmit }: DivinationFormProps) => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-bg-card border border-border rounded-sm p-5 shadow-card">
+      <Card variant="default">
         <h3 className="font-song text-lg font-bold text-text-primary mb-4">起卦方式</h3>
         <div className="grid grid-cols-2 gap-3">
           {divinationMethods.map((item) => (
             <motion.button
               key={item.id}
               onClick={() => setMethod(item.id)}
-              className={`relative p-4 rounded-sm border transition-all duration-200 ${
+              className={`relative p-4 rounded-lg border-2 transition-all duration-300 ${
                 method === item.id
-                  ? 'border-primary bg-primary/10 text-primary-light'
-                  : 'border-border bg-bg-medium text-text-secondary hover:border-border-light hover:text-text-primary'
+                  ? 'border-gold bg-gold/10 shadow-gold-glow text-gold'
+                  : 'border-border bg-bg-medium text-text-secondary hover:border-gold/50 hover:bg-bg-light hover:text-gold hover:shadow-gold-glow/50'
               }`}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <div className="flex items-center gap-3">
-                <span className="text-xl">{item.icon}</span>
+              <div className="flex flex-col items-center gap-2">
+                <span className="text-2xl">{item.icon}</span>
                 <div className="text-left">
-                  <div className="font-kai">{item.name}</div>
-                  <div className="text-xs text-text-muted">{item.desc}</div>
+                  <div className="font-kai text-sm font-medium">{item.name}</div>
+                  <div className="text-xs text-text-muted mt-0.5">{item.desc}</div>
                 </div>
               </div>
               {method === item.id && (
-                <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary" />
+                <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-gold animate-pulse" />
               )}
             </motion.button>
           ))}
         </div>
-      </div>
+      </Card>
 
-      <div className="bg-bg-card border border-border rounded-sm p-5 shadow-card">
+      <Card variant="default">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-song text-lg font-bold text-text-primary">起卦参数</h3>
           {method === 'dice' && (
-            <motion.button
+            <RoyalButton
+              size="sm"
               onClick={handleDiceRoll}
-              className="px-4 py-2 bg-gradient-primary text-white rounded-sm font-kai text-sm"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              className={isShaking ? 'animate-shake' : ''}
             >
-              摇卦
-            </motion.button>
+              🎲 摇卦
+            </RoyalButton>
           )}
         </div>
 
         <div className="grid grid-cols-3 gap-4">
           {[
-            { value: number1, setValue: setNumber1, label: '上卦', placeholder: '1-9' },
-            { value: number2, setValue: setNumber2, label: '下卦', placeholder: '1-9' },
-            { value: number3, setValue: setNumber3, label: '动爻', placeholder: '1-6' },
+            { value: number1, setValue: setNumber1, label: '上卦', placeholder: '1-9', max: '9' },
+            { value: number2, setValue: setNumber2, label: '下卦', placeholder: '1-9', max: '9' },
+            { value: number3, setValue: setNumber3, label: '动爻', placeholder: '1-6', max: '6' },
           ].map((field, idx) => (
-            <div key={idx} className="space-y-2">
-              <label className="text-xs text-text-muted font-kai">{field.label}</label>
-              <motion.div
-                animate={isShaking ? { x: [-3, 3, -3, 3, 0] } : {}}
-                transition={{ duration: 0.1 }}
-              >
-                <input
-                  type="number"
-                  min="1"
-                  max={idx === 2 ? '6' : '9'}
-                  value={field.value}
-                  onChange={(e) => field.setValue(e.target.value)}
-                  placeholder={field.placeholder}
-                  className="w-full px-3 py-3 bg-bg-medium border border-border rounded-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-primary transition-colors"
-                />
-              </motion.div>
-            </div>
+            <motion.div
+              key={idx}
+              className="space-y-2"
+              animate={isShaking ? { x: [-3, 3, -3, 3, 0] } : {}}
+              transition={{ duration: 0.1 }}
+            >
+              <Input
+                label={field.label}
+                type="number"
+                min="1"
+                max={field.max}
+                value={field.value}
+                onChange={(e) => field.setValue(e.target.value)}
+                placeholder={field.placeholder}
+                inputSize="lg"
+              />
+            </motion.div>
           ))}
         </div>
-      </div>
+      </Card>
 
-      <div className="bg-bg-card border border-border rounded-sm shadow-card overflow-hidden">
+      <Card variant="plain">
         <button
           onClick={() => setShowAdvanced(!showAdvanced)}
-          className="w-full px-5 py-4 flex items-center justify-between text-left hover:bg-bg-medium transition-colors"
+          className="w-full flex items-center justify-between text-left hover:text-gold transition-colors"
         >
           <span className="font-kai text-text-secondary">高级参数</span>
           <motion.span
             animate={{ rotate: showAdvanced ? 180 : 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.3 }}
+            className="text-text-muted"
           >
             ▼
           </motion.span>
@@ -161,9 +164,10 @@ export const DivinationForm = ({ onSubmit }: DivinationFormProps) => {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
               className="overflow-hidden"
             >
-              <div className="px-5 pb-5 space-y-4">
+              <div className="pt-4 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-xs text-text-muted font-kai mb-2 block">换将</label>
@@ -172,7 +176,7 @@ export const DivinationForm = ({ onSubmit }: DivinationFormProps) => {
                       onChange={(e) =>
                         setAdvancedValues({ ...advancedValues, switchGeneral: e.target.value })
                       }
-                      className="w-full px-3 py-2 bg-bg-medium border border-border rounded-sm text-text-primary focus:outline-none focus:border-primary"
+                      className="w-full px-3 py-2.5 bg-bg-medium border border-border rounded-lg text-text-primary focus:outline-none focus:border-gold transition-colors"
                     >
                       <option value="day">日将</option>
                       <option value="night">夜将</option>
@@ -188,7 +192,7 @@ export const DivinationForm = ({ onSubmit }: DivinationFormProps) => {
                         onChange={(e) =>
                           setAdvancedValues({ ...advancedValues, zhongqi: e.target.checked })
                         }
-                        className="w-4 h-4 rounded border-border bg-bg-medium text-primary focus:ring-primary"
+                        className="w-4 h-4 rounded border-border bg-bg-medium text-gold focus:ring-gold"
                       />
                       <span className="text-sm text-text-secondary">启用中气</span>
                     </label>
@@ -200,7 +204,7 @@ export const DivinationForm = ({ onSubmit }: DivinationFormProps) => {
                       onChange={(e) =>
                         setAdvancedValues({ ...advancedValues, dayNight: e.target.value })
                       }
-                      className="w-full px-3 py-2 bg-bg-medium border border-border rounded-sm text-text-primary focus:outline-none focus:border-primary"
+                      className="w-full px-3 py-2.5 bg-bg-medium border border-border rounded-lg text-text-primary focus:outline-none focus:border-gold transition-colors"
                     >
                       <option value="day">昼</option>
                       <option value="night">夜</option>
@@ -214,7 +218,7 @@ export const DivinationForm = ({ onSubmit }: DivinationFormProps) => {
                       onChange={(e) =>
                         setAdvancedValues({ ...advancedValues, harmMethod: e.target.value })
                       }
-                      className="w-full px-3 py-2 bg-bg-medium border border-border rounded-sm text-text-primary focus:outline-none focus:border-primary"
+                      className="w-full px-3 py-2.5 bg-bg-medium border border-border rounded-lg text-text-primary focus:outline-none focus:border-gold transition-colors"
                     >
                       <option value="standard">标准</option>
                       <option value="special">特殊</option>
@@ -225,17 +229,16 @@ export const DivinationForm = ({ onSubmit }: DivinationFormProps) => {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </Card>
 
-      <motion.button
+      <RoyalButton
+        size="lg"
         onClick={handleSubmit}
-        className="w-full py-4 bg-gradient-primary text-white font-song text-lg rounded-sm animate-pulse-gold"
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
+        className="w-full animate-pulse-gold"
         disabled={!number1 || !number2 || !number3}
       >
-        排盘
-      </motion.button>
+        🔮 排盘
+      </RoyalButton>
     </div>
   );
 };

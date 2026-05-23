@@ -2,39 +2,83 @@
 
 import React, { forwardRef } from 'react';
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  icon?: React.ReactNode;
-  iconRight?: React.ReactNode;
+type InputSize = 'sm' | 'md' | 'lg';
+
+interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
+  label?: string;
+  error?: string;
+  prefixIcon?: React.ReactNode;
+  suffixIcon?: React.ReactNode;
+  inputSize?: InputSize;
 }
 
+const sizeStyles: Record<InputSize, string> = {
+  sm: 'px-3 py-1.5 text-xs',
+  md: 'px-4 py-2.5 text-sm',
+  lg: 'px-5 py-3 text-base',
+};
+
+const iconSizes: Record<InputSize, string> = {
+  sm: 'w-8 h-8',
+  md: 'w-10 h-10',
+  lg: 'w-12 h-12',
+};
+
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ icon, iconRight, className, disabled, ...props }, ref) => {
+  ({ 
+    label, 
+    error, 
+    prefixIcon, 
+    suffixIcon, 
+    inputSize = 'md', 
+    className = '', 
+    disabled, 
+    ...props 
+  }, ref) => {
+    const hasError = !!error;
+
     return (
-      <div className="relative">
-        {icon && (
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
-            {icon}
-          </div>
+      <div className="w-full">
+        {label && (
+          <label className="block text-sm font-medium text-[#F5F5F5] mb-2">
+            {label}
+          </label>
         )}
-        <input
-          ref={ref}
-          disabled={disabled}
-          className={[
-            'bg-ink-900/80 border border-gold-500/10 rounded-lg px-4 py-3 text-white placeholder:text-gray-600',
-            'focus:border-gold-500/40 focus:outline-none focus:shadow-glow-sm transition-all duration-300',
-            disabled ? 'opacity-50 cursor-not-allowed' : '',
-            icon ? 'pl-10' : '',
-            iconRight ? 'pr-10' : '',
-            className ?? '',
-          ]
-            .filter(Boolean)
-            .join(' ')}
-          {...props}
-        />
-        {iconRight && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
-            {iconRight}
-          </div>
+        <div className="relative">
+          {prefixIcon && (
+            <div className={`absolute left-0 top-0 flex items-center justify-center ${iconSizes[inputSize]} text-[#D4AF37]`}>
+              {prefixIcon}
+            </div>
+          )}
+          <input
+            ref={ref}
+            disabled={disabled}
+            className={[
+              'w-full bg-[#0A0A0F] border rounded-lg text-[#F5F5F5] placeholder:text-[#6B6B7B] transition-all duration-300',
+              'focus:outline-none focus:shadow-[0_0_15px_rgba(212,175,55,0.3)]',
+              sizeStyles[inputSize],
+              hasError 
+                ? 'border-[#EF4444] focus:border-[#EF4444]' 
+                : 'border-[#D4AF37]/30 focus:border-[#D4AF37]',
+              disabled ? 'opacity-50 cursor-not-allowed' : '',
+              prefixIcon ? 'pl-10' : '',
+              suffixIcon ? 'pr-10' : '',
+              className,
+            ]
+              .filter(Boolean)
+              .join(' ')}
+            {...props}
+          />
+          {suffixIcon && (
+            <div className="absolute right-0 top-0 flex items-center justify-center h-full pr-3 text-[#D4AF37]">
+              {suffixIcon}
+            </div>
+          )}
+        </div>
+        {error && (
+          <p className="mt-1.5 text-xs text-[#EF4444]">
+            {error}
+          </p>
         )}
       </div>
     );
@@ -42,3 +86,23 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 );
 
 Input.displayName = 'Input';
+
+interface IconInputProps extends Omit<InputProps, 'prefixIcon'> {
+  icon: React.ReactNode;
+  iconPosition?: 'left' | 'right';
+}
+
+export const IconInput = forwardRef<HTMLInputElement, IconInputProps>(
+  ({ icon, iconPosition = 'left', ...props }, ref) => {
+    return (
+      <Input
+        ref={ref}
+        prefixIcon={iconPosition === 'left' ? icon : undefined}
+        suffixIcon={iconPosition === 'right' ? icon : undefined}
+        {...props}
+      />
+    );
+  }
+);
+
+IconInput.displayName = 'IconInput';

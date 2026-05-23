@@ -1,0 +1,317 @@
+/* ============================================
+   星辰显现动画 (Star Appear)
+   效果：从模糊透明逐渐显现为清晰
+   时长：1s | 缓动：ease-out | 性能：transform/opacity
+   ============================================ */
+@keyframes starAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+    filter: blur(10px);
+  }
+  50% {
+    opacity: 0.8;
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+
+.animate-star-appear {
+  animation: starAppear 1s ease-out forwards;
+}
+
+/* ============================================
+   金色脉冲动画 (Gold Pulse)
+   效果：金色光晕呼吸式脉动
+   时长：2s | 缓动：ease-in-out | 性能：transform/opacity
+   ============================================ */
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.6), 0 0 50px rgba(212, 175, 55, 0.3);
+    transform: scale(1.02);
+  }
+}
+
+.animate-glow-pulse {
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+/* ============================================
+   阴阳旋转动画 (Yin Yang Rotate)
+   效果：360度持续旋转
+   时长：8s | 缓动：linear | 性能：transform
+   ============================================ */
+@keyframes yinYangRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-yin-yang-rotate {
+  animation: yinYangRotate 8s linear infinite;
+}
+
+/* ============================================
+   火焰燃烧动画 (Fire Burn)
+   效果：模拟火焰跳动的明暗变化
+   时长：1.5s | 缓动：ease-in-out | 性能：transform/opacity
+   ============================================ */
+@keyframes fireBurn {
+  0%, 100% {
+    opacity: 0.7;
+    filter: brightness(1) saturate(1);
+    transform: scaleY(1);
+  }
+  25% {
+    opacity: 0.9;
+    filter: brightness(1.2) saturate(1.2);
+    transform: scaleY(1.05);
+  }
+  50% {
+    opacity: 1;
+    filter: brightness(1.4) saturate(1.4);
+    transform: scaleY(1.1);
+  }
+  75% {
+    opacity: 0.9;
+    filter: brightness(1.2) saturate(1.2);
+    transform: scaleY(1.05);
+  }
+}
+
+.animate-fire-burn {
+  animation: fireBurn 1.5s ease-in-out infinite;
+}
+
+/* ============================================
+   水波荡漾动画 (Ripple)
+   效果：从中心向外扩散消散
+   时长：1.2s | 缓动：ease-out | 性能：transform/opacity
+   ============================================ */
+@keyframes ripple {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.animate-ripple {
+  animation: ripple 1.2s ease-out infinite;
+}
+
+/* ============================================
+   摇晃动画 (Shake)
+   效果：水平方向轻微震动
+   时长：0.5s | 缓动：ease-in-out | 性能：transform
+   ============================================ */
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-3px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(3px);
+  }
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+/* ============================================
+   渐入动画 (Fade Slide Up)
+   效果：从下方渐入显现
+   时长：0.6s | 缓动：ease-out | 性能：transform/opacity
+   ============================================ */
+@keyframes fadeSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-slide-up {
+  animation: fadeSlideUp 0.6s ease-out forwards;
+}
+
+/* ============================================
+   浮动动画 (Float)
+   效果：轻柔的上下浮动
+   时长：6s | 缓动：ease-in-out | 性能：transform
+   ============================================ */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* ============================================
+   脉冲动画 (Pulse)
+   效果：透明度脉动
+   时长：2s | 缓动：ease-in-out | 性能：opacity
+   ============================================ */
+@keyframes pulseSubtle {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-pulse-subtle {
+  animation: pulseSubtle 2s ease-in-out infinite;
+}
+
+/* ============================================
+   弹跳动画 (Bounce Gentle)
+   效果：轻柔的上下弹跳
+   时长：2s | 缓动：ease-in-out | 性能：transform
+   ============================================ */
+@keyframes bounceGentle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-bounce-gentle {
+  animation: bounceGentle 2s ease-in-out infinite;
+}
+
+/* ============================================
+   渐入动画 (Fade In)
+   效果：简单淡入
+   时长：0.5s | 缓动：ease-out | 性能：opacity
+   ============================================ */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* ============================================
+   向上滑入动画 (Slide Up)
+   效果：从下方滑入显现
+   时长：0.4s | 缓动：ease-out | 性能：transform/opacity
+   ============================================ */
+@keyframes slideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out forwards;
+}
+
+/* ============================================
+   向下滑入动画 (Slide Down)
+   效果：从上方滑入显现
+   时长：0.4s | 缓动：ease-out | 性能：transform/opacity
+   ============================================ */
+@keyframes slideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-down {
+  animation: slideDown 0.4s ease-out forwards;
+}
+
+/* ============================================
+   强烈摇晃动画 (Shake Intense)
+   效果：更剧烈的水平震动
+   时长：0.6s | 缓动：ease-in-out | 性能：transform
+   ============================================ */
+@keyframes shakeIntense {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-4px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(4px);
+  }
+}
+
+.animate-shake-intense {
+  animation: shakeIntense 0.6s ease-in-out;
+}
+
+/* ============================================
+   旋转动画 (Spin Slow)
+   效果：缓慢的360度旋转
+   时长：8s | 缓动：linear | 性能：transform
+   ============================================ */
+.animate-spin-slow {
+  animation: spin 8s linear infinite;
+}
+
+/* ============================================
+   性能优化提示：
+   1. 优先使用 transform 和 opacity 属性
+   2. 避免使用 width、height、margin、padding 等属性
+   3. 使用 will-change 提示浏览器优化（谨慎使用）
+   4. 复杂动画考虑使用 requestAnimationFrame
+   ============================================ */
+
+/* 使用示例：
+   <div class="animate-star-appear">星辰显现</div>
+   <div class="animate-glow-pulse">金色脉冲</div>
+   <div class="animate-fire-burn">火焰燃烧</div>
+   <div class="animate-ripple">水波荡漾</div>
+   <div class="animate-shake">摇晃</div>
+   <div class="animate-fade-slide-up">渐入</div>
+   <div class="animate-yin-yang-rotate">阴阳旋转</div>
+   <div class="animate-float">浮动</div>
+*/

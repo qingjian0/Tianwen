@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
 
 interface HexagramDisplayProps {
   upperTrigram: number;
@@ -47,7 +49,6 @@ export const HexagramDisplay = ({ upperTrigram, lowerTrigram, changingLine }: He
   const upper = TRIGRAMS[upperTrigram];
   const lower = TRIGRAMS[lowerTrigram];
 
-  // 固定使用第一个卦象，避免 hydration mismatch
   const hexagram = HEXAGRAMS[0];
 
   const lines = [];
@@ -69,106 +70,188 @@ export const HexagramDisplay = ({ upperTrigram, lowerTrigram, changingLine }: He
 
   return (
     <div className="space-y-6">
-      <div className="bg-bg-card border border-border rounded-sm p-5 shadow-card">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-song text-lg font-bold text-text-primary">卦象</h3>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-text-muted font-kai">第{hexagram.number}卦</span>
-            <span className="text-gold font-song font-bold text-xl">{hexagram.name}</span>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+      >
+        <Card variant="default">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-song text-lg font-bold text-text-primary">卦象</h3>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-text-muted font-kai">第{hexagram.number}卦</span>
+              <span className="text-gold font-song font-bold text-xl">{hexagram.name}</span>
+            </div>
           </div>
-        </div>
 
-        <div className="flex justify-center mb-6">
-          <div className="relative">
-            <div className="flex flex-col-reverse gap-1.5 p-4 bg-bg-medium rounded-sm border border-border">
-              {lines.map((line) => (
-                <motion.div
-                  key={line.number}
-                  className="relative"
-                  onMouseEnter={() => setHoveredLine(line.number)}
-                  onMouseLeave={() => setHoveredLine(null)}
-                  whileHover={{ scale: 1.02 }}
-                >
-                  <div
-                    className={`h-8 flex items-center justify-center rounded-sm transition-all duration-200 ${
-                      line.isChanging
-                        ? 'bg-primary/20 border border-primary'
-                        : 'bg-bg-dark'
-                    }`}
+          <div className="flex justify-center mb-6">
+            <div className="relative">
+              <motion.div
+                className="flex flex-col-reverse gap-1.5 p-4 bg-bg-medium rounded-lg border border-border"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8 }}
+              >
+                {lines.map((line, idx) => (
+                  <motion.div
+                    key={line.number}
+                    className="relative"
+                    onMouseEnter={() => setHoveredLine(line.number)}
+                    onMouseLeave={() => setHoveredLine(null)}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ 
+                      delay: idx * 0.1,
+                      duration: 0.5,
+                      ease: 'easeOut'
+                    }}
+                    whileHover={{ scale: 1.02 }}
                   >
-                    {line.isYang ? (
-                      <div className="flex gap-2">
-                        <div className={`w-16 h-2 rounded-sm ${line.isChanging ? 'bg-primary' : 'bg-gold'}`} />
-                      </div>
-                    ) : (
-                      <div className="flex gap-2">
-                        <div className={`w-7 h-2 rounded-sm ${line.isChanging ? 'bg-primary' : 'bg-gold'}`} />
-                        <div className={`w-7 h-2 rounded-sm ${line.isChanging ? 'bg-primary' : 'bg-gold'}`} />
-                      </div>
-                    )}
-                  </div>
-                  <span className="absolute -left-6 top-1/2 -translate-y-1/2 text-xs text-text-muted font-kai">
-                    {line.isYang ? '九' : '六'}{line.number}
-                  </span>
-                  {line.isChanging && (
-                    <span className="absolute -right-6 top-1/2 -translate-y-1/2 text-xs text-primary font-kai">
-                      变
+                    <div
+                      className={`h-8 flex items-center justify-center rounded-sm transition-all duration-200 will-change-transform ${
+                        line.isChanging
+                          ? 'bg-primary/20 border border-primary animate-fire-burn'
+                          : 'bg-bg-dark'
+                      }`}
+                    >
+                      {line.isYang ? (
+                        <motion.div
+                          className="flex gap-2"
+                          animate={line.isChanging ? {
+                            opacity: [1, 1.2, 1],
+                          } : {}}
+                          transition={{ duration: 1.5, repeat: Infinity }}
+                        >
+                          <div className={`w-16 h-2 rounded-sm will-change-transform-opacity ${line.isChanging ? 'bg-primary' : 'bg-gold'}`} />
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          className="flex gap-2"
+                          animate={line.isChanging ? {
+                            opacity: [1, 1.2, 1],
+                          } : {}}
+                          transition={{ duration: 1.5, repeat: Infinity }}
+                        >
+                          <div className={`w-7 h-2 rounded-sm will-change-transform-opacity ${line.isChanging ? 'bg-primary' : 'bg-gold'}`} />
+                          <div className={`w-7 h-2 rounded-sm will-change-transform-opacity ${line.isChanging ? 'bg-primary' : 'bg-gold'}`} />
+                        </motion.div>
+                      )}
+                    </div>
+                    <span className="absolute -left-6 top-1/2 -translate-y-1/2 text-xs text-text-muted font-kai">
+                      {line.isYang ? '九' : '六'}{line.number}
                     </span>
-                  )}
-                </motion.div>
-              ))}
-            </div>
-            <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 pointer-events-none">
-              <div className="w-2 h-2 rounded-full bg-gold/50" />
-            </div>
-          </div>
-        </div>
-
-        <div className="flex justify-center gap-8">
-          <div className="text-center">
-            <div className="text-3xl mb-1">{upper.symbol}</div>
-            <div className="text-sm font-kai text-text-secondary">{upper.name}</div>
-            <div className="text-xs text-text-muted">{upper.element}</div>
-          </div>
-          <div className="text-text-muted">☯</div>
-          <div className="text-center">
-            <div className="text-3xl mb-1">{lower.symbol}</div>
-            <div className="text-sm font-kai text-text-secondary">{lower.name}</div>
-            <div className="text-xs text-text-muted">{lower.element}</div>
-          </div>
-        </div>
-
-        {changingLine && changingLine >= 1 && changingLine <= 6 && (
-          <div className="mt-4 p-3 bg-primary/10 border border-primary/30 rounded-sm">
-            <div className="text-sm font-kai text-primary-light mb-2">动爻 · 第{changingLine}爻</div>
-            <div className="text-text-secondary text-sm">
-              {(() => {
-                // 找到对应动爻的 line 对象
-                const changingLineData = lines.find(l => l.number === changingLine);
-                if (!changingLineData) return '';
-                const lineText = LINE_TEXT[changingLine as keyof typeof LINE_TEXT];
-                return lineText[changingLineData.isYang ? 'yang' : 'yin'];
-              })()}
+                    {line.isChanging && (
+                      <motion.span
+                        className="absolute -right-6 top-1/2 -translate-y-1/2 text-xs text-primary font-kai font-bold"
+                        animate={{
+                          opacity: [0.7, 1, 0.7],
+                          textShadow: [
+                            '0 0 5px rgba(212, 175, 55, 0.3)',
+                            '0 0 15px rgba(212, 175, 55, 0.6)',
+                            '0 0 5px rgba(212, 175, 55, 0.3)',
+                          ],
+                        }}
+                        transition={{ duration: 1.5, repeat: Infinity }}
+                      >
+                        变
+                      </motion.span>
+                    )}
+                  </motion.div>
+                ))}
+              </motion.div>
+              <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 pointer-events-none">
+                <motion.div
+                  className="w-2 h-2 rounded-full bg-gold"
+                  animate={{
+                    boxShadow: [
+                      '0 0 10px rgba(212, 175, 55, 0.3)',
+                      '0 0 20px rgba(212, 175, 55, 0.6)',
+                      '0 0 10px rgba(212, 175, 55, 0.3)',
+                    ],
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+              </div>
             </div>
           </div>
-        )}
-      </div>
 
-      <div className="bg-bg-card border border-border rounded-sm shadow-card overflow-hidden">
+          <div className="flex justify-center gap-8">
+            <div className="text-center">
+              <motion.div
+                className="text-3xl mb-1"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+              >
+                {upper.symbol}
+              </motion.div>
+              <div className="text-sm font-kai text-text-secondary">{upper.name}</div>
+              <div className="text-xs text-text-muted">{upper.element}</div>
+            </div>
+            <motion.div
+              className="text-text-muted text-2xl flex items-center"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+            >
+              ☯
+            </motion.div>
+            <div className="text-center">
+              <motion.div
+                className="text-3xl mb-1"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7 }}
+              >
+                {lower.symbol}
+              </motion.div>
+              <div className="text-sm font-kai text-text-secondary">{lower.name}</div>
+              <div className="text-xs text-text-muted">{lower.element}</div>
+            </div>
+          </div>
+
+          {changingLine && changingLine >= 1 && changingLine <= 6 && (
+            <motion.div
+              className="mt-4 p-3 bg-primary/10 border border-primary/30 rounded-lg"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="text-sm font-kai text-primary-light mb-2">动爻 · 第{changingLine}爻</div>
+              <div className="text-text-secondary text-sm">
+                {(() => {
+                  const changingLineData = lines.find(l => l.number === changingLine);
+                  if (!changingLineData) return '';
+                  const lineText = LINE_TEXT[changingLine as keyof typeof LINE_TEXT];
+                  return lineText[changingLineData.isYang ? 'yang' : 'yin'];
+                })()}
+              </div>
+            </motion.div>
+          )}
+        </Card>
+      </motion.div>
+
+      <Card variant="default">
         <button
           onClick={() => setExpandedDetail(!expandedDetail)}
-          className="w-full px-5 py-4 flex items-center justify-between text-left hover:bg-bg-medium transition-colors"
+          className="w-full flex items-center justify-between text-left hover:text-gold transition-colors"
         >
           <span className="font-kai text-text-secondary">卦辞解读</span>
           <motion.span
             animate={{ rotate: expandedDetail ? 180 : 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.3 }}
+            className="text-text-muted"
           >
             ▼
           </motion.span>
         </button>
         {expandedDetail && (
-          <div className="px-5 pb-5">
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className="pt-4"
+          >
             <div className="text-text-primary font-song mb-4">{hexagram.description}</div>
             <div className="text-text-secondary text-sm leading-relaxed font-kai">
               <p className="mb-3">
@@ -181,51 +264,180 @@ export const HexagramDisplay = ({ upperTrigram, lowerTrigram, changingLine }: He
                 {upper.element === '木' && lower.element === '土' && '木克土，体克用，事可成。'}
               </p>
             </div>
-          </div>
+          </motion.div>
         )}
-      </div>
+      </Card>
 
-      <div className="bg-bg-card border border-border rounded-sm p-5 shadow-card">
-        <h3 className="font-song text-lg font-bold text-text-primary mb-4">五行关系</h3>
-        <div className="flex justify-center">
-          <div className="relative w-48 h-48">
-            <svg viewBox="0 0 200 200" className="w-full h-full">
-              <circle cx="100" cy="100" r="80" fill="none" stroke="currentColor" strokeWidth="1" className="text-border" />
-              <circle cx="100" cy="100" r="60" fill="none" stroke="currentColor" strokeWidth="1" className="text-border" />
-              <circle cx="100" cy="100" r="40" fill="none" stroke="currentColor" strokeWidth="1" className="text-border" />
-              
-              <circle cx="100" cy="20" r="15" fill="#22C55E" className="opacity-60" />
-              <text x="100" y="26" textAnchor="middle" className="text-xs fill-text-secondary" fontSize="10">木</text>
-              
-              <circle cx="170" cy="62" r="15" fill="#EF4444" className="opacity-60" />
-              <text x="170" y="68" textAnchor="middle" className="text-xs fill-text-secondary" fontSize="10">火</text>
-              
-              <circle cx="170" cy="138" r="15" fill="#D4AF37" className="opacity-60" />
-              <text x="170" y="144" textAnchor="middle" className="text-xs fill-text-secondary" fontSize="10">土</text>
-              
-              <circle cx="100" cy="180" r="15" fill="#3B82F6" className="opacity-60" />
-              <text x="100" y="186" textAnchor="middle" className="text-xs fill-text-secondary" fontSize="10">水</text>
-              
-              <circle cx="30" cy="138" r="15" fill="#9CA3AF" className="opacity-60" />
-              <text x="30" y="144" textAnchor="middle" className="text-xs fill-text-secondary" fontSize="10">金</text>
-              
-              <path d="M100 35 L155 57" stroke="#22C55E" strokeWidth="1" className="opacity-40" />
-              <path d="M155 77 L155 123" stroke="#EF4444" strokeWidth="1" className="opacity-40" />
-              <path d="M155 143 L115 165" stroke="#D4AF37" strokeWidth="1" className="opacity-40" />
-              <path d="M85 165 L45 143" stroke="#3B82F6" strokeWidth="1" className="opacity-40" />
-              <path d="M45 123 L45 77" stroke="#9CA3AF" strokeWidth="1" className="opacity-40" />
-            </svg>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.8, duration: 0.6 }}
+      >
+        <Card variant="default">
+          <h3 className="font-song text-lg font-bold text-text-primary mb-4">五行关系</h3>
+          <div className="flex justify-center">
+            <div className="relative w-48 h-48">
+              <svg viewBox="0 0 200 200" className="w-full h-full">
+                <motion.circle
+                  cx="100"
+                  cy="100"
+                  r="80"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1"
+                  className="text-border"
+                  animate={{ strokeDashoffset: [502, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+                  strokeDasharray="502"
+                />
+                <motion.circle
+                  cx="100"
+                  cy="100"
+                  r="60"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1"
+                  className="text-border"
+                  animate={{ strokeDashoffset: [377, 0] }}
+                  transition={{ duration: 2, delay: 0.5, repeat: Infinity, ease: 'linear' }}
+                  strokeDasharray="377"
+                />
+                <motion.circle
+                  cx="100"
+                  cy="100"
+                  r="40"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1"
+                  className="text-border"
+                  animate={{ strokeDashoffset: [251, 0] }}
+                  transition={{ duration: 2, delay: 1, repeat: Infinity, ease: 'linear' }}
+                  strokeDasharray="251"
+                />
+
+                <motion.circle
+                  cx="100"
+                  cy="20"
+                  r="15"
+                  fill={upper.element === '木' ? '#228B22' : '#228B22'}
+                  className={upper.element === '木' ? 'opacity-100' : 'opacity-40'}
+                  animate={upper.element === '木' ? {
+                    opacity: [1, 1.3, 1],
+                  } : {}}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+                <text x="100" y="26" textAnchor="middle" className="text-xs fill-text-secondary" fontSize="10">木</text>
+
+                <motion.circle
+                  cx="170"
+                  cy="62"
+                  r="15"
+                  fill={upper.element === '火' || lower.element === '火' ? '#DC143C' : '#DC143C'}
+                  className={upper.element === '火' || lower.element === '火' ? 'opacity-100' : 'opacity-40'}
+                  animate={upper.element === '火' || lower.element === '火' ? {
+                    opacity: [1, 1.3, 1],
+                  } : {}}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+                <text x="170" y="68" textAnchor="middle" className="text-xs fill-text-secondary" fontSize="10">火</text>
+
+                <motion.circle
+                  cx="170"
+                  cy="138"
+                  r="15"
+                  fill={upper.element === '土' || lower.element === '土' ? '#DAA520' : '#DAA520'}
+                  className={upper.element === '土' || lower.element === '土' ? 'opacity-100' : 'opacity-40'}
+                  animate={upper.element === '土' || lower.element === '土' ? {
+                    opacity: [1, 1.3, 1],
+                  } : {}}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+                <text x="170" y="144" textAnchor="middle" className="text-xs fill-text-secondary" fontSize="10">土</text>
+
+                <motion.circle
+                  cx="100"
+                  cy="180"
+                  r="15"
+                  fill={upper.element === '水' || lower.element === '水' ? '#4169E1' : '#4169E1'}
+                  className={upper.element === '水' || lower.element === '水' ? 'opacity-100' : 'opacity-40'}
+                  animate={upper.element === '水' || lower.element === '水' ? {
+                    opacity: [1, 1.3, 1],
+                  } : {}}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+                <text x="100" y="186" textAnchor="middle" className="text-xs fill-text-secondary" fontSize="10">水</text>
+
+                <motion.circle
+                  cx="30"
+                  cy="138"
+                  r="15"
+                  fill={upper.element === '金' || lower.element === '金' ? '#C0C0C0' : '#C0C0C0'}
+                  className={upper.element === '金' || lower.element === '金' ? 'opacity-100' : 'opacity-40'}
+                  animate={upper.element === '金' || lower.element === '金' ? {
+                    opacity: [1, 1.3, 1],
+                  } : {}}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+                <text x="30" y="144" textAnchor="middle" className="text-xs fill-text-secondary" fontSize="10">金</text>
+
+                <motion.path
+                  d="M100 35 L155 57"
+                  stroke="#22C55E"
+                  strokeWidth="2"
+                  className="opacity-60"
+                  animate={{ strokeDashoffset: [100, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                  strokeDasharray="100"
+                />
+                <motion.path
+                  d="M155 77 L155 123"
+                  stroke="#DC143C"
+                  strokeWidth="2"
+                  className="opacity-60"
+                  animate={{ strokeDashoffset: [100, 0] }}
+                  transition={{ duration: 1.5, delay: 0.3, repeat: Infinity }}
+                  strokeDasharray="100"
+                />
+                <motion.path
+                  d="M155 143 L115 165"
+                  stroke="#DAA520"
+                  strokeWidth="2"
+                  className="opacity-60"
+                  animate={{ strokeDashoffset: [100, 0] }}
+                  transition={{ duration: 1.5, delay: 0.6, repeat: Infinity }}
+                  strokeDasharray="100"
+                />
+                <motion.path
+                  d="M85 165 L45 143"
+                  stroke="#4169E1"
+                  strokeWidth="2"
+                  className="opacity-60"
+                  animate={{ strokeDashoffset: [100, 0] }}
+                  transition={{ duration: 1.5, delay: 0.9, repeat: Infinity }}
+                  strokeDasharray="100"
+                />
+                <motion.path
+                  d="M45 123 L45 77"
+                  stroke="#C0C0C0"
+                  strokeWidth="2"
+                  className="opacity-60"
+                  animate={{ strokeDashoffset: [100, 0] }}
+                  transition={{ duration: 1.5, delay: 1.2, repeat: Infinity }}
+                  strokeDasharray="100"
+                />
+              </svg>
+            </div>
           </div>
-        </div>
-      </div>
+        </Card>
+      </motion.div>
 
       <div className="flex gap-2">
-        <button className="flex-1 px-4 py-2 bg-bg-medium border border-border rounded-sm text-text-secondary text-sm font-kai hover:bg-bg-light hover:text-text-primary transition-colors">
+        <Button variant="secondary" className="flex-1">
           导出 PDF
-        </button>
-        <button className="flex-1 px-4 py-2 bg-bg-medium border border-border rounded-sm text-text-secondary text-sm font-kai hover:bg-bg-light hover:text-text-primary transition-colors">
+        </Button>
+        <Button variant="primary" className="flex-1">
           保存记录
-        </button>
+        </Button>
       </div>
     </div>
   );

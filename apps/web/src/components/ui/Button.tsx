@@ -15,16 +15,23 @@ interface ButtonProps extends ComponentPropsWithoutRef<typeof motion.button> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    'bg-gradient-gold text-ink-black font-song hover:shadow-gold-glow border-2 border-imperial-gold/50',
+    'bg-gradient-to-r from-[#F4D03F] via-[#D4AF37] to-[#B8860B] text-[#000000] font-semibold border-2 border-[#D4AF37]/60 shadow-[0_0_20px_rgba(212,175,55,0.4)]',
   secondary:
-    'bg-ink-dark/80 border border-imperial-gold/30 text-parchment/70 font-kai hover:bg-ink-medium/60 hover:border-imperial-gold/50 hover:text-imperial-gold',
-  ghost: 'bg-transparent text-parchment/50 font-kai hover:text-imperial-gold hover:bg-ink-light/30',
+    'bg-transparent border-2 border-[#D4AF37]/50 text-[#D4AF37] font-semibold shadow-[0_0_10px_rgba(212,175,55,0.15)]',
+  ghost:
+    'bg-transparent border-2 border-transparent text-[#A0A0B0] font-medium',
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
-  sm: 'px-3 py-1.5 text-xs tracking-wider',
-  md: 'px-5 py-2.5 text-sm tracking-wider',
+  sm: 'px-4 py-2 text-xs tracking-wider',
+  md: 'px-6 py-2.5 text-sm tracking-wider',
   lg: 'px-8 py-3.5 text-base tracking-wider',
+};
+
+const hoverStyles: Record<ButtonVariant, string> = {
+  primary: 'hover:shadow-[0_0_30px_rgba(212,175,55,0.6),0_0_50px_rgba(212,175,55,0.4)]',
+  secondary: 'hover:shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:border-[#D4AF37]/70 hover:text-[#F4D03F]',
+  ghost: 'hover:text-[#D4AF37] hover:bg-[#1A1A25]/50',
 };
 
 export const Button = ({
@@ -46,16 +53,17 @@ export const Button = ({
       aria-disabled={isDisabled}
       role="button"
       className={[
-        'inline-flex items-center justify-center gap-2 font-medium transition-all duration-300',
+        'inline-flex items-center justify-center gap-2 transition-all duration-300 rounded-lg',
         variantStyles[variant],
         sizeStyles[size],
+        hoverStyles[variant],
         isDisabled ? 'opacity-50 cursor-not-allowed' : '',
         className,
       ]
         .filter(Boolean)
         .join(' ')}
-      whileHover={isDisabled ? undefined : { y: -1 }}
-      whileTap={isDisabled ? undefined : { scale: 0.98 }}
+      whileHover={isDisabled ? undefined : { y: -2, scale: 1.02 }}
+      whileTap={isDisabled ? undefined : { y: 0, scale: 0.98 }}
       {...props}
     >
       {loading && (
@@ -82,5 +90,24 @@ export const Button = ({
       )}
       {children}
     </motion.button>
+  );
+};
+
+interface RoyalButtonProps extends Omit<ButtonProps, 'variant'> {}
+
+export const RoyalButton = ({
+  size = 'md',
+  ...props
+}: RoyalButtonProps) => {
+  return (
+    <Button
+      variant="primary"
+      size={size}
+      className={[
+        'shadow-[0_0_30px_rgba(212,175,55,0.5),0_0_60px_rgba(212,175,55,0.3)]',
+        props.className || '',
+      ].join(' ')}
+      {...props}
+    />
   );
 };
