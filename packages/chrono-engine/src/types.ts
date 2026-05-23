@@ -89,6 +89,11 @@ export interface ChronoData {
     xunkong: [Dizhi, Dizhi] | null;
     jiuxing: Jiuxing;
   };
+
+  // 位置信息（用于真太阳时）
+  coordinates?: Coordinates;
+  useTrueSun?: boolean;
+  trueSunTime?: Date;
 }
 
 // 经纬度（用于真太阳时计算）
