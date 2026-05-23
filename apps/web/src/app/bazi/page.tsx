@@ -35,7 +35,7 @@ export default function BaziPage() {
           transition={{ duration: 0.6, delay: 0.2 }}
         >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-[#12121A] border border-[#D4AF37]/10 rounded-xl p-6 text-center">
+            <Card className="text-center">
               <div className="text-3xl mb-3">🎯</div>
               <h3 className="font-song text-lg font-bold text-text-primary mb-2">
                 命盘分析
@@ -43,9 +43,9 @@ export default function BaziPage() {
               <p className="text-sm text-text-secondary font-kai">
                 分析日主强弱、五行平衡、格局高低
               </p>
-            </div>
+            </Card>
 
-            <div className="bg-[#12121A] border border-[#D4AF37]/10 rounded-xl p-6 text-center">
+            <Card className="text-center">
               <div className="text-3xl mb-3">📅</div>
               <h3 className="font-song text-lg font-bold text-text-primary mb-2">
                 大运流年
@@ -53,9 +53,9 @@ export default function BaziPage() {
               <p className="text-sm text-text-secondary font-kai">
                 十年大运与流年运势预测
               </p>
-            </div>
+            </Card>
 
-            <div className="bg-[#12121A] border border-[#D4AF37]/10 rounded-xl p-6 text-center">
+            <Card className="text-center">
               <div className="text-3xl mb-3">⭐</div>
               <h3 className="font-song text-lg font-bold text-text-primary mb-2">
                 十神解读
@@ -63,7 +63,7 @@ export default function BaziPage() {
               <p className="text-sm text-text-secondary font-kai">
                 揭示性格特质与人际关系
               </p>
-            </div>
+            </Card>
           </div>
         </motion.div>
 

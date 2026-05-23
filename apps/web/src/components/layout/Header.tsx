@@ -58,28 +58,28 @@ export const Header = () => {
   }, []);
 
   return (
-    <header className="h-16 bg-bg-primary/95 border-b border-border sticky top-0 z-50 backdrop-blur-md">
+    <header className="h-16 bg-bg-primary/90 border-b border-border/50 sticky top-0 z-50 backdrop-blur-lg">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
         {/* Logo Section */}
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-9 h-9 rounded-sm bg-gradient-imperial-gold flex items-center justify-center group-hover:scale-105 transition-transform">
-            <span className="text-black font-song text-lg font-bold">天</span>
+          <div className="w-9 h-9 rounded-md bg-gradient-imperial-gold flex items-center justify-center group-hover:scale-105 transition-transform shadow-sm">
+            <span className="text-white font-song text-lg font-bold">天</span>
           </div>
           <div className="hidden sm:block">
-            <h1 className="font-song text-xl font-bold text-gradient-imperial-gold">天问</h1>
+            <h1 className="font-song text-xl font-bold text-gradient-gold">天问</h1>
           </div>
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-1">
+        <nav className="hidden md:flex items-center gap-0.5">
           {navigationItems.map((item) => (
             <Link
               key={item.id}
               href={item.href}
-              className={`flex items-center gap-2 px-3 py-2 rounded-sm text-sm font-kai transition-all duration-200 ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-kai transition-all duration-200 ${
                 pathname === item.href
-                  ? 'text-imperial-gold bg-imperial-gold/10 border border-imperial-gold/20'
-                  : 'text-text-secondary hover:text-imperial-gold hover:bg-bg-card hover:border hover:border-border'
+                  ? 'text-imperial-gold bg-imperial-gold/5 border border-imperial-gold/20'
+                  : 'text-text-secondary hover:text-imperial-gold hover:bg-bg-secondary'
               }`}
             >
               <span>{item.icon}</span>
@@ -89,9 +89,9 @@ export const Header = () => {
         </nav>
 
         {/* Right Section */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           {/* Time Display (Desktop) */}
-          <div className="hidden lg:flex items-center gap-3 px-3 py-1.5 bg-bg-card border border-border rounded-sm">
+          <div className="hidden lg:flex items-center gap-3 px-4 py-2 bg-bg-secondary/50 border border-border/30 rounded-md">
             <div className="flex items-center gap-2 text-xs">
               <span className="text-text-muted">干支</span>
               <span className="text-imperial-gold font-mono font-medium">
@@ -116,9 +116,9 @@ export const Header = () => {
                   initial={{ opacity: 0, y: -10, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                  className="absolute right-0 top-full mt-2 w-64 bg-bg-card border border-border rounded-sm shadow-card overflow-hidden"
+                  className="absolute right-0 top-full mt-2 w-64 bg-bg-card border border-border rounded-md shadow-lg overflow-hidden"
                 >
-                  <div className="p-4 border-b border-border">
+                  <div className="p-4 border-b border-border/30">
                     <div className="font-song font-bold text-text-primary">设置</div>
                   </div>
                   <div className="p-4 space-y-4">
@@ -158,7 +158,7 @@ export const Header = () => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-text-secondary hover:text-imperial-gold"
+            className="md:hidden p-2 text-text-secondary hover:text-imperial-gold rounded-md hover:bg-bg-secondary transition-colors"
           >
             <span className="text-xl">☰</span>
           </button>
@@ -180,10 +180,10 @@ export const Header = () => {
                   key={item.id}
                   href={item.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-3 rounded-sm text-sm font-kai transition-all ${
+                  className={`flex items-center gap-3 px-4 py-3 rounded-md text-sm font-kai transition-all ${
                     pathname === item.href
-                      ? 'text-imperial-gold bg-imperial-gold/10 border border-imperial-gold/20'
-                      : 'text-text-secondary hover:text-imperial-gold hover:bg-bg-card'
+                      ? 'text-imperial-gold bg-imperial-gold/5 border border-imperial-gold/20'
+                      : 'text-text-secondary hover:text-imperial-gold hover:bg-bg-secondary'
                   }`}
                 >
                   <span>{item.icon}</span>
