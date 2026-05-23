@@ -1,25 +1,20 @@
-import { ChronoData, Coordinates, Dizhi, Jiuxing } from './types';
-import { 
-  SHICHEN_MAP, 
-  DIZHI, 
-  JIUXING,
-  DIZHI_INDEX 
-} from './constants';
-import { 
-  getYearGanZhi, 
-  getMonthGanZhi, 
-  getDayGanZhi, 
+import { ChronoData, Coordinates, Dizhi, Jiuxing } from "./types";
+import { SHICHEN_MAP, DIZHI, JIUXING, DIZHI_INDEX } from "./constants";
+import {
+  getYearGanZhi,
+  getMonthGanZhi,
+  getDayGanZhi,
   getHourGanZhi,
-  getXunKong 
-} from './ganzhi';
-import { 
-  solarToLunar, 
-  getZodiac, 
-  getLunarMonthName, 
+  getXunKong,
+} from "./ganzhi";
+import {
+  solarToLunar,
+  getZodiac,
+  getLunarMonthName,
   getLunarDayName,
-  getHourIndex 
-} from './lunar';
-import { getCurrentJieqi } from './jieqi';
+  getHourIndex,
+} from "./lunar";
+import { getCurrentJieqi } from "./jieqi";
 
 /**
  * 天问 Chrono Engine - 东方时空认知系统核心引擎
@@ -30,7 +25,11 @@ export class ChronoEngine {
   private coordinates?: Coordinates;
   private useTrueSun: boolean;
 
-  constructor(date?: Date, coordinates?: Coordinates, useTrueSun: boolean = false) {
+  constructor(
+    date?: Date,
+    coordinates?: Coordinates,
+    useTrueSun: boolean = false,
+  ) {
     this.date = date || new Date();
     this.coordinates = coordinates;
     this.useTrueSun = useTrueSun;
@@ -74,30 +73,34 @@ export class ChronoEngine {
     }
 
     const { longitude, latitude } = this.coordinates;
-    
+
     // 1. 计算平太阳时
-    let hours = this.date.getHours() + this.date.getMinutes() / 60 + this.date.getSeconds() / 3600;
-    
+    let hours =
+      this.date.getHours() +
+      this.date.getMinutes() / 60 +
+      this.date.getSeconds() / 3600;
+
     // 2. 计算时区差异（以东经120度为基准）
     const timezoneOffset = (longitude - 120) * 4; // 每度4分钟
     hours += timezoneOffset / 60;
-    
+
     // 3. 计算真太阳时差值（简化的均时差算法）
     const dayOfYear = this.getDayOfYear(this.date);
     const B = (2 * Math.PI * (dayOfYear - 81)) / 365;
-    const equationOfTime = 9.87 * Math.sin(2 * B) - 7.53 * Math.cos(B) - 1.5 * Math.sin(B);
+    const equationOfTime =
+      9.87 * Math.sin(2 * B) - 7.53 * Math.cos(B) - 1.5 * Math.sin(B);
     hours += equationOfTime / 60;
-    
+
     // 4. 确保小时在合理范围内
     while (hours < 0) hours += 24;
     while (hours >= 24) hours -= 24;
-    
+
     // 5. 创建新的Date对象
     const result = new Date(this.date);
     result.setHours(Math.floor(hours));
     result.setMinutes(Math.floor((hours % 1) * 60));
-    result.setSeconds(Math.floor(((hours % 1) * 60) % 1 * 60));
-    
+    result.setSeconds(Math.floor((((hours % 1) * 60) % 1) * 60));
+
     return result;
   }
 
@@ -117,7 +120,7 @@ export class ChronoEngine {
   calculate(): ChronoData {
     // 计算使用的时间（真太阳时或平太阳时）
     const workingDate = this.calculateTrueSunTime();
-    
+
     const year = workingDate.getFullYear();
     const month = workingDate.getMonth() + 1;
     const day = workingDate.getDate();
@@ -134,7 +137,7 @@ export class ChronoEngine {
       minute,
       second,
       timestamp: workingDate.getTime(),
-      dateString: workingDate.toISOString()
+      dateString: workingDate.toISOString(),
     };
 
     // 2. 农历信息
@@ -156,7 +159,7 @@ export class ChronoEngine {
       hourGanZhi: hourGanZhi.full,
       zodiac: getZodiac(lunarInfo.year),
       lunarMonthName: getLunarMonthName(lunarInfo.month, lunarInfo.isLeapMonth),
-      lunarDayName: getLunarDayName(lunarInfo.day)
+      lunarDayName: getLunarDayName(lunarInfo.day),
     };
 
     // 3. 节气信息
@@ -167,7 +170,7 @@ export class ChronoEngine {
       year: yearGanZhi,
       month: monthGanZhi,
       day: dayGanZhi,
-      hour: hourGanZhi
+      hour: hourGanZhi,
     };
 
     // 5. 时辰信息
@@ -183,7 +186,7 @@ export class ChronoEngine {
       taisui,
       yuejian,
       xunKong,
-      jiuxing
+      jiuxing,
     };
 
     return {
@@ -195,14 +198,14 @@ export class ChronoEngine {
       special,
       coordinates: this.coordinates,
       useTrueSun: this.useTrueSun,
-      trueSunTime: this.useTrueSun ? workingDate : undefined
+      trueSunTime: this.useTrueSun ? workingDate : undefined,
     };
   }
 
   /**
    * 计算值星（简化版）
    */
-  private calculateJiuxing(ganzhi: ChronoData['ganzhi']): Jiuxing {
+  private calculateJiuxing(ganzhi: ChronoData["ganzhi"]): Jiuxing {
     // 简化算法：根据日干支计算
     const dayZhiIndex = DIZHI_INDEX[ganzhi.day.zhi] - 1;
     const jiuxingIndex = (dayZhiIndex + 3) % 9;
@@ -212,7 +215,10 @@ export class ChronoEngine {
   /**
    * 获取当前时间的时空信息（静态方法）
    */
-  static now(coordinates?: Coordinates, useTrueSun: boolean = false): ChronoData {
+  static now(
+    coordinates?: Coordinates,
+    useTrueSun: boolean = false,
+  ): ChronoData {
     const engine = new ChronoEngine(new Date(), coordinates, useTrueSun);
     return engine.calculate();
   }
@@ -220,7 +226,11 @@ export class ChronoEngine {
   /**
    * 获取指定时间的时空信息（静态方法）
    */
-  static at(date: Date, coordinates?: Coordinates, useTrueSun: boolean = false): ChronoData {
+  static at(
+    date: Date,
+    coordinates?: Coordinates,
+    useTrueSun: boolean = false,
+  ): ChronoData {
     const engine = new ChronoEngine(date, coordinates, useTrueSun);
     return engine.calculate();
   }

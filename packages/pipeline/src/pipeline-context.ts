@@ -2,7 +2,13 @@
  * Pipeline 上下文管理
  */
 
-import { PipelineContext, PipelineStage, StageResult, PredictionInput, PipelineMetadata } from './types';
+import {
+  PipelineContext,
+  PipelineStage,
+  StageResult,
+  PredictionInput,
+  PipelineMetadata,
+} from "./types";
 
 export class PipelineContextManager {
   private contexts: Map<string, PipelineContext> = new Map();
@@ -13,19 +19,19 @@ export class PipelineContextManager {
   createContext(input: PredictionInput): PipelineContext {
     const id = this.generateId();
     const metadata: PipelineMetadata = {
-      version: '1.0.0',
+      version: "1.0.0",
       createdAt: new Date(),
       cacheHit: false,
-      system: 'Tianwen-Pipeline-v1'
+      system: "Tianwen-Pipeline-v1",
     };
 
     const context: PipelineContext = {
       id,
       input,
-      currentStage: 'input',
+      currentStage: "input",
       stageResults: new Map(),
       signals: [],
-      metadata
+      metadata,
     };
 
     this.contexts.set(id, context);
@@ -52,10 +58,10 @@ export class PipelineContextManager {
   recordStageResult(
     context: PipelineContext,
     stage: PipelineStage,
-    status: StageResult['status'],
+    status: StageResult["status"],
     data?: any,
     error?: string,
-    metadata?: Record<string, any>
+    metadata?: Record<string, any>,
   ): StageResult {
     const startTime = context.stageResults.get(stage)?.startTime || new Date();
     const endTime = new Date();
@@ -69,7 +75,7 @@ export class PipelineContextManager {
       startTime,
       endTime,
       duration,
-      metadata
+      metadata,
     };
 
     context.stageResults.set(stage, result);
@@ -82,8 +88,8 @@ export class PipelineContextManager {
   markStageStart(context: PipelineContext, stage: PipelineStage): void {
     context.stageResults.set(stage, {
       stage,
-      status: 'processing',
-      startTime: new Date()
+      status: "processing",
+      startTime: new Date(),
     });
   }
 
@@ -94,9 +100,16 @@ export class PipelineContextManager {
     context: PipelineContext,
     stage: PipelineStage,
     data?: any,
-    metadata?: Record<string, any>
+    metadata?: Record<string, any>,
   ): StageResult {
-    return this.recordStageResult(context, stage, 'completed', data, undefined, metadata);
+    return this.recordStageResult(
+      context,
+      stage,
+      "completed",
+      data,
+      undefined,
+      metadata,
+    );
   }
 
   /**
@@ -106,9 +119,16 @@ export class PipelineContextManager {
     context: PipelineContext,
     stage: PipelineStage,
     error: string,
-    metadata?: Record<string, any>
+    metadata?: Record<string, any>,
   ): StageResult {
-    return this.recordStageResult(context, stage, 'failed', undefined, error, metadata);
+    return this.recordStageResult(
+      context,
+      stage,
+      "failed",
+      undefined,
+      error,
+      metadata,
+    );
   }
 
   /**
@@ -117,22 +137,28 @@ export class PipelineContextManager {
   markStageSkipped(
     context: PipelineContext,
     stage: PipelineStage,
-    reason?: string
+    reason?: string,
   ): StageResult {
-    return this.recordStageResult(context, stage, 'skipped', undefined, reason);
+    return this.recordStageResult(context, stage, "skipped", undefined, reason);
   }
 
   /**
    * 获取阶段状态
    */
-  getStageStatus(context: PipelineContext, stage: PipelineStage): StageResult['status'] | undefined {
+  getStageStatus(
+    context: PipelineContext,
+    stage: PipelineStage,
+  ): StageResult["status"] | undefined {
     return context.stageResults.get(stage)?.status;
   }
 
   /**
    * 获取阶段结果
    */
-  getStageResult<T = any>(context: PipelineContext, stage: PipelineStage): StageResult<T> | undefined {
+  getStageResult<T = any>(
+    context: PipelineContext,
+    stage: PipelineStage,
+  ): StageResult<T> | undefined {
     return context.stageResults.get(stage) as StageResult<T> | undefined;
   }
 
@@ -140,7 +166,7 @@ export class PipelineContextManager {
    * 检查阶段是否完成
    */
   isStageCompleted(context: PipelineContext, stage: PipelineStage): boolean {
-    return this.getStageStatus(context, stage) === 'completed';
+    return this.getStageStatus(context, stage) === "completed";
   }
 
   /**
@@ -149,7 +175,7 @@ export class PipelineContextManager {
   getCompletedStages(context: PipelineContext): PipelineStage[] {
     const completed: PipelineStage[] = [];
     for (const [stage, result] of context.stageResults.entries()) {
-      if (result.status === 'completed') {
+      if (result.status === "completed") {
         completed.push(stage);
       }
     }
@@ -162,7 +188,7 @@ export class PipelineContextManager {
   getFailedStages(context: PipelineContext): PipelineStage[] {
     const failed: PipelineStage[] = [];
     for (const [stage, result] of context.stageResults.entries()) {
-      if (result.status === 'failed') {
+      if (result.status === "failed") {
         failed.push(stage);
       }
     }
@@ -230,7 +256,7 @@ export class PipelineContextManager {
   serializeContext(context: PipelineContext): string {
     const serialized = {
       ...context,
-      stageResults: Array.from(context.stageResults.entries())
+      stageResults: Array.from(context.stageResults.entries()),
     };
     return JSON.stringify(serialized);
   }
@@ -242,7 +268,7 @@ export class PipelineContextManager {
     const parsed = JSON.parse(data);
     return {
       ...parsed,
-      stageResults: new Map(parsed.stageResults)
+      stageResults: new Map(parsed.stageResults),
     };
   }
 }

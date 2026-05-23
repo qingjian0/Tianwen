@@ -31,7 +31,7 @@ export interface SandboxMetrics {
 }
 
 export interface SandboxViolation {
-  type: 'memory' | 'time' | 'iteration' | 'forbidden' | 'undefined';
+  type: "memory" | "time" | "iteration" | "forbidden" | "undefined";
   message: string;
   timestamp: number;
 }

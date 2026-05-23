@@ -55,6 +55,7 @@ tianwen/
 ## 开发阶段
 
 ### Phase 1（当前）
+
 - ✅ Monorepo 项目初始化
 - ✅ Chrono Engine 基础实现
 - ✅ 梅花易数核心模块
@@ -65,16 +66,19 @@ tianwen/
 - ⏳ 六爻 / 奇门基础结构
 
 ### Phase 2
+
 - AI Agent 系统
 - Prompt Engine
 - 概率分析与共振分析
 
 ### Phase 3
+
 - RAG 系统
 - 知识图谱
 - 规则引擎
 
 ### Phase 4
+
 - 宇宙 UI 系统
 - 命运时间轴
 - 高级动画与可视化
@@ -82,6 +86,7 @@ tianwen/
 ## 快速开始
 
 ### 环境要求
+
 - Node.js 24+
 - Python 3.14+
 - pnpm 9+

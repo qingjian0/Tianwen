@@ -1,13 +1,23 @@
-import { Tiangan, Dizhi, Wuxing, ChronoData } from '@tianwen/chrono-engine';
+import { Tiangan, Dizhi, Wuxing, ChronoData } from "@tianwen/chrono-engine";
 
 // 十神
-export type Shishen = '正官' | '七杀' | '正印' | '偏印' | '比肩' | '劫财' | '食神' | '伤官' | '正财' | '偏财';
+export type Shishen =
+  | "正官"
+  | "七杀"
+  | "正印"
+  | "偏印"
+  | "比肩"
+  | "劫财"
+  | "食神"
+  | "伤官"
+  | "正财"
+  | "偏财";
 
 // 五行强弱
 export interface WuxingStrength {
   wuxing: Wuxing;
   score: number;
-  level: 'strong' | 'medium' | 'weak';
+  level: "strong" | "medium" | "weak";
 }
 
 // 单柱
@@ -44,7 +54,7 @@ export interface LiunianPillar {
 // 八字完整结果
 export interface BaZiResult {
   chronoData: ChronoData;
-  gender: 'male' | 'female';
+  gender: "male" | "female";
   yearPillar: BaZiPillar;
   monthPillar: BaZiPillar;
   dayPillar: BaZiPillar;
@@ -52,7 +62,7 @@ export interface BaZiResult {
   dayMaster: Tiangan;
   dayMasterWuxing: Wuxing;
   wuxingStrengths: WuxingStrength[];
-  dayMasterStrength: 'weak' | 'balanced' | 'strong';
+  dayMasterStrength: "weak" | "balanced" | "strong";
   favorableWuxing: Wuxing[];
   unfavorableWuxing: Wuxing[];
   dayuns: DayunPillar[];

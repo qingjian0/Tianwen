@@ -1,7 +1,12 @@
-import { Signal } from '@tianwen/signal-system';
-import { ProbabilityScore } from '@tianwen/probability-engine';
-import { DEFAULT_MAPPING_CONFIG, POLARITY_SCORE_WEIGHTS, STRENGTH_WEIGHTS, CONFIDENCE_FACTOR } from './constants';
-import { MappingConfig, MappedProbability } from './types';
+import { Signal } from "@tianwen/signal-system";
+import { ProbabilityScore } from "@tianwen/probability-engine";
+import {
+  DEFAULT_MAPPING_CONFIG,
+  POLARITY_SCORE_WEIGHTS,
+  STRENGTH_WEIGHTS,
+  CONFIDENCE_FACTOR,
+} from "./constants";
+import { MappingConfig, MappedProbability } from "./types";
 
 export class ProbabilityMapper {
   private config: MappingConfig;
@@ -37,15 +42,17 @@ export class ProbabilityMapper {
 
       // 应用贡献
       if (contribution > 0) {
-        score += contribution * this.config.positiveMultiplier / signals.length;
+        score +=
+          (contribution * this.config.positiveMultiplier) / signals.length;
       } else if (contribution < 0) {
-        score += contribution * this.config.negativeMultiplier / signals.length;
+        score +=
+          (contribution * this.config.negativeMultiplier) / signals.length;
       }
 
       contributingSignals.push(signal);
 
       // 收集不稳定因素
-      if (signal.polarity === 'unstable') {
+      if (signal.polarity === "unstable") {
         uncertaintyFactors.push(`信号 ${signal.id} 不稳定`);
       }
     }
@@ -54,9 +61,11 @@ export class ProbabilityMapper {
     score = Math.max(0.05, Math.min(0.95, score));
 
     // 计算置信度
-    const avgConfidence = contributingSignals.length > 0
-      ? contributingSignals.reduce((sum, s) => sum + s.confidence, 0) / contributingSignals.length
-      : 0.5;
+    const avgConfidence =
+      contributingSignals.length > 0
+        ? contributingSignals.reduce((sum, s) => sum + s.confidence, 0) /
+          contributingSignals.length
+        : 0.5;
 
     // 计算波动率
     const volatility = this.calculateVolatility(signals);
@@ -67,14 +76,14 @@ export class ProbabilityMapper {
       failureProbability: 1 - score,
       uncertainty: 1 - avgConfidence,
       volatility,
-      confidence: avgConfidence
+      confidence: avgConfidence,
     };
 
     return {
       probabilityScore,
       contributingSignals,
       reasoning: this.generateReasoning(signals, probabilityScore),
-      uncertaintyFactors
+      uncertaintyFactors,
     };
   }
 
@@ -85,12 +94,19 @@ export class ProbabilityMapper {
     if (signals.length === 0) return 0.5;
 
     // 基于极性的分布计算波动率
-    const positiveCount = signals.filter(s => s.polarity === 'positive').length;
-    const negativeCount = signals.filter(s => s.polarity === 'negative').length;
-    const unstableCount = signals.filter(s => s.polarity === 'unstable').length;
+    const positiveCount = signals.filter(
+      (s) => s.polarity === "positive",
+    ).length;
+    const negativeCount = signals.filter(
+      (s) => s.polarity === "negative",
+    ).length;
+    const unstableCount = signals.filter(
+      (s) => s.polarity === "unstable",
+    ).length;
 
     // 如果信号冲突强烈，波动率高
-    const conflict = Math.min(positiveCount, negativeCount) / Math.max(1, signals.length);
+    const conflict =
+      Math.min(positiveCount, negativeCount) / Math.max(1, signals.length);
     const unstableFactor = unstableCount / signals.length;
 
     return Math.min(0.95, conflict * 0.6 + unstableFactor * 0.4);
@@ -99,11 +115,20 @@ export class ProbabilityMapper {
   /**
    * 生成推理说明
    */
-  private generateReasoning(signals: Signal[], score: ProbabilityScore): string {
-    const positiveCount = signals.filter(s => s.polarity === 'positive').length;
-    const negativeCount = signals.filter(s => s.polarity === 'negative').length;
-    const neutralCount = signals.filter(s => s.polarity === 'neutral').length;
-    const unstableCount = signals.filter(s => s.polarity === 'unstable').length;
+  private generateReasoning(
+    signals: Signal[],
+    score: ProbabilityScore,
+  ): string {
+    const positiveCount = signals.filter(
+      (s) => s.polarity === "positive",
+    ).length;
+    const negativeCount = signals.filter(
+      (s) => s.polarity === "negative",
+    ).length;
+    const neutralCount = signals.filter((s) => s.polarity === "neutral").length;
+    const unstableCount = signals.filter(
+      (s) => s.polarity === "unstable",
+    ).length;
 
     const lines = [
       `基于 ${signals.length} 个信号分析:`,
@@ -111,10 +136,10 @@ export class ProbabilityMapper {
       `消极信号: ${negativeCount} 个`,
       `中性信号: ${neutralCount} 个`,
       `不稳定信号: ${unstableCount} 个`,
-      `综合成功概率: ${Math.round(score.successProbability * 100)}%`
+      `综合成功概率: ${Math.round(score.successProbability * 100)}%`,
     ];
 
-    return lines.join('\n');
+    return lines.join("\n");
   }
 
   /**
@@ -127,11 +152,11 @@ export class ProbabilityMapper {
         failureProbability: 0.5,
         uncertainty: 0.5,
         volatility: 0.5,
-        confidence: 0.3
+        confidence: 0.3,
       },
       contributingSignals: [],
-      reasoning: '无可用信号，返回中性概率。',
-      uncertaintyFactors: ['无信号数据']
+      reasoning: "无可用信号，返回中性概率。",
+      uncertaintyFactors: ["无信号数据"],
     };
   }
 }

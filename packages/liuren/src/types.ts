@@ -1,16 +1,16 @@
-import { ChronoData, Coordinates } from '@tianwen/chrono-engine';
+import { ChronoData, Coordinates } from "@tianwen/chrono-engine";
 
 export interface LiuRenConfig {
   useTrueSun?: boolean;
   coordinates?: Coordinates;
   // 换将方式：月将/时将
-  jiangMethod?: 'yue' | 'shi';
+  jiangMethod?: "yue" | "shi";
   // 起课方式：天盘/地盘
-  keMethod?: 'tian' | 'di';
+  keMethod?: "tian" | "di";
   // 涉害方法：孟仲季/深浅
-  shehaiMethod?: 'mengzhongji' | 'shenqian';
+  shehaiMethod?: "mengzhongji" | "shenqian";
   // 昼夜选择
-  dayNight?: 'day' | 'night';
+  dayNight?: "day" | "night";
 }
 
 export interface TianPan {

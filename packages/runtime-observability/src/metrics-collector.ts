@@ -2,7 +2,7 @@
  * Metrics Collector - 运行时指标收集
  */
 
-import { RuntimeMetrics } from './types';
+import { RuntimeMetrics } from "./types";
 
 export class MetricsCollector {
   private metrics: RuntimeMetrics[] = [];
@@ -19,9 +19,11 @@ export class MetricsCollector {
   }
 
   collect(): RuntimeMetrics {
-    const averageExecutionTime = this.executionTimes.length > 0
-      ? this.executionTimes.reduce((a, b) => a + b, 0) / this.executionTimes.length
-      : 0;
+    const averageExecutionTime =
+      this.executionTimes.length > 0
+        ? this.executionTimes.reduce((a, b) => a + b, 0) /
+          this.executionTimes.length
+        : 0;
 
     return {
       timestamp: Date.now(),
@@ -34,7 +36,7 @@ export class MetricsCollector {
   }
 
   private getMemoryUsage(): number {
-    if (typeof process !== 'undefined' && process.memoryUsage) {
+    if (typeof process !== "undefined" && process.memoryUsage) {
       return process.memoryUsage().heapUsed / 1024 / 1024;
     }
     return 0;

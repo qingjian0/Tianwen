@@ -2,14 +2,9 @@
  * 规则服务 - 规则查询与管理
  */
 
-import { allRules, rulesByCategory, getRuleCount } from '@/knowledge/rules';
-import { Rule, RuleCondition, RuleEffect } from '@tianwen/rule-engine-core';
-import {
-  ApiResponse,
-  RuleResponse,
-  RuleInfo,
-  RuleQuery
-} from './types';
+import { allRules, rulesByCategory, getRuleCount } from "@/knowledge/rules";
+import { Rule, RuleCondition, RuleEffect } from "@tianwen/rule-engine-core";
+import { ApiResponse, RuleResponse, RuleInfo, RuleQuery } from "./types";
 
 export class RuleService {
   private rules: Rule[];
@@ -18,7 +13,7 @@ export class RuleService {
   constructor() {
     this.rules = allRules;
     this.rulesMap = new Map();
-    
+
     for (const rule of this.rules) {
       this.rulesMap.set(rule.metadata.id, rule);
     }
@@ -28,18 +23,19 @@ export class RuleService {
     let filtered = [...this.rules];
 
     if (query.category) {
-      filtered = filtered.filter(r => r.metadata.category === query.category);
+      filtered = filtered.filter((r) => r.metadata.category === query.category);
     }
 
     if (query.priority) {
-      filtered = filtered.filter(r => r.metadata.priority === query.priority);
+      filtered = filtered.filter((r) => r.metadata.priority === query.priority);
     }
 
     if (query.keyword) {
       const keyword = query.keyword.toLowerCase();
-      filtered = filtered.filter(r => 
-        r.metadata.name.toLowerCase().includes(keyword) ||
-        r.metadata.description.toLowerCase().includes(keyword)
+      filtered = filtered.filter(
+        (r) =>
+          r.metadata.name.toLowerCase().includes(keyword) ||
+          r.metadata.description.toLowerCase().includes(keyword),
       );
     }
 
@@ -48,16 +44,16 @@ export class RuleService {
     const start = (page - 1) * limit;
     const items = filtered.slice(start, start + limit);
 
-    const ruleInfos = items.map(rule => this.convertToRuleInfo(rule));
+    const ruleInfos = items.map((rule) => this.convertToRuleInfo(rule));
 
     return {
       success: true,
       data: {
         items: ruleInfos,
-        total: filtered.length
+        total: filtered.length,
       },
       timestamp: new Date().toISOString(),
-      requestId: `rule_${Date.now()}`
+      requestId: `rule_${Date.now()}`,
     };
   }
 
@@ -67,9 +63,9 @@ export class RuleService {
     if (!rule) {
       return {
         success: false,
-        error: 'Rule not found',
+        error: "Rule not found",
         timestamp: new Date().toISOString(),
-        requestId: id
+        requestId: id,
       };
     }
 
@@ -77,11 +73,13 @@ export class RuleService {
       success: true,
       data: this.convertToRuleInfo(rule),
       timestamp: new Date().toISOString(),
-      requestId: id
+      requestId: id,
     };
   }
 
-  async getCategories(): Promise<ApiResponse<{ categories: string[]; counts: Record<string, number> }>> {
+  async getCategories(): Promise<
+    ApiResponse<{ categories: string[]; counts: Record<string, number> }>
+  > {
     const counts = getRuleCount();
     const categories = Object.keys(rulesByCategory);
 
@@ -95,11 +93,11 @@ export class RuleService {
           universal: counts.universal,
           bazi: counts.bazi,
           qimen: counts.qimen,
-          ziwei: counts.ziwei
-        }
+          ziwei: counts.ziwei,
+        },
       },
       timestamp: new Date().toISOString(),
-      requestId: `cat_${Date.now()}`
+      requestId: `cat_${Date.now()}`,
     };
   }
 
@@ -109,19 +107,19 @@ export class RuleService {
     if (!rules) {
       return {
         success: false,
-        error: 'Category not found',
+        error: "Category not found",
         timestamp: new Date().toISOString(),
-        requestId: `cat_${category}`
+        requestId: `cat_${category}`,
       };
     }
 
-    const ruleInfos = rules.map(rule => this.convertToRuleInfo(rule));
+    const ruleInfos = rules.map((rule) => this.convertToRuleInfo(rule));
 
     return {
       success: true,
       data: ruleInfos,
       timestamp: new Date().toISOString(),
-      requestId: `cat_${category}`
+      requestId: `cat_${category}`,
     };
   }
 
@@ -135,30 +133,30 @@ export class RuleService {
       source: {
         name: rule.metadata.source.name,
         chapter: rule.metadata.source.chapter,
-        page: rule.metadata.source.page
+        page: rule.metadata.source.page,
       },
-      conditions: rule.conditions.map(c => this.convertCondition(c)),
-      effects: rule.effects.map(e => this.convertEffect(e)),
-      confidence: rule.confidence || 0.8
+      conditions: rule.conditions.map((c) => this.convertCondition(c)),
+      effects: rule.effects.map((e) => this.convertEffect(e)),
+      confidence: rule.confidence || 0.8,
     };
   }
 
   private convertCondition(condition: RuleCondition): any {
-    if ('type' in condition && condition.type === 'simple') {
+    if ("type" in condition && condition.type === "simple") {
       return {
         field: condition.field,
         operator: condition.operator,
-        value: condition.value
+        value: condition.value,
       };
     }
-    return { type: 'complex', description: '组合条件' };
+    return { type: "complex", description: "组合条件" };
   }
 
   private convertEffect(effect: RuleEffect): any {
     return {
       type: effect.type,
-      action: effect.action || 'set',
-      value: effect.value
+      action: effect.action || "set",
+      value: effect.value,
     };
   }
 }

@@ -6,7 +6,7 @@ export interface TimelineState {
   stateId: string;
   userId: string;
   timestamp: number;
-  type: 'prediction' | 'event' | 'milestone' | 'reflection';
+  type: "prediction" | "event" | "milestone" | "reflection";
   content: any;
   properties: Record<string, any>;
   confidence: number;

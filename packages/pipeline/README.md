@@ -61,7 +61,7 @@ Interpretation Engine (规则解释)
 ## 使用示例
 
 ```typescript
-import { TianwenPipeline, PredictionInput } from '@tianwen/pipeline';
+import { TianwenPipeline, PredictionInput } from "@tianwen/pipeline";
 
 // 创建 Pipeline
 const pipeline = new TianwenPipeline({
@@ -69,17 +69,17 @@ const pipeline = new TianwenPipeline({
   enableConflictResolution: true,
   rules: {
     enabled: true,
-    categories: ['meihua', 'liuyao']
-  }
+    categories: ["meihua", "liuyao"],
+  },
 });
 
 // 准备输入
 const input: PredictionInput = {
-  question: '今日财运如何？',
-  category: 'wealth',
-  system: 'meihua',
-  mode: 'single',
-  timestamp: new Date()
+  question: "今日财运如何？",
+  category: "wealth",
+  system: "meihua",
+  mode: "single",
+  timestamp: new Date(),
 };
 
 // 执行推演
@@ -87,10 +87,10 @@ const result = await pipeline.execute(input);
 
 // 获取结果
 if (result.success) {
-  console.log('摘要:', result.output.summary);
-  console.log('成功概率:', result.output.probability.success);
-  console.log('吉凶等级:', result.output.fortune.level);
-  console.log('计算轨迹:', result.output.calculationTrace);
+  console.log("摘要:", result.output.summary);
+  console.log("成功概率:", result.output.probability.success);
+  console.log("吉凶等级:", result.output.fortune.level);
+  console.log("计算轨迹:", result.output.calculationTrace);
 }
 ```
 
@@ -98,11 +98,11 @@ if (result.success) {
 
 ```typescript
 interface PipelineConfig {
-  enableCache: boolean;              // 启用缓存
-  enableConflictResolution: boolean;  // 启用冲突解决
-  enableMultiSystemFusion: boolean;   // 启用多系统融合
-  maxExecutionTimeMs: number;         // 最大执行时间
-  stages: StageConfig[];              // 阶段配置
+  enableCache: boolean; // 启用缓存
+  enableConflictResolution: boolean; // 启用冲突解决
+  enableMultiSystemFusion: boolean; // 启用多系统融合
+  maxExecutionTimeMs: number; // 最大执行时间
+  stages: StageConfig[]; // 阶段配置
   rules: {
     enabled: boolean;
     categories?: string[];
@@ -110,7 +110,7 @@ interface PipelineConfig {
   };
   interpretation: {
     enabled: boolean;
-    style?: 'formal' | 'casual' | 'detailed';
+    style?: "formal" | "casual" | "detailed";
     includeTrace?: boolean;
   };
 }
@@ -120,27 +120,30 @@ interface PipelineConfig {
 
 ```typescript
 interface PredictionOutput {
-  summary: string;                    // 摘要
-  probability: {                      // 概率分析
+  summary: string; // 摘要
+  probability: {
+    // 概率分析
     success: number;
     failure: number;
     confidence: number;
   };
-  fortune: {                          // 吉凶判定
+  fortune: {
+    // 吉凶判定
     level: FortuneLevel;
     score: number;
     description: string;
   };
-  timing: {                           // 时间分析
+  timing: {
+    // 时间分析
     favorable: string[];
     unfavorable: string[];
     optimal?: string;
   };
-  signals: SignalOutput[];             // 信号列表
-  appliedRules: RuleOutput[];          // 应用规则
-  knowledgeReferences: any[];          // 知识引用
-  calculationTrace: TraceStep[];       // 计算轨迹
-  actionableSuggestions: string[];     // 行动建议
+  signals: SignalOutput[]; // 信号列表
+  appliedRules: RuleOutput[]; // 应用规则
+  knowledgeReferences: any[]; // 知识引用
+  calculationTrace: TraceStep[]; // 计算轨迹
+  actionableSuggestions: string[]; // 行动建议
 }
 ```
 
@@ -149,7 +152,7 @@ interface PredictionOutput {
 ### 注册自定义处理器
 
 ```typescript
-pipeline.registerProcessor('interpretation', customProcessor);
+pipeline.registerProcessor("interpretation", customProcessor);
 ```
 
 ### 自定义阶段配置
@@ -157,9 +160,9 @@ pipeline.registerProcessor('interpretation', customProcessor);
 ```typescript
 pipeline.updateConfig({
   stages: [
-    { name: 'chrono', enabled: true, timeout: 5000 },
-    { name: 'rule', enabled: true, retries: 3 }
-  ]
+    { name: "chrono", enabled: true, timeout: 5000 },
+    { name: "rule", enabled: true, retries: 3 },
+  ],
 });
 ```
 
@@ -179,4 +182,4 @@ pipeline.updateConfig({
 
 ---
 
-*Phase 6 - Pipeline 整合核心 - 2026年5月*
+_Phase 6 - Pipeline 整合核心 - 2026年5月_

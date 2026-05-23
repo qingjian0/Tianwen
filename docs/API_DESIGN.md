@@ -16,11 +16,11 @@
 
 ### 2.1 预测接口 (Prediction)
 
-| 方法 | 路径 | 功能 |
-|-----|------|------|
-| POST | /predictions | 创建新的预测请求 |
-| GET | /predictions/:id | 获取指定预测结果 |
-| GET | /predictions | 获取历史预测列表 |
+| 方法 | 路径             | 功能             |
+| ---- | ---------------- | ---------------- |
+| POST | /predictions     | 创建新的预测请求 |
+| GET  | /predictions/:id | 获取指定预测结果 |
+| GET  | /predictions     | 获取历史预测列表 |
 
 #### 2.1.1 创建预测请求
 
@@ -106,12 +106,12 @@ Content-Type: application/json
 
 ### 2.2 规则接口 (Rule)
 
-| 方法 | 路径 | 功能 |
-|-----|------|------|
-| GET | /rules | 获取所有规则列表 |
-| GET | /rules/:id | 获取指定规则详细信息 |
-| GET | /rules/categories/list | 获取规则分类列表 |
-| GET | /rules/categories/:category | 获取某分类规则 |
+| 方法 | 路径                        | 功能                 |
+| ---- | --------------------------- | -------------------- |
+| GET  | /rules                      | 获取所有规则列表     |
+| GET  | /rules/:id                  | 获取指定规则详细信息 |
+| GET  | /rules/categories/list      | 获取规则分类列表     |
+| GET  | /rules/categories/:category | 获取某分类规则       |
 
 #### 2.2.1 示例：获取八字规则
 
@@ -135,10 +135,10 @@ Content-Type: application/json
 
 ### 2.3 系统接口
 
-| 方法 | 路径 | 功能 |
-|-----|------|------|
-| GET | /health | 健康检查 |
-| GET | /version | 系统版本信息 |
+| 方法 | 路径     | 功能         |
+| ---- | -------- | ------------ |
+| GET  | /health  | 健康检查     |
+| GET  | /version | 系统版本信息 |
 
 ---
 
@@ -150,11 +150,11 @@ Content-Type: application/json
 
 ### 3.2 频道 (Channels)
 
-| 频道 | 功能 |
-|-----|------|
+| 频道        | 功能                   |
+| ----------- | ---------------------- |
 | predictions | 推演状态更新与完成通知 |
-| rules | 规则库更新通知 |
-| system | 系统状态与健康监控 |
+| rules       | 规则库更新通知         |
+| system      | 系统状态与健康监控     |
 
 ### 3.3 消息示例
 
@@ -207,14 +207,14 @@ Content-Type: application/json
 
 ## 4. 错误码约定
 
-| HTTP 状态码 | 说明 |
-|------------|------|
-| 200 | 成功 |
-| 202 | 请求已接受，处理中 |
-| 400 | 请求参数错误 |
-| 401 | 未授权 |
-| 404 | 资源不存在 |
-| 500 | 服务器内部错误 |
+| HTTP 状态码 | 说明               |
+| ----------- | ------------------ |
+| 200         | 成功               |
+| 202         | 请求已接受，处理中 |
+| 400         | 请求参数错误       |
+| 401         | 未授权             |
+| 404         | 资源不存在         |
+| 500         | 服务器内部错误     |
 
 ### WebSocket 错误消息
 
@@ -234,38 +234,40 @@ Content-Type: application/json
 ### 5.1 使用 RESTful API
 
 ```javascript
-import axios from 'axios';
+import axios from "axios";
 
-const response = await axios.post('http://localhost:3000/api/predictions', {
-  question: '今日财运如何？',
-  category: 'wealth',
-  system: 'meihua',
-  mode: 'single'
+const response = await axios.post("http://localhost:3000/api/predictions", {
+  question: "今日财运如何？",
+  category: "wealth",
+  system: "meihua",
+  mode: "single",
 });
 
-console.log('预测请求ID:', response.data.id);
+console.log("预测请求ID:", response.data.id);
 ```
 
 ### 5.2 使用 WebSocket
 
 ```javascript
-import WebSocket from 'ws';
+import WebSocket from "ws";
 
-const ws = new WebSocket('ws://localhost:3000/ws');
+const ws = new WebSocket("ws://localhost:3000/ws");
 
-ws.on('open', () => {
-  console.log('WebSocket 已连接');
-  
+ws.on("open", () => {
+  console.log("WebSocket 已连接");
+
   // 订阅预测频道
-  ws.send(JSON.stringify({
-    action: 'subscribe',
-    channel: 'predictions'
-  }));
+  ws.send(
+    JSON.stringify({
+      action: "subscribe",
+      channel: "predictions",
+    }),
+  );
 });
 
-ws.on('message', (message) => {
+ws.on("message", (message) => {
   const msg = JSON.parse(message.toString());
-  console.log('收到消息:', msg);
+  console.log("收到消息:", msg);
 });
 ```
 

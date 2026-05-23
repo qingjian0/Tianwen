@@ -2,7 +2,11 @@
  * Rule Compiler - 类型定义
  */
 
-import { ProgramNode, RuleDefinitionNode, ExpressionNode } from '@tianwen/rule-dsl';
+import {
+  ProgramNode,
+  RuleDefinitionNode,
+  ExpressionNode,
+} from "@tianwen/rule-dsl";
 
 export interface CompiledRule {
   ruleId: string;
@@ -16,7 +20,9 @@ export interface CompiledRule {
 
 export type CompiledFunction = (context: Record<string, any>) => any;
 export type PredicateFunction = (context: Record<string, any>) => boolean;
-export type EffectFunction = (context: Record<string, any>) => Record<string, any>;
+export type EffectFunction = (
+  context: Record<string, any>,
+) => Record<string, any>;
 
 export interface CompiledProgram {
   rules: CompiledRule[];

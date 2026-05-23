@@ -4,6 +4,6 @@
  * 要求：缓慢、高级、克制
  */
 
-export * from './presets';
-export * from './cosmic';
-export * from './page';
+export * from "./presets";
+export * from "./cosmic";
+export * from "./page";

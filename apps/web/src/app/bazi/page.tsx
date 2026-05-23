@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { PageLayout } from '@/components/layout/PageLayout';
-import { BaziPanel } from '@/components/divination/BaziPanel';
+import { motion } from "framer-motion";
+import { PageLayout } from "@/components/layout/PageLayout";
+import { BaziPanel } from "@/components/divination/BaziPanel";
 
 export default function BaziPage() {
   return (

@@ -3,6 +3,7 @@
 ## 已完成的功能模块
 
 ### 1. Rule DSL - 规则定义语言
+
 - **Lexer**: 词法分析器，支持关键字、操作符、字符串、数字
 - **Parser**: 语法解析器，生成抽象语法树 (AST)
 - **Interpreter**: 解释器，执行规则逻辑
@@ -21,6 +22,7 @@ rule dayMasterStrong {
 ```
 
 ### 2. Event Bus - 事件驱动架构
+
 - 完整的事件总线实现
 - 优先级监听器
 - 事件历史记录
@@ -29,6 +31,7 @@ rule dayMasterStrong {
 - TianwenEventEmitter 辅助类
 
 ### 3. Case Replay - 历史回测系统
+
 - 测试案例定义
 - 回测执行引擎
 - 自动验证
@@ -36,6 +39,7 @@ rule dayMasterStrong {
 - 准确率计算
 
 ### 4. Calibration Engine - 概率校准
+
 - 预测结果记录
 - 规则置信度调整
 - 学习率配置
@@ -43,6 +47,7 @@ rule dayMasterStrong {
 - 自动校准
 
 ## 项目结构
+
 ```
 packages/
 ├── rule-dsl/          # 规则定义语言
@@ -52,6 +57,7 @@ packages/
 ```
 
 ## 关键文件
+
 - `/workspace/packages/rule-dsl/examples/dsl-demo.ts` - DSL 示例
 - `/workspace/packages/rule-dsl/src/` - 完整实现
 - `/workspace/packages/event-bus/src/` - 事件系统
@@ -59,6 +65,7 @@ packages/
 - `/workspace/packages/calibration/src/` - 校准引擎
 
 ## 下一步
+
 - 与现有 Pipeline 集成
 - 完整的端到端测试
 - 性能优化

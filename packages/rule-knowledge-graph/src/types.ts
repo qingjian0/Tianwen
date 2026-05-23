@@ -14,13 +14,13 @@ export interface RuleNode {
 }
 
 export type RelationType =
-  | 'supports'
-  | 'contradicts'
-  | 'refines'
-  | 'supersedes'
-  | 'derived_from'
-  | 'triggered_by'
-  | 'conflicts_with';
+  | "supports"
+  | "contradicts"
+  | "refines"
+  | "supersedes"
+  | "derived_from"
+  | "triggered_by"
+  | "conflicts_with";
 
 export interface RuleRelation {
   relationId: string;

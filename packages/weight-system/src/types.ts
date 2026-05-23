@@ -2,8 +2,8 @@
  * 权重系统类型定义
  */
 
-import { z } from 'zod';
-import { WeightType, SystemType, MIN_WEIGHT, MAX_WEIGHT } from './constants';
+import { z } from "zod";
+import { WeightType, SystemType, MIN_WEIGHT, MAX_WEIGHT } from "./constants";
 
 export interface Weight {
   type: WeightType;
@@ -20,7 +20,7 @@ export const WeightSchema = z.object({
   value: z.number().min(MIN_WEIGHT).max(MAX_WEIGHT),
   description: z.string().optional(),
   source: z.string().optional(),
-  timestamp: z.date().optional()
+  timestamp: z.date().optional(),
 });
 
 export interface WeightConfig {
@@ -31,10 +31,13 @@ export interface WeightConfig {
 }
 
 export const WeightConfigSchema = z.object({
-  systemWeights: z.record(z.nativeEnum(SystemType), z.number().min(MIN_WEIGHT).max(MAX_WEIGHT)),
+  systemWeights: z.record(
+    z.nativeEnum(SystemType),
+    z.number().min(MIN_WEIGHT).max(MAX_WEIGHT),
+  ),
   contextWeights: z.record(z.number().min(MIN_WEIGHT).max(MAX_WEIGHT)),
   timingWeights: z.record(z.number().min(MIN_WEIGHT).max(MAX_WEIGHT)),
-  dynamicWeights: z.record(z.number().min(MIN_WEIGHT).max(MAX_WEIGHT))
+  dynamicWeights: z.record(z.number().min(MIN_WEIGHT).max(MAX_WEIGHT)),
 });
 
 export interface WeightedScore {

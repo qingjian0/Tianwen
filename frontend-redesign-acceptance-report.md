@@ -13,6 +13,7 @@
 #### 1. 动画性能优化 ✓
 
 **globals.css 优化：**
+
 - ✅ 移除所有 CSS 注释以减少文件大小
 - ✅ 添加 will-change utility 类：
   - `.will-change-transform` - 用于 transform 动画
@@ -22,6 +23,7 @@
 - ✅ 避免触发布局重排的属性（仅使用 transform 和 opacity）
 
 **CosmicBackground.tsx 优化：**
+
 - ✅ 使用 `useMemo` 缓存 StarField 星星数据，减少重渲染
 - ✅ 添加 `will-change-transform` 到 ConstellationPattern
 - ✅ 添加 `will-change-opacity` 到 StarField 星星
@@ -29,6 +31,7 @@
 - ✅ 保持移动端优化（减少星星数量）
 
 **HexagramDisplay.tsx 优化：**
+
 - ✅ 将所有 `filter: brightness` 动画替换为 `opacity` 动画
 - ✅ 为卦象线条添加 `will-change-transform-opacity` 类
 - ✅ 为五行图元素添加性能优化类
@@ -55,23 +58,27 @@
 #### 1. 移动端适配 (< 768px) ✓
 
 **Sidebar.tsx：**
+
 - ✅ 侧边栏使用抽屉模式（初始隐藏）
 - ✅ 汉堡菜单按钮可见
 - ✅ 点击可打开侧边栏
 
 **page.tsx：**
+
 - ✅ 左侧表单面板在移动端隐藏（`hidden md:block`）
 - ✅ 三栏布局变为单栏（`grid-cols-1 lg:grid-cols-3`）
 - ✅ 标题字体缩小（`text-5xl` → `text-3xl md:text-5xl`）
 - ✅ 热门工具按钮添加 `min-h-[48px]` 确保触控目标
 
 **CosmicBackground.tsx：**
+
 - ✅ 移动端减少星星数量（60 → 20）
 - ✅ 移动端隐藏复杂星图和光晕效果
 
 #### 2. 平板适配 (768px - 1024px) ✓
 
 **page.tsx：**
+
 - ✅ 使用 `md:` 断点处理平板样式
 - ✅ 术数系统使用 `grid-cols-2 sm:grid-cols-3 lg:grid-cols-5`
 - ✅ 今日概览使用 `grid-cols-1 sm:grid-cols-2`
@@ -80,6 +87,7 @@
 #### 3. 桌面端优化 (> 1024px) ✓
 
 **page.tsx：**
+
 - ✅ 完整三栏布局
 - ✅ 最大化利用空间
 - ✅ 所有元素使用 `lg:` 断点优化
@@ -122,11 +130,13 @@
 ## 修改文件清单
 
 ### CSS 文件
+
 1. `/workspace/apps/web/src/app/globals.css`
    - 移除 CSS 注释
    - 添加 will-change utility 类
 
 ### 组件文件
+
 2. `/workspace/apps/web/src/components/layout/CosmicBackground.tsx`
    - 添加 `useMemo` 优化
    - 添加 will-change 类
@@ -145,15 +155,18 @@
 ## 风险分析与影响范围
 
 ### 风险评估
+
 - **风险等级**: 低
 - **影响范围**: 仅前端 UI 和动画性能
 - **业务影响**: 无
 
 ### 已知问题
+
 1. `@tianwen/chrono-engine` 包存在类型错误（与本次优化无关）
 2. ESLint 配置需要更新（Next.js 16 弃用警告）
 
 ### 兼容性
+
 - ✅ 现代浏览器（Chrome, Firefox, Safari, Edge）
 - ✅ 移动设备（iOS, Android）
 - ✅ 响应式设计覆盖所有常见设备尺寸

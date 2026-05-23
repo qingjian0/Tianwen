@@ -7,7 +7,7 @@ export interface ClassicMetadata {
   name: string;
   author?: string;
   dynasty?: string;
-  category: 'zhouyi' | 'meihua' | 'liuyao' | 'bazi' | 'qimen' | 'ziwei';
+  category: "zhouyi" | "meihua" | "liuyao" | "bazi" | "qimen" | "ziwei";
   tags?: string[];
   description?: string;
 }
@@ -54,7 +54,13 @@ export interface ClassicContent {
 export interface SchoolOfInterpretation {
   id: string;
   name: string;
-  category: 'classical' | 'image-number' | 'philosophical' | 'jingfang' | 'takashima' | 'modern-ai';
+  category:
+    | "classical"
+    | "image-number"
+    | "philosophical"
+    | "jingfang"
+    | "takashima"
+    | "modern-ai";
   description: string;
 }
 

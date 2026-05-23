@@ -3,4 +3,4 @@
  * Phase 1: 基础结构
  */
 
-export { StarBackground } from './star-background';
+export { StarBackground } from "./star-background";

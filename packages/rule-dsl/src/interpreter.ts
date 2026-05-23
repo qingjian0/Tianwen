@@ -13,47 +13,47 @@ import {
   CallExpressionNode,
   ExecutionContext,
   ExecutionResult,
-} from './types';
+} from "./types";
 
 // 内置五行生克函数
 const WUXING_RELATIONS: Record<string, string[]> = {
-  '木': ['火', '土'],
-  '火': ['土', '金'],
-  '土': ['金', '水'],
-  '金': ['水', '木'],
-  '水': ['木', '火'],
+  木: ["火", "土"],
+  火: ["土", "金"],
+  土: ["金", "水"],
+  金: ["水", "木"],
+  水: ["木", "火"],
 };
 
 // 干支六合关系
 const ZHI_HE: Record<string, string> = {
-  '子': '丑',
-  '丑': '子',
-  '寅': '亥',
-  '亥': '寅',
-  '卯': '戌',
-  '戌': '卯',
-  '辰': '酉',
-  '酉': '辰',
-  '巳': '申',
-  '申': '巳',
-  '午': '未',
-  '未': '午',
+  子: "丑",
+  丑: "子",
+  寅: "亥",
+  亥: "寅",
+  卯: "戌",
+  戌: "卯",
+  辰: "酉",
+  酉: "辰",
+  巳: "申",
+  申: "巳",
+  午: "未",
+  未: "午",
 };
 
 // 干支六冲关系
 const ZHI_CHONG: Record<string, string> = {
-  '子': '午',
-  '午': '子',
-  '丑': '未',
-  '未': '丑',
-  '寅': '申',
-  '申': '寅',
-  '卯': '酉',
-  '酉': '卯',
-  '辰': '戌',
-  '戌': '辰',
-  '巳': '亥',
-  '亥': '巳',
+  子: "午",
+  午: "子",
+  丑: "未",
+  未: "丑",
+  寅: "申",
+  申: "寅",
+  卯: "酉",
+  酉: "卯",
+  辰: "戌",
+  戌: "辰",
+  巳: "亥",
+  亥: "巳",
 };
 
 export class Interpreter {
@@ -68,29 +68,38 @@ export class Interpreter {
 
   private initBuiltInFunctions(): void {
     // 五行生克
-    this.builtInFunctions['wuxingSheng'] = (sheng: string, shengZhe: string): boolean => {
+    this.builtInFunctions["wuxingSheng"] = (
+      sheng: string,
+      shengZhe: string,
+    ): boolean => {
       return WUXING_RELATIONS[sheng]?.[0] === shengZhe;
     };
 
-    this.builtInFunctions['wuxingKe'] = (ke: string, keZhe: string): boolean => {
+    this.builtInFunctions["wuxingKe"] = (
+      ke: string,
+      keZhe: string,
+    ): boolean => {
       return WUXING_RELATIONS[ke]?.[1] === keZhe;
     };
 
     // 干支关系
-    this.builtInFunctions['zhiHe'] = (zhi1: string, zhi2: string): boolean => {
+    this.builtInFunctions["zhiHe"] = (zhi1: string, zhi2: string): boolean => {
       return ZHI_HE[zhi1] === zhi2;
     };
 
-    this.builtInFunctions['zhiChong'] = (zhi1: string, zhi2: string): boolean => {
+    this.builtInFunctions["zhiChong"] = (
+      zhi1: string,
+      zhi2: string,
+    ): boolean => {
       return ZHI_CHONG[zhi1] === zhi2;
     };
 
     // 工具函数
-    this.builtInFunctions['includes'] = (arr: any[], item: any): boolean => {
+    this.builtInFunctions["includes"] = (arr: any[], item: any): boolean => {
       return Array.isArray(arr) && arr.includes(item);
     };
 
-    this.builtInFunctions['length'] = (arr: any[]): number => {
+    this.builtInFunctions["length"] = (arr: any[]): number => {
       return Array.isArray(arr) ? arr.length : 0;
     };
   }
@@ -113,7 +122,7 @@ export class Interpreter {
       success: errors.length === 0,
       matched: allMatched,
       effects: this.effects,
-      errors: errors.length > 0 ? errors : undefined
+      errors: errors.length > 0 ? errors : undefined,
     };
   }
 
@@ -142,24 +151,24 @@ export class Interpreter {
         success: true,
         matched: allConditionsMet,
         effects: this.effects,
-        errors: errors.length > 0 ? errors : undefined
+        errors: errors.length > 0 ? errors : undefined,
       };
     } catch (error) {
       return {
         success: false,
         matched: false,
         effects: this.effects,
-        errors: [error instanceof Error ? error.message : String(error)]
+        errors: [error instanceof Error ? error.message : String(error)],
       };
     }
   }
 
   private interpretEffect(expr: ExpressionNode): void {
-    if (expr.type === 'BinaryExpression') {
+    if (expr.type === "BinaryExpression") {
       const binExpr = expr as BinaryExpressionNode;
-      
+
       // 处理赋值操作
-      if (binExpr.operator === '=') {
+      if (binExpr.operator === "=") {
         const left = binExpr.left;
         const right = this.interpretExpression(binExpr.right);
         this.assignValue(left, right);
@@ -167,23 +176,23 @@ export class Interpreter {
       }
 
       // 处理复合赋值
-      if (['+=', '-=', '*=', '/='].includes(binExpr.operator)) {
+      if (["+=", "-=", "*=", "/="].includes(binExpr.operator)) {
         const left = binExpr.left;
         const currentValue = this.interpretExpression(left);
         const rightValue = this.interpretExpression(binExpr.right);
         let newValue: any;
 
         switch (binExpr.operator) {
-          case '+=':
+          case "+=":
             newValue = currentValue + rightValue;
             break;
-          case '-=':
+          case "-=":
             newValue = currentValue - rightValue;
             break;
-          case '*=':
+          case "*=":
             newValue = currentValue * rightValue;
             break;
-          case '/=':
+          case "/=":
             newValue = currentValue / rightValue;
             break;
         }
@@ -198,14 +207,14 @@ export class Interpreter {
   }
 
   private assignValue(target: ExpressionNode, value: any): void {
-    if (target.type === 'Identifier') {
+    if (target.type === "Identifier") {
       const id = target as IdentifierNode;
       this.context[id.name] = value;
       this.effects[id.name] = value;
-    } else if (target.type === 'MemberExpression') {
+    } else if (target.type === "MemberExpression") {
       const member = target as MemberExpressionNode;
       const obj = this.interpretExpression(member.object);
-      if (obj && typeof obj === 'object') {
+      if (obj && typeof obj === "object") {
         obj[member.property.name] = value;
         this.effects[`${JSON.stringify(obj)}.${member.property.name}`] = value;
       }
@@ -214,23 +223,23 @@ export class Interpreter {
 
   private interpretExpression(expr: ExpressionNode): any {
     switch (expr.type) {
-      case 'BinaryExpression':
+      case "BinaryExpression":
         return this.interpretBinaryExpression(expr as BinaryExpressionNode);
-      case 'UnaryExpression':
+      case "UnaryExpression":
         return this.interpretUnaryExpression(expr as UnaryExpressionNode);
-      case 'Identifier':
+      case "Identifier":
         return this.interpretIdentifier(expr as IdentifierNode);
-      case 'MemberExpression':
+      case "MemberExpression":
         return this.interpretMemberExpression(expr as MemberExpressionNode);
-      case 'CallExpression':
+      case "CallExpression":
         return this.interpretCallExpression(expr as CallExpressionNode);
-      case 'NumberLiteral':
+      case "NumberLiteral":
         return (expr as any).value;
-      case 'StringLiteral':
+      case "StringLiteral":
         return (expr as any).value;
-      case 'BooleanLiteral':
+      case "BooleanLiteral":
         return (expr as any).value;
-      case 'NullLiteral':
+      case "NullLiteral":
         return null;
       default:
         throw new Error(`Unknown expression type: ${expr.type}`);
@@ -242,31 +251,31 @@ export class Interpreter {
     const right = this.interpretExpression(expr.right);
 
     switch (expr.operator) {
-      case '==':
+      case "==":
         return left === right;
-      case '!=':
+      case "!=":
         return left !== right;
-      case '<':
+      case "<":
         return left < right;
-      case '>':
+      case ">":
         return left > right;
-      case '<=':
+      case "<=":
         return left <= right;
-      case '>=':
+      case ">=":
         return left >= right;
-      case '&&':
+      case "&&":
         return left && right;
-      case '||':
+      case "||":
         return left || right;
-      case '+':
+      case "+":
         return left + right;
-      case '-':
+      case "-":
         return left - right;
-      case '*':
+      case "*":
         return left * right;
-      case '/':
+      case "/":
         return left / right;
-      case '%':
+      case "%":
         return left % right;
       default:
         throw new Error(`Unknown operator: ${expr.operator}`);
@@ -277,11 +286,11 @@ export class Interpreter {
     const operand = this.interpretExpression(expr.operand);
 
     switch (expr.operator) {
-      case '!':
+      case "!":
         return !operand;
-      case '-':
+      case "-":
         return -operand;
-      case '+':
+      case "+":
         return +operand;
       default:
         throw new Error(`Unknown unary operator: ${expr.operator}`);
@@ -300,7 +309,7 @@ export class Interpreter {
 
   private interpretMemberExpression(expr: MemberExpressionNode): any {
     const obj = this.interpretExpression(expr.object);
-    if (obj && typeof obj === 'object') {
+    if (obj && typeof obj === "object") {
       return obj[expr.property.name];
     }
     return undefined;
@@ -308,12 +317,12 @@ export class Interpreter {
 
   private interpretCallExpression(expr: CallExpressionNode): any {
     const callee = expr.callee;
-    if (callee.type !== 'Identifier') {
-      throw new Error('Only identifier function calls are supported');
+    if (callee.type !== "Identifier") {
+      throw new Error("Only identifier function calls are supported");
     }
 
     const funcName = (callee as IdentifierNode).name;
-    const args = expr.arguments.map(arg => this.interpretExpression(arg));
+    const args = expr.arguments.map((arg) => this.interpretExpression(arg));
 
     if (funcName in this.builtInFunctions) {
       return this.builtInFunctions[funcName](...args);

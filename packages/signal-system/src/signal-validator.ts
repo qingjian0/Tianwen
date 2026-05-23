@@ -2,9 +2,9 @@
  * 信号验证器
  */
 
-import { z } from 'zod';
-import { Signal, SignalSchema } from './types';
-import { SignalPolarity, SignalStrength } from './constants';
+import { z } from "zod";
+import { Signal, SignalSchema } from "./types";
+import { SignalPolarity, SignalStrength } from "./constants";
 
 export class SignalValidator {
   /**

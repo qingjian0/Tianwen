@@ -2,13 +2,8 @@
  * Replay Recorder - 录制器
  */
 
-import {
-  ReplaySession,
-  ReplayFrame,
-  ReplayRecorder,
-  Snapshot,
-} from './types';
-import { DeterministicRandom } from './deterministic-random';
+import { ReplaySession, ReplayFrame, ReplayRecorder, Snapshot } from "./types";
+import { DeterministicRandom } from "./deterministic-random";
 
 export class ReplayRecorderImpl implements ReplayRecorder {
   private sessions: Map<string, ReplaySession> = new Map();
@@ -17,7 +12,9 @@ export class ReplayRecorderImpl implements ReplayRecorder {
   private deterministicRandom: DeterministicRandom;
 
   constructor(seed?: number) {
-    this.deterministicRandom = new DeterministicRandom(seed || DeterministicRandom.fromTimestamp());
+    this.deterministicRandom = new DeterministicRandom(
+      seed || DeterministicRandom.fromTimestamp(),
+    );
   }
 
   startSession(input: any, metadata: Record<string, any> = {}): string {
@@ -43,11 +40,11 @@ export class ReplayRecorderImpl implements ReplayRecorder {
 
   recordFrame(event: string, data: any, context: Record<string, any>): void {
     if (!this.currentSessionId) {
-      throw new Error('No active session. Call startSession first.');
+      throw new Error("No active session. Call startSession first.");
     }
 
     const session = this.sessions.get(this.currentSessionId)!;
-    
+
     const frame: ReplayFrame = {
       frameId: this.generateId(),
       timestamp: Date.now(),
@@ -62,7 +59,7 @@ export class ReplayRecorderImpl implements ReplayRecorder {
 
   endSession(result: any, finalContext: Record<string, any>): ReplaySession {
     if (!this.currentSessionId) {
-      throw new Error('No active session. Call startSession first.');
+      throw new Error("No active session. Call startSession first.");
     }
 
     const session = this.sessions.get(this.currentSessionId)!;

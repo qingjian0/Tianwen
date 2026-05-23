@@ -2,10 +2,10 @@
  * 吉凶引擎类型定义
  */
 
-import { z } from 'zod';
-import { FortuneLevel } from './constants';
-import { Signal } from '@tianwen/signal-system';
-import { ProbabilityScore } from '@tianwen/probability-engine';
+import { z } from "zod";
+import { FortuneLevel } from "./constants";
+import { Signal } from "@tianwen/signal-system";
+import { ProbabilityScore } from "@tianwen/probability-engine";
 
 export interface FortuneScore {
   level: FortuneLevel;
@@ -24,7 +24,7 @@ export const FortuneScoreSchema = z.object({
   label: z.string(),
   description: z.string(),
   timestamp: z.date(),
-  metadata: z.record(z.unknown()).optional()
+  metadata: z.record(z.unknown()).optional(),
 });
 
 export interface FortuneFactors {

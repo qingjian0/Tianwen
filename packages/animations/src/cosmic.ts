@@ -9,7 +9,7 @@ export const float = {
   },
   transition: {
     duration: 6,
-    ease: 'easeInOut',
+    ease: "easeInOut",
     repeat: Infinity,
   },
 };
@@ -20,7 +20,7 @@ export const glow = {
   },
   transition: {
     duration: 3,
-    ease: 'easeInOut',
+    ease: "easeInOut",
     repeat: Infinity,
   },
 };
@@ -31,7 +31,7 @@ export const cosmicRotate = {
   },
   transition: {
     duration: 8,
-    ease: 'easeInOut',
+    ease: "easeInOut",
     repeat: Infinity,
   },
 };
@@ -43,7 +43,7 @@ export const starPulse = {
   },
   transition: {
     duration: 2.5,
-    ease: 'easeInOut',
+    ease: "easeInOut",
     repeat: Infinity,
   },
 };

@@ -2,9 +2,9 @@
  * 信号处理器
  */
 
-import { Signal, SignalAnalysisResult } from './types';
-import { SignalPolarity, POLARITY_WEIGHTS } from './constants';
-import { SignalValidator } from './signal-validator';
+import { Signal, SignalAnalysisResult } from "./types";
+import { SignalPolarity, POLARITY_WEIGHTS } from "./constants";
+import { SignalValidator } from "./signal-validator";
 
 export class SignalProcessor {
   /**
@@ -13,10 +13,18 @@ export class SignalProcessor {
   static analyze(signals: Signal[]): SignalAnalysisResult {
     const validSignals = signals.filter((s) => SignalValidator.isValid(s));
 
-    const positiveSignals = validSignals.filter((s) => s.polarity === SignalPolarity.POSITIVE);
-    const negativeSignals = validSignals.filter((s) => s.polarity === SignalPolarity.NEGATIVE);
-    const neutralSignals = validSignals.filter((s) => s.polarity === SignalPolarity.NEUTRAL);
-    const unstableSignals = validSignals.filter((s) => s.polarity === SignalPolarity.UNSTABLE);
+    const positiveSignals = validSignals.filter(
+      (s) => s.polarity === SignalPolarity.POSITIVE,
+    );
+    const negativeSignals = validSignals.filter(
+      (s) => s.polarity === SignalPolarity.NEGATIVE,
+    );
+    const neutralSignals = validSignals.filter(
+      (s) => s.polarity === SignalPolarity.NEUTRAL,
+    );
+    const unstableSignals = validSignals.filter(
+      (s) => s.polarity === SignalPolarity.UNSTABLE,
+    );
 
     const totalSignals = validSignals.length;
     const totalStrength = validSignals.reduce((sum, s) => sum + s.strength, 0);
@@ -27,17 +35,24 @@ export class SignalProcessor {
     }, 0);
 
     let dominantPolarity = SignalPolarity.NEUTRAL;
-    if (positiveSignals.length > negativeSignals.length && positiveSignals.length > neutralSignals.length) {
+    if (
+      positiveSignals.length > negativeSignals.length &&
+      positiveSignals.length > neutralSignals.length
+    ) {
       dominantPolarity = SignalPolarity.POSITIVE;
-    } else if (negativeSignals.length > positiveSignals.length && negativeSignals.length > neutralSignals.length) {
+    } else if (
+      negativeSignals.length > positiveSignals.length &&
+      negativeSignals.length > neutralSignals.length
+    ) {
       dominantPolarity = SignalPolarity.NEGATIVE;
     } else if (unstableSignals.length > 0) {
       dominantPolarity = SignalPolarity.UNSTABLE;
     }
 
-    const averageConfidence = totalSignals > 0
-      ? validSignals.reduce((sum, s) => sum + s.confidence, 0) / totalSignals
-      : 0;
+    const averageConfidence =
+      totalSignals > 0
+        ? validSignals.reduce((sum, s) => sum + s.confidence, 0) / totalSignals
+        : 0;
 
     return {
       totalSignals,
@@ -48,14 +63,17 @@ export class SignalProcessor {
       averageStrength,
       netPolarity,
       dominantPolarity,
-      confidence: averageConfidence
+      confidence: averageConfidence,
     };
   }
 
   /**
    * 按极性过滤信号
    */
-  static filterByPolarity(signals: Signal[], polarity: SignalPolarity): Signal[] {
+  static filterByPolarity(
+    signals: Signal[],
+    polarity: SignalPolarity,
+  ): Signal[] {
     return signals.filter((s) => s.polarity === polarity);
   }
 
@@ -71,7 +89,7 @@ export class SignalProcessor {
    */
   static sortByStrength(signals: Signal[], ascending = false): Signal[] {
     return [...signals].sort((a, b) =>
-      ascending ? a.strength - b.strength : b.strength - a.strength
+      ascending ? a.strength - b.strength : b.strength - a.strength,
     );
   }
 }

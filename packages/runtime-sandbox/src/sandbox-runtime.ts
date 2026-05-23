@@ -3,15 +3,37 @@
  * 提供内存限制、超时控制、安全的内置函数
  */
 
-import { SandboxConfig, SandboxResult, SandboxMetrics, SandboxViolation } from './types';
+import {
+  SandboxConfig,
+  SandboxResult,
+  SandboxMetrics,
+  SandboxViolation,
+} from "./types";
 
 const DEFAULT_CONFIG: SandboxConfig = {
   maxMemoryMB: 10,
   maxExecutionTimeMS: 1000,
   maxIterations: 10000,
   enableConsole: false,
-  allowedGlobals: ['Math', 'Date', 'JSON', 'Array', 'Object', 'String', 'Number', 'Boolean'],
-  forbiddenKeywords: ['eval', 'Function', 'constructor', 'prototype', '__proto__', 'import', 'export'],
+  allowedGlobals: [
+    "Math",
+    "Date",
+    "JSON",
+    "Array",
+    "Object",
+    "String",
+    "Number",
+    "Boolean",
+  ],
+  forbiddenKeywords: [
+    "eval",
+    "Function",
+    "constructor",
+    "prototype",
+    "__proto__",
+    "import",
+    "export",
+  ],
 };
 
 export class SandboxRuntime {
@@ -55,7 +77,7 @@ export class SandboxRuntime {
       };
     } catch (error) {
       this.metrics.executionTime = performance.now() - startTime;
-      
+
       return {
         success: false,
         error: error instanceof Error ? error.message : String(error),
@@ -70,7 +92,7 @@ export class SandboxRuntime {
 
     const contextSetup = contextKeys
       .map((key, i) => `let ${key} = __context__[${i}];`)
-      .join('\n');
+      .join("\n");
 
     return `
       (function(__context__) {
@@ -111,24 +133,24 @@ export class SandboxRuntime {
       `);
     }
 
-    return builtins.join('\n');
+    return builtins.join("\n");
   }
 
   private executeWithTimeout(code: string): any {
     const contextValues = Object.values({});
-    
-    const fn = new Function('__ctx__', code);
-    
+
+    const fn = new Function("__ctx__", code);
+
     let iterations = 0;
     const checkIteration = () => {
       iterations++;
       if (iterations > this.config.maxIterations) {
         this.recordViolation({
-          type: 'iteration',
+          type: "iteration",
           message: `Maximum iterations (${this.config.maxIterations}) exceeded`,
           timestamp: Date.now(),
         });
-        throw new Error('Maximum iterations exceeded');
+        throw new Error("Maximum iterations exceeded");
       }
     };
 
@@ -139,11 +161,11 @@ export class SandboxRuntime {
 
     if (memoryUsed > this.config.maxMemoryMB * 1024 * 1024) {
       this.recordViolation({
-        type: 'memory',
+        type: "memory",
         message: `Memory usage (${memoryUsed} bytes) exceeded limit (${this.config.maxMemoryMB} MB)`,
         timestamp: Date.now(),
       });
-      throw new Error('Memory limit exceeded');
+      throw new Error("Memory limit exceeded");
     }
 
     return result;
@@ -153,7 +175,7 @@ export class SandboxRuntime {
     for (const keyword of this.config.forbiddenKeywords) {
       if (code.includes(keyword)) {
         this.recordViolation({
-          type: 'forbidden',
+          type: "forbidden",
           message: `Forbidden keyword detected: ${keyword}`,
           timestamp: Date.now(),
         });
@@ -168,7 +190,7 @@ export class SandboxRuntime {
   }
 
   private getMemoryUsage(): number {
-    if (typeof process !== 'undefined' && process.memoryUsage) {
+    if (typeof process !== "undefined" && process.memoryUsage) {
       return process.memoryUsage().heapUsed;
     }
     return 0;
@@ -180,7 +202,7 @@ export class SandboxRuntime {
 
   executeRule(
     predicate: (context: Record<string, any>) => boolean,
-    context: Record<string, any>
+    context: Record<string, any>,
   ): SandboxResult {
     const startTime = performance.now();
 

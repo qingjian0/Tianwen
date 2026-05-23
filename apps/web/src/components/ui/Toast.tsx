@@ -2,7 +2,7 @@
  * 消息提示
  */
 
-'use client';
+"use client";
 
 import {
   createContext,
@@ -10,10 +10,10 @@ import {
   useState,
   useCallback,
   ReactNode,
-} from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+} from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
-type ToastType = 'success' | 'error' | 'info';
+type ToastType = "success" | "error" | "info";
 
 interface Toast {
   id: number;
@@ -28,15 +28,15 @@ interface ToastContextValue {
 const ToastContext = createContext<ToastContextValue | null>(null);
 
 const typeStyles: Record<ToastType, string> = {
-  success: 'border-jade-500/30 bg-jade-500/10',
-  error: 'border-vermillion-500/30 bg-vermillion-500/10',
-  info: 'border-gold-500/30 bg-gold-500/10',
+  success: "border-jade-500/30 bg-jade-500/10",
+  error: "border-vermillion-500/30 bg-vermillion-500/10",
+  info: "border-gold-500/30 bg-gold-500/10",
 };
 
 const dotColors: Record<ToastType, string> = {
-  success: 'bg-jade-400',
-  error: 'bg-vermillion-400',
-  info: 'bg-gold-400',
+  success: "bg-jade-400",
+  error: "bg-vermillion-400",
+  info: "bg-gold-400",
 };
 
 let nextId = 0;
@@ -44,7 +44,7 @@ let nextId = 0;
 export const ToastProvider = ({ children }: { children: ReactNode }) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const showToast = useCallback((message: string, type: ToastType = 'info') => {
+  const showToast = useCallback((message: string, type: ToastType = "info") => {
     const id = nextId++;
     setToasts((prev) => [...prev, { id, message, type }]);
     setTimeout(() => {
@@ -83,7 +83,7 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
 export const useToast = (): ToastContextValue => {
   const ctx = useContext(ToastContext);
   if (!ctx) {
-    throw new Error('useToast must be used within a ToastProvider');
+    throw new Error("useToast must be used within a ToastProvider");
   }
   return ctx;
 };

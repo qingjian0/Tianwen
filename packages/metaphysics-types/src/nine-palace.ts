@@ -2,10 +2,20 @@
  * 九宫系统类型定义
  */
 
-import type { Star, Deity } from './star';
+import type { Star, Deity } from "./star";
 
-export const NINE_PALACES = ['坎', '坤', '震', '巽', '中', '乾', '兑', '艮', '离'] as const;
-export type NinePalace = typeof NINE_PALACES[number];
+export const NINE_PALACES = [
+  "坎",
+  "坤",
+  "震",
+  "巽",
+  "中",
+  "乾",
+  "兑",
+  "艮",
+  "离",
+] as const;
+export type NinePalace = (typeof NINE_PALACES)[number];
 
 // 九宫位置
 export interface Palace {
@@ -16,5 +26,14 @@ export interface Palace {
 }
 
 // 八门
-export const EIGHT_GATES = ['休门', '死门', '伤门', '杜门', '开门', '惊门', '生门', '景门'] as const;
-export type EightGate = typeof EIGHT_GATES[number];
+export const EIGHT_GATES = [
+  "休门",
+  "死门",
+  "伤门",
+  "杜门",
+  "开门",
+  "惊门",
+  "生门",
+  "景门",
+] as const;
+export type EightGate = (typeof EIGHT_GATES)[number];

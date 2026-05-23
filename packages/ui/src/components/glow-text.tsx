@@ -3,4 +3,4 @@
  * Phase 1: 基础结构
  */
 
-export { GlowText } from './glow-text';
+export { GlowText } from "./glow-text";

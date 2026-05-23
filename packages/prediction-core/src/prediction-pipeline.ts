@@ -6,11 +6,11 @@ import {
   PredictionContext,
   PredictionOutput,
   PredictionInput,
-  PipelineState
-} from './types';
-import { PredictionContextManager } from './prediction-context';
-import { PipelineStage } from './constants';
-import { Signal } from '@tianwen/signal-system';
+  PipelineState,
+} from "./types";
+import { PredictionContextManager } from "./prediction-context";
+import { PipelineStage } from "./constants";
+import { Signal } from "@tianwen/signal-system";
 
 export class PredictionPipeline {
   private state: PipelineState;
@@ -21,7 +21,7 @@ export class PredictionPipeline {
       stage: PipelineStage.INPUT,
       signals: [],
       errors: [],
-      warnings: []
+      warnings: [],
     };
   }
 
@@ -58,9 +58,9 @@ export class PredictionPipeline {
       // Stage 1: 输入处理
       this.updateState({ stage: PipelineStage.INPUT });
       const context = PredictionContextManager.create(input);
-      
+
       if (!PredictionContextManager.validate(context)) {
-        throw new Error('Invalid prediction context');
+        throw new Error("Invalid prediction context");
       }
 
       this.updateState({ context });
@@ -84,19 +84,23 @@ export class PredictionPipeline {
 
       // Stage 6: 解释生成（占位）
       this.updateState({ stage: PipelineStage.INTERPRETATION });
-      const output = await this.generateOutput(preprocessedContext, fusedSignals);
+      const output = await this.generateOutput(
+        preprocessedContext,
+        fusedSignals,
+      );
 
       // 完成
       this.updateState({
         stage: PipelineStage.COMPLETE,
-        outputs: output
+        outputs: output,
       });
 
       return output;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
       this.updateState({
-        errors: [...this.state.errors, errorMessage]
+        errors: [...this.state.errors, errorMessage],
       });
       throw error;
     }
@@ -105,14 +109,16 @@ export class PredictionPipeline {
   /**
    * 预处理
    */
-  private async preprocess(context: PredictionContext): Promise<PredictionContext> {
+  private async preprocess(
+    context: PredictionContext,
+  ): Promise<PredictionContext> {
     return {
       ...context,
       metadata: {
         ...context.metadata,
         preprocessed: true,
-        preprocessingTimestamp: new Date()
-      }
+        preprocessingTimestamp: new Date(),
+      },
     };
   }
 
@@ -135,21 +141,21 @@ export class PredictionPipeline {
    */
   private async generateOutput(
     context: PredictionContext,
-    signals: Signal[]
+    signals: Signal[],
   ): Promise<PredictionOutput> {
     return {
       id: `output_${Date.now()}`,
       contextId: context.id,
-      summary: '推演结果待生成',
+      summary: "推演结果待生成",
       probability: 0.5,
-      fortuneLevel: 'neutral',
+      fortuneLevel: "neutral",
       timingWindows: [],
       keySignals: signals,
       risks: [],
       opportunities: [],
       suggestions: [],
       confidence: 0.5,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
   }
 
@@ -168,7 +174,7 @@ export class PredictionPipeline {
       stage: PipelineStage.INPUT,
       signals: [],
       errors: [],
-      warnings: []
+      warnings: [],
     };
     this.notify();
   }

@@ -2,8 +2,8 @@
  * 时间引擎类型定义
  */
 
-import { z } from 'zod';
-import { TimeStrength, TimeHorizon } from './constants';
+import { z } from "zod";
+import { TimeStrength, TimeHorizon } from "./constants";
 
 export interface TimingWindow {
   id: string;
@@ -26,7 +26,7 @@ export const TimingWindowSchema = z.object({
   horizon: z.nativeEnum(TimeHorizon),
   description: z.string().optional(),
   tags: z.array(z.string()).optional(),
-  metadata: z.record(z.unknown()).optional()
+  metadata: z.record(z.unknown()).optional(),
 });
 
 export interface TimingAnalysis {

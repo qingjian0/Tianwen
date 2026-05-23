@@ -101,6 +101,7 @@
   - [x] 14.3 验证移动端响应式布局
 
 # Task Dependencies
+
 - Task 2-5 依赖 Task 1（设计 Token）
 - Task 6-8 依赖 Task 1
 - Task 9-12 依赖 Task 1, Task 2-5（使用 UI 组件）

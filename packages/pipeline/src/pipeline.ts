@@ -11,9 +11,9 @@ import {
   PredictionInput,
   PredictionOutput,
   StageResult,
-  TraceStep
-} from './types';
-import { PipelineContextManager } from './pipeline-context';
+  TraceStep,
+} from "./types";
+import { PipelineContextManager } from "./pipeline-context";
 import {
   RandomProcessor,
   ChronoProcessor,
@@ -23,9 +23,9 @@ import {
   ProbabilityProcessor,
   FortuneProcessor,
   InterpretationProcessor,
-  StageProcessor
-} from './stages';
-import { DEFAULT_PIPELINE_CONFIG, PIPELINE_STAGE_ORDER } from './constants';
+  StageProcessor,
+} from "./stages";
+import { DEFAULT_PIPELINE_CONFIG, PIPELINE_STAGE_ORDER } from "./constants";
 
 /**
  * 天问推演流水线
@@ -48,14 +48,14 @@ export class TianwenPipeline {
    * 初始化阶段处理器
    */
   private initializeProcessors(): void {
-    this.processors.set('random', new RandomProcessor());
-    this.processors.set('chrono', new ChronoProcessor());
-    this.processors.set('divination', new DivinationProcessor());
-    this.processors.set('signal', new SignalProcessor());
-    this.processors.set('rule', new RuleProcessor());
-    this.processors.set('probability', new ProbabilityProcessor());
-    this.processors.set('fortune', new FortuneProcessor());
-    this.processors.set('interpretation', new InterpretationProcessor());
+    this.processors.set("random", new RandomProcessor());
+    this.processors.set("chrono", new ChronoProcessor());
+    this.processors.set("divination", new DivinationProcessor());
+    this.processors.set("signal", new SignalProcessor());
+    this.processors.set("rule", new RuleProcessor());
+    this.processors.set("probability", new ProbabilityProcessor());
+    this.processors.set("fortune", new FortuneProcessor());
+    this.processors.set("interpretation", new InterpretationProcessor());
   }
 
   /**
@@ -67,10 +67,10 @@ export class TianwenPipeline {
 
     // 1. 创建上下文
     const context = this.contextManager.createContext(input);
-    this.contextManager.markStageStart(context, 'input');
+    this.contextManager.markStageStart(context, "input");
 
     // 2. 标记输入完成
-    this.contextManager.markStageComplete(context, 'input', input);
+    this.contextManager.markStageComplete(context, "input", input);
 
     try {
       // 3. 依次执行各阶段
@@ -91,10 +91,11 @@ export class TianwenPipeline {
         context,
         output,
         errors,
-        warnings
+        warnings,
       };
     } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : '流水线执行失败';
+      const errorMsg =
+        error instanceof Error ? error.message : "流水线执行失败";
       errors.push(errorMsg);
 
       return {
@@ -102,7 +103,7 @@ export class TianwenPipeline {
         context,
         output: this.generateOutput(context),
         errors,
-        warnings
+        warnings,
       };
     }
   }
@@ -114,18 +115,22 @@ export class TianwenPipeline {
     context: PipelineContext,
     stage: PipelineStage,
     errors: string[],
-    warnings: string[]
+    warnings: string[],
   ): Promise<void> {
     const processor = this.processors.get(stage);
     if (!processor) {
       warnings.push(`阶段 ${stage} 没有处理器，跳过`);
-      this.contextManager.markStageSkipped(context, stage, 'No processor');
+      this.contextManager.markStageSkipped(context, stage, "No processor");
       return;
     }
 
     // 检查是否应跳过
     if (this.shouldSkipStage(context, stage)) {
-      this.contextManager.markStageSkipped(context, stage, 'Dependency not met');
+      this.contextManager.markStageSkipped(
+        context,
+        stage,
+        "Dependency not met",
+      );
       return;
     }
 
@@ -134,27 +139,32 @@ export class TianwenPipeline {
     try {
       const result = await this.executeStageWithTimeout(processor, context);
 
-      if (result.status === 'completed') {
-        this.contextManager.markStageComplete(context, stage, result.data, result.metadata);
-      } else if (result.status === 'failed') {
+      if (result.status === "completed") {
+        this.contextManager.markStageComplete(
+          context,
+          stage,
+          result.data,
+          result.metadata,
+        );
+      } else if (result.status === "failed") {
         errors.push(`${stage}: ${result.error}`);
-        
+
         const stageConfig = this.getStageConfig(stage);
-        if (stageConfig?.onError === 'fail') {
+        if (stageConfig?.onError === "fail") {
           throw new Error(result.error);
-        } else if (stageConfig?.onError === 'skip') {
+        } else if (stageConfig?.onError === "skip") {
           this.contextManager.markStageSkipped(context, stage, result.error);
         } else {
           this.contextManager.markStageFailed(context, stage, result.error!);
         }
       }
     } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : '阶段执行失败';
+      const errorMsg = error instanceof Error ? error.message : "阶段执行失败";
       this.contextManager.markStageFailed(context, stage, errorMsg);
       errors.push(`${stage}: ${errorMsg}`);
 
       const stageConfig = this.getStageConfig(stage);
-      if (stageConfig?.onError === 'fail') {
+      if (stageConfig?.onError === "fail") {
         throw error;
       }
     }
@@ -166,15 +176,15 @@ export class TianwenPipeline {
   private async executeStageWithTimeout(
     processor: StageProcessor,
     context: PipelineContext,
-    timeout?: number
+    timeout?: number,
   ): Promise<StageResult> {
     const timeoutMs = timeout || 10000;
 
     return Promise.race([
       processor.process(context),
       new Promise<StageResult>((_, reject) =>
-        setTimeout(() => reject(new Error('Stage timeout')), timeoutMs)
-      )
+        setTimeout(() => reject(new Error("Stage timeout")), timeoutMs),
+      ),
     ]);
   }
 
@@ -186,7 +196,7 @@ export class TianwenPipeline {
 
     for (const stageName of PIPELINE_STAGE_ORDER) {
       const stage = stageName as PipelineStage;
-      const stageConfig = this.config.stages.find(s => s.name === stage);
+      const stageConfig = this.config.stages.find((s) => s.name === stage);
 
       if (!stageConfig || stageConfig.enabled) {
         enabled.push(stage);
@@ -199,45 +209,51 @@ export class TianwenPipeline {
   /**
    * 检查是否应跳过阶段
    */
-  private shouldSkipStage(context: PipelineContext, stage: PipelineStage): boolean {
+  private shouldSkipStage(
+    context: PipelineContext,
+    stage: PipelineStage,
+  ): boolean {
     switch (stage) {
-      case 'random':
+      case "random":
         return false;
 
-      case 'chrono':
+      case "chrono":
         return false;
 
-      case 'divination':
-        return !this.contextManager.isStageCompleted(context, 'chrono');
+      case "divination":
+        return !this.contextManager.isStageCompleted(context, "chrono");
 
-      case 'signal':
-        return !this.contextManager.isStageCompleted(context, 'divination');
+      case "signal":
+        return !this.contextManager.isStageCompleted(context, "divination");
 
-      case 'rule':
+      case "rule":
         if (!this.config.rules?.enabled) return true;
-        return !this.contextManager.isStageCompleted(context, 'signal');
+        return !this.contextManager.isStageCompleted(context, "signal");
 
-      case 'conflict':
+      case "conflict":
         if (!this.config.enableConflictResolution) return true;
-        return !this.contextManager.isStageCompleted(context, 'rule');
+        return !this.contextManager.isStageCompleted(context, "rule");
 
-      case 'probability':
-        const needSignal = this.contextManager.isStageCompleted(context, 'signal');
-        const needRule = this.contextManager.isStageCompleted(context, 'rule');
+      case "probability":
+        const needSignal = this.contextManager.isStageCompleted(
+          context,
+          "signal",
+        );
+        const needRule = this.contextManager.isStageCompleted(context, "rule");
         return !needSignal && !needRule;
 
-      case 'fortune':
-        return !this.contextManager.isStageCompleted(context, 'probability');
+      case "fortune":
+        return !this.contextManager.isStageCompleted(context, "probability");
 
-      case 'timing':
-        return !this.contextManager.isStageCompleted(context, 'fortune');
+      case "timing":
+        return !this.contextManager.isStageCompleted(context, "fortune");
 
-      case 'interpretation':
+      case "interpretation":
         if (!this.config.interpretation?.enabled) return true;
-        return !this.contextManager.isStageCompleted(context, 'fortune');
+        return !this.contextManager.isStageCompleted(context, "fortune");
 
-      case 'output':
-        return !this.contextManager.isStageCompleted(context, 'interpretation');
+      case "output":
+        return !this.contextManager.isStageCompleted(context, "interpretation");
 
       default:
         return false;
@@ -248,7 +264,7 @@ export class TianwenPipeline {
    * 获取阶段配置
    */
   private getStageConfig(stage: PipelineStage) {
-    return this.config.stages.find(s => s.name === stage);
+    return this.config.stages.find((s) => s.name === stage);
   }
 
   /**
@@ -263,18 +279,18 @@ export class TianwenPipeline {
     const calculationTrace = this.generateTrace(context);
 
     // 构建信号输出
-    const signalOutputs = context.signals.map(signal => ({
+    const signalOutputs = context.signals.map((signal) => ({
       id: signal.id,
-      description: signal.description || '',
+      description: signal.description || "",
       polarity: signal.polarity,
       strength: signal.strength,
       source: signal.source,
-      sourceRule: undefined
+      sourceRule: undefined,
     }));
 
     // 构建规则输出
     const ruleOutputs: any[] = [];
-    const ruleData = context.stageResults.get('rule')?.data;
+    const ruleData = context.stageResults.get("rule")?.data;
     if (ruleData?.conflictResolution?.resolvedMatches) {
       for (const match of ruleData.conflictResolution.resolvedMatches) {
         if (match.matched) {
@@ -286,7 +302,7 @@ export class TianwenPipeline {
             source: match.rule.metadata.source.name,
             confidence: match.rule.confidence || 0.8,
             matched: true,
-            effects: match.rule.effects.map(e => e.description || e.type)
+            effects: match.rule.effects.map((e) => e.description || e.type),
           });
         }
       }
@@ -301,33 +317,33 @@ export class TianwenPipeline {
           author: ref.author,
           chapter: ref.chapter,
           page: ref.page,
-          quote: ref.quote
+          quote: ref.quote,
         });
       }
     }
 
     return {
-      summary: interpretation?.summary || '推演完成',
+      summary: interpretation?.summary || "推演完成",
       probability: {
         success: probabilityScore?.successProbability || 0.5,
         failure: probabilityScore?.failureProbability || 0.5,
-        confidence: probabilityScore?.confidence || 0.5
+        confidence: probabilityScore?.confidence || 0.5,
       },
       fortune: {
-        level: fortuneLevel || 'neutral',
+        level: fortuneLevel || "neutral",
         score: interpretation?.fortuneLevel || 50,
-        description: interpretation?.summary || ''
+        description: interpretation?.summary || "",
       },
       timing: {
         favorable: interpretation?.timingAdvice || [],
         unfavorable: [],
-        optimal: undefined
+        optimal: undefined,
       },
       signals: signalOutputs,
       appliedRules: ruleOutputs,
       knowledgeReferences,
       calculationTrace,
-      actionableSuggestions: interpretation?.actionableSuggestions || []
+      actionableSuggestions: interpretation?.actionableSuggestions || [],
     };
   }
 
@@ -343,7 +359,7 @@ export class TianwenPipeline {
         timestamp: result.startTime,
         action: this.getStageAction(stage, result),
         result: this.getStageResultDescription(stage, result),
-        duration: result.duration || 0
+        duration: result.duration || 0,
       });
     }
 
@@ -355,18 +371,18 @@ export class TianwenPipeline {
    */
   private getStageAction(stage: PipelineStage, result: StageResult): string {
     const actions: Record<PipelineStage, string> = {
-      input: '接收用户输入',
-      random: '生成随机数',
-      chrono: '计算时间干支',
-      divination: '起卦排盘',
-      signal: '提取信号',
-      rule: '规则匹配',
-      conflict: '冲突检测与解决',
-      probability: '概率映射',
-      fortune: '吉凶判定',
-      timing: '时间分析',
-      interpretation: '生成解释',
-      output: '输出结果'
+      input: "接收用户输入",
+      random: "生成随机数",
+      chrono: "计算时间干支",
+      divination: "起卦排盘",
+      signal: "提取信号",
+      rule: "规则匹配",
+      conflict: "冲突检测与解决",
+      probability: "概率映射",
+      fortune: "吉凶判定",
+      timing: "时间分析",
+      interpretation: "生成解释",
+      output: "输出结果",
     };
     return actions[stage] || stage;
   }
@@ -374,36 +390,39 @@ export class TianwenPipeline {
   /**
    * 获取阶段结果描述
    */
-  private getStageResultDescription(stage: PipelineStage, result: StageResult): string {
-    if (result.status === 'failed') {
+  private getStageResultDescription(
+    stage: PipelineStage,
+    result: StageResult,
+  ): string {
+    if (result.status === "failed") {
       return `失败: ${result.error}`;
     }
-    if (result.status === 'skipped') {
-      return '已跳过';
+    if (result.status === "skipped") {
+      return "已跳过";
     }
 
     const stageResult = result.data;
-    if (!stageResult) return '完成';
+    if (!stageResult) return "完成";
 
     switch (stage) {
-      case 'random':
+      case "random":
         return `生成 ${stageResult.numbers?.length || 0} 个随机数`;
-      case 'chrono':
-        return '时间计算完成';
-      case 'divination':
+      case "chrono":
+        return "时间计算完成";
+      case "divination":
         return `生成 ${Object.keys(stageResult).length} 种排盘`;
-      case 'signal':
+      case "signal":
         return `提取 ${stageResult.length || 0} 个信号`;
-      case 'rule':
+      case "rule":
         return `匹配 ${stageResult.matchedRules || 0} 条规则`;
-      case 'probability':
+      case "probability":
         return `成功概率 ${Math.round(stageResult.probabilityScore?.successProbability * 100)}%`;
-      case 'fortune':
+      case "fortune":
         return `吉凶等级: ${stageResult.level}`;
-      case 'interpretation':
-        return '解释生成完成';
+      case "interpretation":
+        return "解释生成完成";
       default:
-        return '完成';
+        return "完成";
     }
   }
 
@@ -456,7 +475,7 @@ export class TianwenPipeline {
 
     return {
       healthy: healthyStages.length === PIPELINE_STAGE_ORDER.length,
-      stages: healthyStages
+      stages: healthyStages,
     };
   }
 }

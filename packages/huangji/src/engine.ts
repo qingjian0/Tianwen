@@ -1,6 +1,6 @@
-import { ChronoEngine } from '@tianwen/chrono-engine';
-import { HuangJiInput, HuangJiResult, YuanHuiYunShi, GuaMing } from './types';
-import { YUAN_BASE, HUI_NAMES, GUA_TABLE } from './constants';
+import { ChronoEngine } from "@tianwen/chrono-engine";
+import { HuangJiInput, HuangJiResult, YuanHuiYunShi, GuaMing } from "./types";
+import { YUAN_BASE, HUI_NAMES, GUA_TABLE } from "./constants";
 
 export class HuangJiEngine {
   private chronoData;
@@ -33,7 +33,7 @@ export class HuangJiEngine {
       monthGua: getGua(input.month),
       dayGua: getGua(input.day),
       hourGua: getGua(input.hour + 1),
-      baseNum: YUAN_BASE
+      baseNum: YUAN_BASE,
     };
   }
 
@@ -42,11 +42,11 @@ export class HuangJiEngine {
     guaMingInterpretation: string;
     suggestions: string[];
   } {
-    const huiDesc = HUI_NAMES[result.yuanHuiYunShi.hui] || '';
+    const huiDesc = HUI_NAMES[result.yuanHuiYunShi.hui] || "";
     return {
       eraDescription: `元${result.yuanHuiYunShi.yuan}，${huiDesc}，运${result.yuanHuiYunShi.yun}，世${result.yuanHuiYunShi.shi}`,
       guaMingInterpretation: `会卦${result.huiGua.guaName}，运卦${result.yunGua.guaName}，世卦${result.shiGua.guaName}`,
-      suggestions: ['顺天应时', '知几其神']
+      suggestions: ["顺天应时", "知几其神"],
     };
   }
 }

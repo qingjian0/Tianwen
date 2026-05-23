@@ -2,10 +2,10 @@
  * 推演上下文管理器
  */
 
-import { PredictionContext, PredictionInput } from './types';
-import { PredictionCategory, PredictionMode } from './constants';
-import { WeightCalculator } from '@tianwen/weight-system';
-import { SignalSource } from '@tianwen/signal-system';
+import { PredictionContext, PredictionInput } from "./types";
+import { PredictionCategory, PredictionMode } from "./constants";
+import { WeightCalculator } from "@tianwen/weight-system";
+import { SignalSource } from "@tianwen/signal-system";
 
 export class PredictionContextManager {
   /**
@@ -13,7 +13,7 @@ export class PredictionContextManager {
    */
   static create(input: PredictionInput): PredictionContext {
     const id = `pred_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
+
     return {
       id,
       question: input.question,
@@ -25,7 +25,7 @@ export class PredictionContextManager {
         ? { ...WeightCalculator.createDefaultConfig(), ...input.weightConfig }
         : WeightCalculator.createDefaultConfig(),
       mode: input.mode || PredictionMode.SINGLE_SYSTEM,
-      metadata: {}
+      metadata: {},
     };
   }
 
@@ -47,12 +47,12 @@ export class PredictionContextManager {
    */
   static update(
     context: PredictionContext,
-    updates: Partial<PredictionContext>
+    updates: Partial<PredictionContext>,
   ): PredictionContext {
     return {
       ...context,
       ...updates,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
   }
 
@@ -62,14 +62,14 @@ export class PredictionContextManager {
   static addMetadata(
     context: PredictionContext,
     key: string,
-    value: unknown
+    value: unknown,
   ): PredictionContext {
     return {
       ...context,
       metadata: {
         ...context.metadata,
-        [key]: value
-      }
+        [key]: value,
+      },
     };
   }
 }

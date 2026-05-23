@@ -2,13 +2,13 @@
  * Execution Context Store - 执行上下文存储
  */
 
-import { StorageAdapter, ExecutionContextStore } from './types';
+import { StorageAdapter, ExecutionContextStore } from "./types";
 
 export class ExecutionContextStoreImpl implements ExecutionContextStore {
   private storage: StorageAdapter;
   private prefix: string;
 
-  constructor(storage: StorageAdapter, prefix: string = 'ctx:') {
+  constructor(storage: StorageAdapter, prefix: string = "ctx:") {
     this.storage = storage;
     this.prefix = prefix;
   }
@@ -35,6 +35,6 @@ export class ExecutionContextStoreImpl implements ExecutionContextStore {
 
   async list(): Promise<string[]> {
     const keys = await this.storage.keys(`${this.prefix}*`);
-    return keys.map(key => key.replace(this.prefix, ''));
+    return keys.map((key) => key.replace(this.prefix, ""));
   }
 }

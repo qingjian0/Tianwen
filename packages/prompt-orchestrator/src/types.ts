@@ -2,11 +2,11 @@
  * Prompt 编排器类型定义
  */
 
-import { z } from 'zod';
-import { PromptLayer, OutputMode } from './constants';
-import { PredictionContext } from '@tianwen/prediction-core';
-import { FusionResult } from '@tianwen/fusion-engine';
-import { ProbabilityScore } from '@tianwen/probability-engine';
+import { z } from "zod";
+import { PromptLayer, OutputMode } from "./constants";
+import { PredictionContext } from "@tianwen/prediction-core";
+import { FusionResult } from "@tianwen/fusion-engine";
+import { ProbabilityScore } from "@tianwen/probability-engine";
 
 export interface PromptSection {
   layer: PromptLayer;
@@ -35,5 +35,5 @@ export interface OrchestrationConfig {
   includeLayers: PromptLayer[];
   outputMode: OutputMode;
   maxLength?: number;
-  tone?: 'formal' | 'friendly' | 'analytical';
+  tone?: "formal" | "friendly" | "analytical";
 }

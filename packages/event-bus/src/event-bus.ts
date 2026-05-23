@@ -2,7 +2,12 @@
  * Event Bus - 事件总线实现
  */
 
-import { Event, EventHandler, EventHandlerOptions, ListenerSubscription } from './types';
+import {
+  Event,
+  EventHandler,
+  EventHandlerOptions,
+  ListenerSubscription,
+} from "./types";
 
 interface Listener {
   handler: EventHandler;
@@ -18,12 +23,12 @@ export class EventBus {
   on(
     eventType: string,
     handler: EventHandler,
-    options: EventHandlerOptions = {}
+    options: EventHandlerOptions = {},
   ): ListenerSubscription {
     const listener: Listener = {
       handler,
       options,
-      id: this.generateId()
+      id: this.generateId(),
     };
 
     if (!this.listeners.has(eventType)) {
@@ -34,17 +39,19 @@ export class EventBus {
     listeners.push(listener);
 
     // 按优先级排序
-    listeners.sort((a, b) => (b.options.priority || 0) - (a.options.priority || 0));
+    listeners.sort(
+      (a, b) => (b.options.priority || 0) - (a.options.priority || 0),
+    );
 
     return {
-      unsubscribe: () => this.off(eventType, listener.id)
+      unsubscribe: () => this.off(eventType, listener.id),
     };
   }
 
   once(
     eventType: string,
     handler: EventHandler,
-    options: EventHandlerOptions = {}
+    options: EventHandlerOptions = {},
   ): ListenerSubscription {
     return this.on(eventType, handler, { ...options, once: true });
   }
@@ -55,7 +62,7 @@ export class EventBus {
       type: eventType,
       timestamp: Date.now(),
       payload,
-      metadata
+      metadata,
     };
 
     this.recordEvent(event);
@@ -95,7 +102,7 @@ export class EventBus {
   private off(eventType: string, listenerId: string): void {
     const listeners = this.listeners.get(eventType);
     if (listeners) {
-      const index = listeners.findIndex(l => l.id === listenerId);
+      const index = listeners.findIndex((l) => l.id === listenerId);
       if (index !== -1) {
         listeners.splice(index, 1);
       }
@@ -113,7 +120,7 @@ export class EventBus {
   getEventHistory(eventType?: string, limit: number = 100): Event[] {
     let history = this.eventHistory;
     if (eventType) {
-      history = history.filter(e => e.type === eventType);
+      history = history.filter((e) => e.type === eventType);
     }
     return history.slice(-limit);
   }

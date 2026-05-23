@@ -3,26 +3,23 @@
  * Phase 6: 各阶段处理逻辑
  */
 
-import { PipelineContext, StageResult } from './types';
-import { ChronoEngine } from '@tianwen/chrono-engine';
-import { MeihuaEngine } from '@tianwen/meihua';
-import { LiuYaoEngine } from '@tianwen/liuyao';
-import { BaZiEngine } from '@tianwen/bazi-engine';
-import { LiuRenEngine } from '@tianwen/liuren';
-import { XiaoChengTuEngine } from '@tianwen/xiaochengtu';
-import { HuangLiEngine } from '@tianwen/huangli';
-import { HuangJiEngine } from '@tianwen/huangji';
-import { CeGuiEngine } from '@tianwen/cegui';
-import { SignalExtractor } from '@tianwen/signal-extractor';
-import {
-  RuleEngine,
-  RuleContext
-} from '@tianwen/rule-engine-core';
-import { ProbabilityMapper } from '@tianwen/probability-mapping';
-import { FortuneCalculator } from '@tianwen/fortune-engine';
-import { TimingCalculator } from '@tianwen/timing-engine';
-import { RuleBasedInterpreter } from '@tianwen/interpretation-engine';
-import { allRules } from '../../../knowledge/rules';
+import { PipelineContext, StageResult } from "./types";
+import { ChronoEngine } from "@tianwen/chrono-engine";
+import { MeihuaEngine } from "@tianwen/meihua";
+import { LiuYaoEngine } from "@tianwen/liuyao";
+import { BaZiEngine } from "@tianwen/bazi-engine";
+import { LiuRenEngine } from "@tianwen/liuren";
+import { XiaoChengTuEngine } from "@tianwen/xiaochengtu";
+import { HuangLiEngine } from "@tianwen/huangli";
+import { HuangJiEngine } from "@tianwen/huangji";
+import { CeGuiEngine } from "@tianwen/cegui";
+import { SignalExtractor } from "@tianwen/signal-extractor";
+import { RuleEngine, RuleContext } from "@tianwen/rule-engine-core";
+import { ProbabilityMapper } from "@tianwen/probability-mapping";
+import { FortuneCalculator } from "@tianwen/fortune-engine";
+import { TimingCalculator } from "@tianwen/timing-engine";
+import { RuleBasedInterpreter } from "@tianwen/interpretation-engine";
+import { allRules } from "../../../knowledge/rules";
 
 /**
  * 阶段处理器接口
@@ -44,22 +41,22 @@ export class RandomProcessor implements StageProcessor {
 
       if (!randomSource) {
         return {
-          stage: 'random',
-          status: 'skipped',
+          stage: "random",
+          status: "skipped",
           startTime: new Date(startTime),
           endTime: new Date(),
-          duration: 0
+          duration: 0,
         };
       }
 
       let numbers: number[];
 
       switch (randomSource.mode) {
-        case 'manual':
+        case "manual":
           numbers = randomSource.values || [];
           break;
 
-        case 'auto': {
+        case "auto": {
           const count = randomSource.diceCount || 3;
           const maxVal = 50;
           numbers = Array.from({ length: count }, () => {
@@ -72,20 +69,22 @@ export class RandomProcessor implements StageProcessor {
           break;
         }
 
-        case 'timestamp': {
+        case "timestamp": {
           const digitLength = randomSource.digitLength || 2;
           const modulus = Math.pow(10, digitLength);
           numbers = [Date.now() % modulus];
           break;
         }
 
-        case 'digital': {
+        case "digital": {
           const source = randomSource.values?.[0]
             ? String(randomSource.values[0])
             : String(Date.now());
-          const digits = source.replace(/\D/g, '');
+          const digits = source.replace(/\D/g, "");
           const segments = digits.match(/.{1,3}/g);
-          numbers = segments ? segments.map(Number) : [Number(digits.slice(0, 3))];
+          numbers = segments
+            ? segments.map(Number)
+            : [Number(digits.slice(0, 3))];
           break;
         }
 
@@ -96,25 +95,25 @@ export class RandomProcessor implements StageProcessor {
       context.generatedRandom = numbers;
 
       return {
-        stage: 'random',
-        status: 'completed',
+        stage: "random",
+        status: "completed",
         data: { numbers },
         startTime: new Date(startTime),
         endTime: new Date(),
         duration: Date.now() - startTime,
         metadata: {
           mode: randomSource.mode,
-          count: numbers.length
-        }
+          count: numbers.length,
+        },
       };
     } catch (error) {
       return {
-        stage: 'random',
-        status: 'failed',
-        error: error instanceof Error ? error.message : '随机数生成失败',
+        stage: "random",
+        status: "failed",
+        error: error instanceof Error ? error.message : "随机数生成失败",
         startTime: new Date(startTime),
         endTime: new Date(),
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       };
     }
   }
@@ -140,25 +139,25 @@ export class ChronoProcessor implements StageProcessor {
       const duration = Date.now() - startTime;
 
       return {
-        stage: 'chrono',
-        status: 'completed',
+        stage: "chrono",
+        status: "completed",
         data: chronoData,
         startTime: new Date(startTime),
         endTime: new Date(),
         duration,
         metadata: {
           timestamp: timestamp.toISOString(),
-          system: 'ChronoEngine'
-        }
+          system: "ChronoEngine",
+        },
       };
     } catch (error) {
       return {
-        stage: 'chrono',
-        status: 'failed',
-        error: error instanceof Error ? error.message : '时间计算失败',
+        stage: "chrono",
+        status: "failed",
+        error: error instanceof Error ? error.message : "时间计算失败",
         startTime: new Date(startTime),
         endTime: new Date(),
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       };
     }
   }
@@ -188,7 +187,7 @@ export class DivinationProcessor implements StageProcessor {
       xiaochengtu: new XiaoChengTuEngine(),
       huangli: new HuangLiEngine(),
       huangji: new HuangJiEngine(),
-      cegui: new CeGuiEngine()
+      cegui: new CeGuiEngine(),
     };
   }
 
@@ -202,38 +201,41 @@ export class DivinationProcessor implements StageProcessor {
 
       for (const system of systems) {
         const timestamp = context.input.timestamp || new Date();
-        const chronoResult = context.stageResults.get('chrono')?.data;
+        const chronoResult = context.stageResults.get("chrono")?.data;
 
         switch (system) {
-          case 'meihua':
+          case "meihua":
             results.meihua = this.engines.meihua.divinateByTime(timestamp);
             break;
 
-          case 'liuyao':
+          case "liuyao":
             // 六爻需要6次铜钱结果，这里简化处理
             const coinResults = [9, 8, 7, 8, 9, 6]; // 示例数据
-            results.liuyao = this.engines.liuyao.divinateByCoin(coinResults, timestamp);
+            results.liuyao = this.engines.liuyao.divinateByCoin(
+              coinResults,
+              timestamp,
+            );
             break;
 
-          case 'bazi':
+          case "bazi":
             if (context.input.birth) {
               const birthDate = new Date(
                 context.input.birth.year,
                 context.input.birth.month - 1,
                 context.input.birth.day,
-                context.input.birth.hour
+                context.input.birth.hour,
               );
               results.bazi = this.engines.bazi.calculate(
                 birthDate,
-                context.input.birth.gender
+                context.input.birth.gender,
               );
             }
             break;
 
-          case 'liuren':
+          case "liuren":
             if (context.input.eventTime) {
               results.liuren = this.engines.liuren.calculate({
-                eventTime: context.input.eventTime
+                eventTime: context.input.eventTime,
               });
             } else {
               results.liuren = this.engines.liuren.calculate({
@@ -241,50 +243,50 @@ export class DivinationProcessor implements StageProcessor {
                   year: new Date().getFullYear(),
                   month: new Date().getMonth() + 1,
                   day: new Date().getDate(),
-                  hour: new Date().getHours()
-                }
+                  hour: new Date().getHours(),
+                },
               });
             }
             break;
 
-          case 'xiaochengtu':
+          case "xiaochengtu":
             {
               const randomNums = context.generatedRandom;
               const date = context.input.timestamp || new Date();
               results.xiaochengtu = this.engines.xiaochengtu.calculate(
                 randomNums && randomNums.length >= 3
                   ? { numbers: randomNums }
-                  : { date }
+                  : { date },
               );
             }
             break;
 
-          case 'huangli':
+          case "huangli":
             results.huangli = this.engines.huangli.query(
-              context.input.timestamp
+              context.input.timestamp,
             );
             break;
 
-          case 'huangji':
+          case "huangji":
             {
               const evt = context.input.eventTime || context.input.birth;
               results.huangji = this.engines.huangji.calculate({
                 year: evt?.year || new Date().getFullYear(),
-                month: evt?.month || (new Date().getMonth() + 1),
+                month: evt?.month || new Date().getMonth() + 1,
                 day: evt?.day || new Date().getDate(),
-                hour: evt?.hour || 0
+                hour: evt?.hour || 0,
               });
             }
             break;
 
-          case 'cegui':
+          case "cegui":
             {
               const evt = context.input.eventTime || context.input.birth;
               results.cegui = this.engines.cegui.calculate({
                 year: evt?.year || new Date().getFullYear(),
-                month: evt?.month || (new Date().getMonth() + 1),
+                month: evt?.month || new Date().getMonth() + 1,
                 day: evt?.day || new Date().getDate(),
-                hour: evt?.hour || 0
+                hour: evt?.hour || 0,
               });
             }
             break;
@@ -297,25 +299,25 @@ export class DivinationProcessor implements StageProcessor {
       const duration = Date.now() - startTime;
 
       return {
-        stage: 'divination',
-        status: 'completed',
+        stage: "divination",
+        status: "completed",
         data: results,
         startTime: new Date(startTime),
         endTime: new Date(),
         duration,
         metadata: {
           systems: systems,
-          resultCount: Object.keys(results).length
-        }
+          resultCount: Object.keys(results).length,
+        },
       };
     } catch (error) {
       return {
-        stage: 'divination',
-        status: 'failed',
-        error: error instanceof Error ? error.message : '起卦排盘失败',
+        stage: "divination",
+        status: "failed",
+        error: error instanceof Error ? error.message : "起卦排盘失败",
         startTime: new Date(startTime),
         endTime: new Date(),
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       };
     }
   }
@@ -335,21 +337,25 @@ export class SignalProcessor implements StageProcessor {
     const startTime = Date.now();
 
     try {
-      const divinationResults = context.stageResults.get('divination')?.data;
+      const divinationResults = context.stageResults.get("divination")?.data;
       if (!divinationResults) {
-        throw new Error('缺少排盘结果');
+        throw new Error("缺少排盘结果");
       }
 
       const signals: any[] = [];
 
       // 提取各系统信号
       if (divinationResults.meihua) {
-        const meihuaSignals = this.extractor.extractMeihua(divinationResults.meihua);
+        const meihuaSignals = this.extractor.extractMeihua(
+          divinationResults.meihua,
+        );
         signals.push(...meihuaSignals.signals);
       }
 
       if (divinationResults.liuyao) {
-        const liuyaoSignals = this.extractor.extractLiuYao(divinationResults.liuyao);
+        const liuyaoSignals = this.extractor.extractLiuYao(
+          divinationResults.liuyao,
+        );
         signals.push(...liuyaoSignals.signals);
       }
 
@@ -363,25 +369,25 @@ export class SignalProcessor implements StageProcessor {
       const duration = Date.now() - startTime;
 
       return {
-        stage: 'signal',
-        status: 'completed',
+        stage: "signal",
+        status: "completed",
         data: signals,
         startTime: new Date(startTime),
         endTime: new Date(),
         duration,
         metadata: {
           signalCount: signals.length,
-          systems: Object.keys(divinationResults)
-        }
+          systems: Object.keys(divinationResults),
+        },
       };
     } catch (error) {
       return {
-        stage: 'signal',
-        status: 'failed',
-        error: error instanceof Error ? error.message : '信号提取失败',
+        stage: "signal",
+        status: "failed",
+        error: error instanceof Error ? error.message : "信号提取失败",
         startTime: new Date(startTime),
         endTime: new Date(),
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       };
     }
   }
@@ -405,14 +411,15 @@ export class RuleProcessor implements StageProcessor {
       // 构建规则上下文
       const ruleContext: RuleContext = {
         data: this.buildRuleContextData(context),
-        timestamp: new Date()
+        timestamp: new Date(),
       };
 
       // 执行规则（包含冲突处理）
-      const { result, conflictResolution } = this.engine.executeAndGetResultWithConflictResolution(
-        ruleContext,
-        'priority_based'
-      );
+      const { result, conflictResolution } =
+        this.engine.executeAndGetResultWithConflictResolution(
+          ruleContext,
+          "priority_based",
+        );
 
       context.ruleContext = ruleContext;
       context.conflictResolution = conflictResolution;
@@ -420,47 +427,50 @@ export class RuleProcessor implements StageProcessor {
       const duration = Date.now() - startTime;
 
       return {
-        stage: 'rule',
-        status: 'completed',
+        stage: "rule",
+        status: "completed",
         data: {
           result,
           conflictResolution,
-          matchedRules: conflictResolution.resolvedMatches.filter(m => m.matched).length,
-          skippedRules: conflictResolution.skippedRuleIds.length
+          matchedRules: conflictResolution.resolvedMatches.filter(
+            (m) => m.matched,
+          ).length,
+          skippedRules: conflictResolution.skippedRuleIds.length,
         },
         startTime: new Date(startTime),
         endTime: new Date(),
         duration,
         metadata: {
           ruleCount: this.engine.getRules().length,
-          strategy: 'Priority'
-        }
+          strategy: "Priority",
+        },
       };
     } catch (error) {
       return {
-        stage: 'rule',
-        status: 'failed',
-        error: error instanceof Error ? error.message : '规则评估失败',
+        stage: "rule",
+        status: "failed",
+        error: error instanceof Error ? error.message : "规则评估失败",
         startTime: new Date(startTime),
         endTime: new Date(),
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       };
     }
   }
 
   private buildRuleContextData(context: PipelineContext): any {
     const data: any = {};
-    const divinationResults = context.stageResults.get('divination')?.data;
+    const divinationResults = context.stageResults.get("divination")?.data;
 
     if (divinationResults?.meihua) {
       data.tiyong = {
-        relation: 'yongshengti',
-        ti: { wuxing: 'jin' },
-        yong: { wuxing: 'tu' }
+        relation: "yongshengti",
+        ti: { wuxing: "jin" },
+        yong: { wuxing: "tu" },
       };
-      data.dongyaoCount = divinationResults.meihua.dongYaoPositions?.length || 0;
+      data.dongyaoCount =
+        divinationResults.meihua.dongYaoPositions?.length || 0;
       data.hasBiangua = !!divinationResults.meihua.bianGua;
-      data.system = 'meihua';
+      data.system = "meihua";
     }
 
     if (divinationResults?.bazi) {
@@ -492,7 +502,7 @@ export class ProbabilityProcessor implements StageProcessor {
     try {
       const signals = context.signals;
       if (signals.length === 0) {
-        throw new Error('缺少信号数据');
+        throw new Error("缺少信号数据");
       }
 
       const probResult = this.mapper.mapSignals(signals);
@@ -501,25 +511,25 @@ export class ProbabilityProcessor implements StageProcessor {
       const duration = Date.now() - startTime;
 
       return {
-        stage: 'probability',
-        status: 'completed',
+        stage: "probability",
+        status: "completed",
         data: probResult,
         startTime: new Date(startTime),
         endTime: new Date(),
         duration,
         metadata: {
           successProbability: probResult.probabilityScore.successProbability,
-          confidence: probResult.probabilityScore.confidence
-        }
+          confidence: probResult.probabilityScore.confidence,
+        },
       };
     } catch (error) {
       return {
-        stage: 'probability',
-        status: 'failed',
-        error: error instanceof Error ? error.message : '概率映射失败',
+        stage: "probability",
+        status: "failed",
+        error: error instanceof Error ? error.message : "概率映射失败",
         startTime: new Date(startTime),
         endTime: new Date(),
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       };
     }
   }
@@ -535,35 +545,36 @@ export class FortuneProcessor implements StageProcessor {
     try {
       const probabilityScore = context.probabilityScore;
       if (!probabilityScore) {
-        throw new Error('缺少概率分数');
+        throw new Error("缺少概率分数");
       }
 
-      const fortuneScore = FortuneCalculator.calculateFromProbability(probabilityScore);
+      const fortuneScore =
+        FortuneCalculator.calculateFromProbability(probabilityScore);
 
       context.fortuneLevel = fortuneScore.level;
 
       const duration = Date.now() - startTime;
 
       return {
-        stage: 'fortune',
-        status: 'completed',
+        stage: "fortune",
+        status: "completed",
         data: {
           level: fortuneScore.level,
           score: fortuneScore.score,
-          description: fortuneScore.description
+          description: fortuneScore.description,
         },
         startTime: new Date(startTime),
         endTime: new Date(),
-        duration
+        duration,
       };
     } catch (error) {
       return {
-        stage: 'fortune',
-        status: 'failed',
-        error: error instanceof Error ? error.message : '吉凶计算失败',
+        stage: "fortune",
+        status: "failed",
+        error: error instanceof Error ? error.message : "吉凶计算失败",
         startTime: new Date(startTime),
         endTime: new Date(),
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       };
     }
   }
@@ -578,7 +589,7 @@ export class InterpretationProcessor implements StageProcessor {
   constructor() {
     this.interpreter = new RuleBasedInterpreter({
       maxRulesToShow: 10,
-      maxSignalsToShow: 15
+      maxSignalsToShow: 15,
     });
   }
 
@@ -590,12 +601,12 @@ export class InterpretationProcessor implements StageProcessor {
       const fortuneLevel = context.fortuneLevel;
 
       if (!probabilityScore || !fortuneLevel) {
-        throw new Error('缺少必要数据');
+        throw new Error("缺少必要数据");
       }
 
       // 构建规则执行结果（简化版）
       const ruleExecutionResults: any[] = [];
-      const ruleContext = context.stageResults.get('rule')?.data;
+      const ruleContext = context.stageResults.get("rule")?.data;
       if (ruleContext?.conflictResolution?.resolvedMatches) {
         for (const match of ruleContext.conflictResolution.resolvedMatches) {
           if (match.matched) {
@@ -604,7 +615,7 @@ export class InterpretationProcessor implements StageProcessor {
               executed: true,
               matched: true,
               appliedEffects: match.rule.effects || [],
-              skippedEffects: []
+              skippedEffects: [],
             });
           }
         }
@@ -615,7 +626,7 @@ export class InterpretationProcessor implements StageProcessor {
         context.signals || [],
         probabilityScore,
         fortuneLevel as any,
-        context.ruleContext
+        context.ruleContext,
       );
 
       context.interpretation = interpretation;
@@ -623,25 +634,26 @@ export class InterpretationProcessor implements StageProcessor {
       const duration = Date.now() - startTime;
 
       return {
-        stage: 'interpretation',
-        status: 'completed',
+        stage: "interpretation",
+        status: "completed",
         data: interpretation,
         startTime: new Date(startTime),
         endTime: new Date(),
         duration,
         metadata: {
           hasSummary: !!interpretation.summary,
-          hasSuggestions: (interpretation.actionableSuggestions?.length || 0) > 0
-        }
+          hasSuggestions:
+            (interpretation.actionableSuggestions?.length || 0) > 0,
+        },
       };
     } catch (error) {
       return {
-        stage: 'interpretation',
-        status: 'failed',
-        error: error instanceof Error ? error.message : '解释生成失败',
+        stage: "interpretation",
+        status: "failed",
+        error: error instanceof Error ? error.message : "解释生成失败",
         startTime: new Date(startTime),
         endTime: new Date(),
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       };
     }
   }

@@ -3,48 +3,48 @@
  */
 
 export type TokenType =
-  | 'IDENTIFIER'
-  | 'NUMBER'
-  | 'STRING'
-  | 'BOOLEAN'
-  | 'NULL'
-  | 'LBRACE'
-  | 'RBRACE'
-  | 'LPAREN'
-  | 'RPAREN'
-  | 'LBRACKET'
-  | 'RBRACKET'
-  | 'COMMA'
-  | 'COLON'
-  | 'SEMICOLON'
-  | 'DOT'
-  | 'PLUS'
-  | 'MINUS'
-  | 'MULTIPLY'
-  | 'DIVIDE'
-  | 'MODULO'
-  | 'ASSIGN'
-  | 'PLUS_ASSIGN'
-  | 'MINUS_ASSIGN'
-  | 'MULTIPLY_ASSIGN'
-  | 'DIVIDE_ASSIGN'
-  | 'EQ'
-  | 'NEQ'
-  | 'LT'
-  | 'GT'
-  | 'LTE'
-  | 'GTE'
-  | 'AND'
-  | 'OR'
-  | 'NOT'
-  | 'IF'
-  | 'THEN'
-  | 'RULE'
-  | 'CATEGORY'
-  | 'DESCRIPTION'
-  | 'PRIORITY'
-  | 'EOF'
-  | 'NEWLINE';
+  | "IDENTIFIER"
+  | "NUMBER"
+  | "STRING"
+  | "BOOLEAN"
+  | "NULL"
+  | "LBRACE"
+  | "RBRACE"
+  | "LPAREN"
+  | "RPAREN"
+  | "LBRACKET"
+  | "RBRACKET"
+  | "COMMA"
+  | "COLON"
+  | "SEMICOLON"
+  | "DOT"
+  | "PLUS"
+  | "MINUS"
+  | "MULTIPLY"
+  | "DIVIDE"
+  | "MODULO"
+  | "ASSIGN"
+  | "PLUS_ASSIGN"
+  | "MINUS_ASSIGN"
+  | "MULTIPLY_ASSIGN"
+  | "DIVIDE_ASSIGN"
+  | "EQ"
+  | "NEQ"
+  | "LT"
+  | "GT"
+  | "LTE"
+  | "GTE"
+  | "AND"
+  | "OR"
+  | "NOT"
+  | "IF"
+  | "THEN"
+  | "RULE"
+  | "CATEGORY"
+  | "DESCRIPTION"
+  | "PRIORITY"
+  | "EOF"
+  | "NEWLINE";
 
 export interface Token {
   type: TokenType;
@@ -55,32 +55,32 @@ export interface Token {
 
 // AST 节点类型
 export type ASTNodeType =
-  | 'Program'
-  | 'RuleDefinition'
-  | 'Property'
-  | 'IfStatement'
-  | 'ThenStatement'
-  | 'BinaryExpression'
-  | 'UnaryExpression'
-  | 'Identifier'
-  | 'MemberExpression'
-  | 'CallExpression'
-  | 'NumberLiteral'
-  | 'StringLiteral'
-  | 'BooleanLiteral'
-  | 'NullLiteral';
+  | "Program"
+  | "RuleDefinition"
+  | "Property"
+  | "IfStatement"
+  | "ThenStatement"
+  | "BinaryExpression"
+  | "UnaryExpression"
+  | "Identifier"
+  | "MemberExpression"
+  | "CallExpression"
+  | "NumberLiteral"
+  | "StringLiteral"
+  | "BooleanLiteral"
+  | "NullLiteral";
 
 export interface ASTNode {
   type: ASTNodeType;
 }
 
 export interface ProgramNode extends ASTNode {
-  type: 'Program';
+  type: "Program";
   rules: RuleDefinitionNode[];
 }
 
 export interface RuleDefinitionNode extends ASTNode {
-  type: 'RuleDefinition';
+  type: "RuleDefinition";
   name: string;
   properties: PropertyNode[];
   conditions: IfStatementNode[];
@@ -88,18 +88,18 @@ export interface RuleDefinitionNode extends ASTNode {
 }
 
 export interface PropertyNode extends ASTNode {
-  type: 'Property';
+  type: "Property";
   key: string;
   value: ExpressionNode;
 }
 
 export interface IfStatementNode extends ASTNode {
-  type: 'IfStatement';
+  type: "IfStatement";
   condition: ExpressionNode;
 }
 
 export interface ThenStatementNode extends ASTNode {
-  type: 'ThenStatement';
+  type: "ThenStatement";
   effect: ExpressionNode;
 }
 
@@ -115,52 +115,65 @@ export type ExpressionNode =
   | NullLiteralNode;
 
 export interface BinaryExpressionNode extends ASTNode {
-  type: 'BinaryExpression';
-  operator: '==' | '!=' | '<' | '>' | '<=' | '>=' | '&&' | '||' | '+' | '-' | '*' | '/' | '%';
+  type: "BinaryExpression";
+  operator:
+    | "=="
+    | "!="
+    | "<"
+    | ">"
+    | "<="
+    | ">="
+    | "&&"
+    | "||"
+    | "+"
+    | "-"
+    | "*"
+    | "/"
+    | "%";
   left: ExpressionNode;
   right: ExpressionNode;
 }
 
 export interface UnaryExpressionNode extends ASTNode {
-  type: 'UnaryExpression';
-  operator: '!' | '-' | '+';
+  type: "UnaryExpression";
+  operator: "!" | "-" | "+";
   operand: ExpressionNode;
 }
 
 export interface IdentifierNode extends ASTNode {
-  type: 'Identifier';
+  type: "Identifier";
   name: string;
 }
 
 export interface MemberExpressionNode extends ASTNode {
-  type: 'MemberExpression';
+  type: "MemberExpression";
   object: ExpressionNode;
   property: IdentifierNode;
 }
 
 export interface CallExpressionNode extends ASTNode {
-  type: 'CallExpression';
+  type: "CallExpression";
   callee: ExpressionNode;
   arguments: ExpressionNode[];
 }
 
 export interface NumberLiteralNode extends ASTNode {
-  type: 'NumberLiteral';
+  type: "NumberLiteral";
   value: number;
 }
 
 export interface StringLiteralNode extends ASTNode {
-  type: 'StringLiteral';
+  type: "StringLiteral";
   value: string;
 }
 
 export interface BooleanLiteralNode extends ASTNode {
-  type: 'BooleanLiteral';
+  type: "BooleanLiteral";
   value: boolean;
 }
 
 export interface NullLiteralNode extends ASTNode {
-  type: 'NullLiteral';
+  type: "NullLiteral";
   value: null;
 }
 

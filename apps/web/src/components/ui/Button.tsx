@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { ComponentPropsWithoutRef, ReactNode } from 'react';
-import { motion } from 'framer-motion';
+import { ComponentPropsWithoutRef, ReactNode } from "react";
+import { motion } from "framer-motion";
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost';
-type ButtonSize = 'sm' | 'md' | 'lg';
+type ButtonVariant = "primary" | "secondary" | "ghost";
+type ButtonSize = "sm" | "md" | "lg";
 
 interface ButtonProps extends ComponentPropsWithoutRef<typeof motion.button> {
   variant?: ButtonVariant;
@@ -15,33 +15,32 @@ interface ButtonProps extends ComponentPropsWithoutRef<typeof motion.button> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    'bg-gradient-to-r from-[#F4D03F] via-[#D4AF37] to-[#B8860B] text-white font-semibold border border-[#D4AF37]/80',
-  secondary:
-    'bg-white border border-border text-text-primary font-semibold',
+    "bg-gradient-to-r from-[#F4D03F] via-[#D4AF37] to-[#B8860B] text-white font-semibold border border-[#D4AF37]/80",
+  secondary: "bg-white border border-border text-text-primary font-semibold",
   ghost:
-    'bg-transparent border border-transparent text-text-secondary font-medium',
+    "bg-transparent border border-transparent text-text-secondary font-medium",
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
-  sm: 'px-4 py-2 text-xs tracking-wider',
-  md: 'px-6 py-2.5 text-sm tracking-wider',
-  lg: 'px-8 py-3.5 text-base tracking-wider',
+  sm: "px-4 py-2 text-xs tracking-wider",
+  md: "px-6 py-2.5 text-sm tracking-wider",
+  lg: "px-8 py-3.5 text-base tracking-wider",
 };
 
 const hoverStyles: Record<ButtonVariant, string> = {
-  primary: 'hover:border-[#D4AF37] hover:shadow-card',
-  secondary: 'hover:border-imperial-gold/40 hover:text-imperial-gold',
-  ghost: 'hover:text-imperial-gold hover:bg-bg-secondary',
+  primary: "hover:border-[#D4AF37] hover:shadow-card",
+  secondary: "hover:border-imperial-gold/40 hover:text-imperial-gold",
+  ghost: "hover:text-imperial-gold hover:bg-bg-secondary",
 };
 
 export const Button = ({
-  variant = 'primary',
-  size = 'md',
+  variant = "primary",
+  size = "md",
   disabled = false,
   loading = false,
   children,
-  className = '',
-  type = 'button',
+  className = "",
+  type = "button",
   ...props
 }: ButtonProps) => {
   const isDisabled = disabled || loading;
@@ -53,15 +52,15 @@ export const Button = ({
       aria-disabled={isDisabled}
       role="button"
       className={[
-        'inline-flex items-center justify-center gap-2 transition-all duration-300 rounded-lg',
+        "inline-flex items-center justify-center gap-2 transition-all duration-300 rounded-lg",
         variantStyles[variant],
         sizeStyles[size],
         hoverStyles[variant],
-        isDisabled ? 'opacity-50 cursor-not-allowed' : '',
+        isDisabled ? "opacity-50 cursor-not-allowed" : "",
         className,
       ]
         .filter(Boolean)
-        .join(' ')}
+        .join(" ")}
       whileHover={isDisabled ? undefined : { y: -1 }}
       whileTap={isDisabled ? undefined : { scale: 0.98 }}
       {...props}
@@ -91,19 +90,10 @@ export const Button = ({
       {children}
     </motion.button>
   );
-}
+};
 
-interface RoyalButtonProps extends Omit<ButtonProps, 'variant'> {}
+interface RoyalButtonProps extends Omit<ButtonProps, "variant"> {}
 
-export const RoyalButton = ({
-  size = 'md',
-  ...props
-}: RoyalButtonProps) => {
-  return (
-    <Button
-      variant="primary"
-      size={size}
-      {...props}
-    />
-  );
-}
+export const RoyalButton = ({ size = "md", ...props }: RoyalButtonProps) => {
+  return <Button variant="primary" size={size} {...props} />;
+};

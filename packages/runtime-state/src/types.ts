@@ -5,7 +5,7 @@
 export interface StorageAdapter {
   initialize(): Promise<void>;
   close(): Promise<void>;
-  
+
   // Key-Value operations
   get<T>(key: string): Promise<T | null>;
   set<T>(key: string, value: T): Promise<void>;

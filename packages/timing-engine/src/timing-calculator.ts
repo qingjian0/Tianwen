@@ -2,8 +2,13 @@
  * 时间计算器
  */
 
-import { TimingWindow, TimingAnalysis, TimingFactors } from './types';
-import { TimeStrength, TimeHorizon, TIME_HORIZON_DAYS, TIME_STRENGTH_LABELS } from './constants';
+import { TimingWindow, TimingAnalysis, TimingFactors } from "./types";
+import {
+  TimeStrength,
+  TimeHorizon,
+  TIME_HORIZON_DAYS,
+  TIME_STRENGTH_LABELS,
+} from "./constants";
 
 export class TimingCalculator {
   /**
@@ -25,7 +30,7 @@ export class TimingCalculator {
     end: Date,
     strength: number,
     horizon: TimeHorizon,
-    description?: string
+    description?: string,
   ): TimingWindow {
     const strengthLevel = this.determineStrengthLevel(strength);
     return {
@@ -36,7 +41,7 @@ export class TimingCalculator {
       strengthLevel,
       horizon,
       description: description || TIME_STRENGTH_LABELS[strengthLevel],
-      tags: [horizon, strengthLevel]
+      tags: [horizon, strengthLevel],
     };
   }
 
@@ -46,7 +51,7 @@ export class TimingCalculator {
   static calculateFactors(baseDate: Date = new Date()): TimingFactors {
     const dayOfMonth = baseDate.getDate();
     const dayOfWeek = baseDate.getDay();
-    
+
     const currentPosition = (dayOfMonth % 30) / 30;
     const trendDirection = Math.sin(currentPosition * Math.PI * 2);
     const momentum = 0.5 + Math.cos(currentPosition * Math.PI * 4) * 0.3;
@@ -56,7 +61,7 @@ export class TimingCalculator {
       currentPosition,
       trendDirection,
       momentum,
-      cyclePhase
+      cyclePhase,
     };
   }
 }

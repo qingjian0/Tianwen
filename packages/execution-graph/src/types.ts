@@ -3,15 +3,20 @@
  */
 
 export type NodeType =
-  | 'chronology'
-  | 'divination'
-  | 'signal'
-  | 'rule'
-  | 'probability'
-  | 'fortune'
-  | 'interpretation';
+  | "chronology"
+  | "divination"
+  | "signal"
+  | "rule"
+  | "probability"
+  | "fortune"
+  | "interpretation";
 
-export type NodeStatus = 'pending' | 'running' | 'completed' | 'failed' | 'skipped';
+export type NodeStatus =
+  | "pending"
+  | "running"
+  | "completed"
+  | "failed"
+  | "skipped";
 
 export interface ExecutionNode {
   id: string;

@@ -3,4 +3,4 @@
  * Phase 2: 统一主题系统
  */
 
-export * from './theme';
+export * from "./theme";

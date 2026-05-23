@@ -2,18 +2,18 @@
  * Rule DSL 词法分析器
  */
 
-import { Token, TokenType } from './types';
+import { Token, TokenType } from "./types";
 
 const KEYWORDS: Record<string, TokenType> = {
-  'if': 'IF',
-  'then': 'THEN',
-  'rule': 'RULE',
-  'category': 'CATEGORY',
-  'description': 'DESCRIPTION',
-  'priority': 'PRIORITY',
-  'true': 'BOOLEAN',
-  'false': 'BOOLEAN',
-  'null': 'NULL',
+  if: "IF",
+  then: "THEN",
+  rule: "RULE",
+  category: "CATEGORY",
+  description: "DESCRIPTION",
+  priority: "PRIORITY",
+  true: "BOOLEAN",
+  false: "BOOLEAN",
+  null: "NULL",
 };
 
 export class Lexer {
@@ -33,9 +33,9 @@ export class Lexer {
 
       if (/\s/.test(char)) {
         this.handleWhitespace(char);
-      } else if (char === '/' && this.source[this.position + 1] === '/') {
+      } else if (char === "/" && this.source[this.position + 1] === "/") {
         this.handleComment();
-      } else if (char === '/' && this.source[this.position + 1] === '*') {
+      } else if (char === "/" && this.source[this.position + 1] === "*") {
         this.handleMultilineComment();
       } else if (char === '"' || char === "'") {
         this.handleString(char);
@@ -48,16 +48,16 @@ export class Lexer {
       }
     }
 
-    this.addToken('EOF', '');
+    this.addToken("EOF", "");
     return this.tokens;
   }
 
   private handleWhitespace(char: string): void {
-    if (char === '\n') {
+    if (char === "\n") {
       this.line++;
       this.column = 1;
-      this.addToken('NEWLINE', '\\n');
-    } else if (char === '\r') {
+      this.addToken("NEWLINE", "\\n");
+    } else if (char === "\r") {
       // 忽略
     } else {
       this.column++;
@@ -66,7 +66,10 @@ export class Lexer {
   }
 
   private handleComment(): void {
-    while (this.position < this.source.length && this.source[this.position] !== '\n') {
+    while (
+      this.position < this.source.length &&
+      this.source[this.position] !== "\n"
+    ) {
       this.position++;
     }
   }
@@ -74,11 +77,14 @@ export class Lexer {
   private handleMultilineComment(): void {
     this.position += 2;
     while (this.position < this.source.length) {
-      if (this.source[this.position] === '*' && this.source[this.position + 1] === '/') {
+      if (
+        this.source[this.position] === "*" &&
+        this.source[this.position + 1] === "/"
+      ) {
         this.position += 2;
         return;
       }
-      if (this.source[this.position] === '\n') {
+      if (this.source[this.position] === "\n") {
         this.line++;
         this.column = 1;
       }
@@ -90,83 +96,96 @@ export class Lexer {
     const startColumn = this.column;
     this.position++;
     this.column++;
-    let value = '';
+    let value = "";
 
     while (this.position < this.source.length) {
       const char = this.source[this.position];
-      
+
       if (char === quote) {
         this.position++;
         this.column++;
         break;
       }
-      
-      if (char === '\\') {
+
+      if (char === "\\") {
         this.position++;
         this.column++;
         const next = this.source[this.position];
         switch (next) {
-          case 'n': value += '\n'; break;
-          case 't': value += '\t'; break;
-          case 'r': value += '\r'; break;
-          default: value += next;
+          case "n":
+            value += "\n";
+            break;
+          case "t":
+            value += "\t";
+            break;
+          case "r":
+            value += "\r";
+            break;
+          default:
+            value += next;
         }
       } else {
         value += char;
       }
-      
-      if (char === '\n') {
+
+      if (char === "\n") {
         this.line++;
         this.column = 1;
       } else {
         this.column++;
       }
-      
+
       this.position++;
     }
 
     this.tokens.push({
-      type: 'STRING',
+      type: "STRING",
       value,
       line: this.line,
-      column: startColumn
+      column: startColumn,
     });
   }
 
   private handleNumber(): void {
     const startColumn = this.column;
-    let value = '';
+    let value = "";
 
-    while (this.position < this.source.length && /[\d.]/.test(this.source[this.position])) {
+    while (
+      this.position < this.source.length &&
+      /[\d.]/.test(this.source[this.position])
+    ) {
       value += this.source[this.position];
       this.position++;
       this.column++;
     }
 
     this.tokens.push({
-      type: 'NUMBER',
+      type: "NUMBER",
       value,
       line: this.line,
-      column: startColumn
+      column: startColumn,
     });
   }
 
   private handleIdentifier(): void {
     const startColumn = this.column;
-    let value = '';
+    let value = "";
 
-    while (this.position < this.source.length && /[a-zA-Z0-9_]/.test(this.source[this.position])) {
+    while (
+      this.position < this.source.length &&
+      /[a-zA-Z0-9_]/.test(this.source[this.position])
+    ) {
       value += this.source[this.position];
       this.position++;
       this.column++;
     }
 
-    const type = KEYWORDS[value] || 'IDENTIFIER';
+    const type = KEYWORDS[value] || "IDENTIFIER";
     this.tokens.push({
       type,
       value,
       line: this.line,
-      column: startColumn
+      column: startColumn,
     });
   }
 
@@ -174,18 +193,18 @@ export class Lexer {
     const startColumn = this.column;
 
     // 处理两个字符的运算符
-    const twoChars = char + (this.source[this.position + 1] || '');
+    const twoChars = char + (this.source[this.position + 1] || "");
     const twoCharTokens: Record<string, TokenType> = {
-      '==': 'EQ',
-      '!=': 'NEQ',
-      '<=': 'LTE',
-      '>=': 'GTE',
-      '&&': 'AND',
-      '||': 'OR',
-      '+=': 'PLUS_ASSIGN',
-      '-=': 'MINUS_ASSIGN',
-      '*=': 'MULTIPLY_ASSIGN',
-      '/=': 'DIVIDE_ASSIGN',
+      "==": "EQ",
+      "!=": "NEQ",
+      "<=": "LTE",
+      ">=": "GTE",
+      "&&": "AND",
+      "||": "OR",
+      "+=": "PLUS_ASSIGN",
+      "-=": "MINUS_ASSIGN",
+      "*=": "MULTIPLY_ASSIGN",
+      "/=": "DIVIDE_ASSIGN",
     };
 
     if (twoCharTokens[twoChars]) {
@@ -193,7 +212,7 @@ export class Lexer {
         type: twoCharTokens[twoChars],
         value: twoChars,
         line: this.line,
-        column: startColumn
+        column: startColumn,
       });
       this.position += 2;
       this.column += 2;
@@ -202,25 +221,25 @@ export class Lexer {
 
     // 处理单字符的标点
     const singleCharTokens: Record<string, TokenType> = {
-      '{': 'LBRACE',
-      '}': 'RBRACE',
-      '(': 'LPAREN',
-      ')': 'RPAREN',
-      '[': 'LBRACKET',
-      ']': 'RBRACKET',
-      ',': 'COMMA',
-      ':': 'COLON',
-      ';': 'SEMICOLON',
-      '.': 'DOT',
-      '+': 'PLUS',
-      '-': 'MINUS',
-      '*': 'MULTIPLY',
-      '/': 'DIVIDE',
-      '%': 'MODULO',
-      '=': 'ASSIGN',
-      '<': 'LT',
-      '>': 'GT',
-      '!': 'NOT',
+      "{": "LBRACE",
+      "}": "RBRACE",
+      "(": "LPAREN",
+      ")": "RPAREN",
+      "[": "LBRACKET",
+      "]": "RBRACKET",
+      ",": "COMMA",
+      ":": "COLON",
+      ";": "SEMICOLON",
+      ".": "DOT",
+      "+": "PLUS",
+      "-": "MINUS",
+      "*": "MULTIPLY",
+      "/": "DIVIDE",
+      "%": "MODULO",
+      "=": "ASSIGN",
+      "<": "LT",
+      ">": "GT",
+      "!": "NOT",
     };
 
     if (singleCharTokens[char]) {
@@ -228,12 +247,14 @@ export class Lexer {
         type: singleCharTokens[char],
         value: char,
         line: this.line,
-        column: startColumn
+        column: startColumn,
       });
       this.position++;
       this.column++;
     } else {
-      throw new Error(`Unexpected character: ${char} at line ${this.line}, column ${this.column}`);
+      throw new Error(
+        `Unexpected character: ${char} at line ${this.line}, column ${this.column}`,
+      );
     }
   }
 
@@ -242,7 +263,7 @@ export class Lexer {
       type,
       value,
       line: this.line,
-      column: this.column
+      column: this.column,
     });
   }
 }

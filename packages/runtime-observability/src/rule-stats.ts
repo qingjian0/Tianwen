@@ -2,7 +2,7 @@
  * Rule Statistics - 规则统计
  */
 
-import { RuleHitStats } from './types';
+import { RuleHitStats } from "./types";
 
 export class RuleStatistics {
   private stats: Map<string, RuleHitStats> = new Map();
@@ -52,10 +52,13 @@ export class RuleStatistics {
     return Array.from(this.stats.values());
   }
 
-  getTopRules(count: number = 10, sortBy: 'hits' | 'averageExecutionTime' = 'hits'): RuleHitStats[] {
+  getTopRules(
+    count: number = 10,
+    sortBy: "hits" | "averageExecutionTime" = "hits",
+  ): RuleHitStats[] {
     return Array.from(this.stats.values())
       .sort((a, b) => {
-        if (sortBy === 'hits') {
+        if (sortBy === "hits") {
           return b.hits - a.hits;
         } else {
           return a.averageExecutionTime - b.averageExecutionTime;

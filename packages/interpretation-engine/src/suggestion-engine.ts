@@ -2,12 +2,20 @@
  * 建议引擎
  */
 
-import { Suggestion, InterpretationResult, InterpretationConfig } from './types';
-import { SuggestionType, InterpretationTone } from './constants';
-import { Signal, SignalProcessor, SignalPolarity } from '@tianwen/signal-system';
-import { ProbabilityScore } from '@tianwen/probability-engine';
-import { FortuneScore } from '@tianwen/fortune-engine';
-import { InterpretationGenerator } from './interpretation-generator';
+import {
+  Suggestion,
+  InterpretationResult,
+  InterpretationConfig,
+} from "./types";
+import { SuggestionType, InterpretationTone } from "./constants";
+import {
+  Signal,
+  SignalProcessor,
+  SignalPolarity,
+} from "@tianwen/signal-system";
+import { ProbabilityScore } from "@tianwen/probability-engine";
+import { FortuneScore } from "@tianwen/fortune-engine";
+import { InterpretationGenerator } from "./interpretation-generator";
 
 export class SuggestionEngine {
   private config: InterpretationConfig;
@@ -19,8 +27,8 @@ export class SuggestionEngine {
       tone: InterpretationTone.FRIENDLY,
       includeRisks: true,
       includeOpportunities: true,
-      detailLevel: 'medium',
-      ...config
+      detailLevel: "medium",
+      ...config,
     };
     this.generator = new InterpretationGenerator(this.config);
   }
@@ -31,9 +39,13 @@ export class SuggestionEngine {
   generateInterpretation(
     signals: Signal[],
     probability?: ProbabilityScore,
-    fortune?: FortuneScore
+    fortune?: FortuneScore,
   ): InterpretationResult {
-    const interpretation = this.generator.generate(signals, probability, fortune);
+    const interpretation = this.generator.generate(
+      signals,
+      probability,
+      fortune,
+    );
     const suggestions = this.generateSuggestions(signals, probability, fortune);
     const risks = this.extractRisks(signals);
     const opportunities = this.extractOpportunities(signals);
@@ -43,7 +55,7 @@ export class SuggestionEngine {
       suggestions,
       risks,
       opportunities,
-      sources: signals
+      sources: signals,
     };
   }
 
@@ -53,80 +65,80 @@ export class SuggestionEngine {
   private generateSuggestions(
     signals: Signal[],
     probability?: ProbabilityScore,
-    fortune?: FortuneScore
+    fortune?: FortuneScore,
   ): Suggestion[] {
     const suggestions: Suggestion[] = [];
     const analysis = SignalProcessor.analyze(signals);
 
     if (analysis.dominantPolarity === SignalPolarity.POSITIVE) {
       suggestions.push({
-        id: 'action-1',
+        id: "action-1",
         type: SuggestionType.ACTION,
-        content: '把握当前有利时机，积极采取行动',
+        content: "把握当前有利时机，积极采取行动",
         priority: 1,
         actionable: true,
-        reason: '积极信号占主导'
+        reason: "积极信号占主导",
       });
     } else if (analysis.dominantPolarity === SignalPolarity.NEGATIVE) {
       suggestions.push({
-        id: 'precaution-1',
+        id: "precaution-1",
         type: SuggestionType.PRECAUTION,
-        content: '保持谨慎，避免重大决策',
+        content: "保持谨慎，避免重大决策",
         priority: 1,
         actionable: true,
-        reason: '需要注意的信号较多'
+        reason: "需要注意的信号较多",
       });
     }
 
     if (analysis.unstableSignals.length > 0) {
       suggestions.push({
-        id: 'attitude-1',
+        id: "attitude-1",
         type: SuggestionType.ATTITUDE,
-        content: '保持灵活应对的态度',
+        content: "保持灵活应对的态度",
         priority: 2,
         actionable: true,
-        reason: '存在不稳定因素'
+        reason: "存在不稳定因素",
       });
     }
 
     if (probability && probability.successProbability >= 0.7) {
       suggestions.push({
-        id: 'timing-1',
+        id: "timing-1",
         type: SuggestionType.TIMING,
-        content: '当前时机有利，可以考虑行动',
+        content: "当前时机有利，可以考虑行动",
         priority: 2,
         actionable: true,
-        reason: '成功概率较高'
+        reason: "成功概率较高",
       });
     } else if (probability && probability.successProbability <= 0.3) {
       suggestions.push({
-        id: 'timing-2',
+        id: "timing-2",
         type: SuggestionType.TIMING,
-        content: '建议暂缓行动，等待更好时机',
+        content: "建议暂缓行动，等待更好时机",
         priority: 2,
         actionable: true,
-        reason: '成功概率较低'
+        reason: "成功概率较低",
       });
     }
 
     if (analysis.confidence < 0.5) {
       suggestions.push({
-        id: 'precaution-2',
+        id: "precaution-2",
         type: SuggestionType.PRECAUTION,
-        content: '建议收集更多信息再做决策',
+        content: "建议收集更多信息再做决策",
         priority: 3,
         actionable: true,
-        reason: '分析置信度较低'
+        reason: "分析置信度较低",
       });
     }
 
     suggestions.push({
-      id: 'attitude-2',
+      id: "attitude-2",
       type: SuggestionType.ATTITUDE,
-      content: '保持理性思考，避免盲从',
+      content: "保持理性思考，避免盲从",
       priority: 4,
       actionable: true,
-      reason: '术数仅供参考'
+      reason: "术数仅供参考",
     });
 
     return suggestions
@@ -144,15 +156,15 @@ export class SuggestionEngine {
     const risks: string[] = [];
 
     if (analysis.negativeSignals.length > 0) {
-      risks.push('存在需要注意的信号');
+      risks.push("存在需要注意的信号");
     }
 
     if (analysis.unstableSignals.length > 0) {
-      risks.push('局势可能发生变化');
+      risks.push("局势可能发生变化");
     }
 
     if (analysis.confidence < 0.5) {
-      risks.push('分析结果置信度较低');
+      risks.push("分析结果置信度较低");
     }
 
     return risks;
@@ -168,15 +180,15 @@ export class SuggestionEngine {
     const opportunities: string[] = [];
 
     if (analysis.positiveSignals.length > 0) {
-      opportunities.push('有积极信号指示');
+      opportunities.push("有积极信号指示");
     }
 
     if (analysis.dominantPolarity === SignalPolarity.POSITIVE) {
-      opportunities.push('整体趋势偏向积极');
+      opportunities.push("整体趋势偏向积极");
     }
 
     if (analysis.confidence >= 0.7) {
-      opportunities.push('分析结果置信度较高');
+      opportunities.push("分析结果置信度较高");
     }
 
     return opportunities;

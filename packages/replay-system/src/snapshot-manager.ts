@@ -2,7 +2,7 @@
  * Snapshot Manager - 快照管理器
  */
 
-import { Snapshot } from './types';
+import { Snapshot } from "./types";
 
 export class SnapshotManager {
   private snapshots: Map<string, Snapshot> = new Map();
@@ -12,10 +12,10 @@ export class SnapshotManager {
     sessionId: string,
     frameIndex: number,
     context: Record<string, any>,
-    data: any
+    data: any,
   ): Snapshot {
     const snapshotId = this.generateId();
-    
+
     const snapshot: Snapshot = {
       snapshotId,
       sessionId,
@@ -42,9 +42,9 @@ export class SnapshotManager {
   getSessionSnapshots(sessionId: string): Snapshot[] {
     const snapshotIds = this.sessionSnapshots.get(sessionId);
     if (!snapshotIds) return [];
-    
+
     return Array.from(snapshotIds)
-      .map(id => this.snapshots.get(id))
+      .map((id) => this.snapshots.get(id))
       .filter((s): s is Snapshot => s !== undefined)
       .sort((a, b) => a.frameIndex - b.frameIndex);
   }

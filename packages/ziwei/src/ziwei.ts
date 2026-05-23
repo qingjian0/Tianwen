@@ -2,13 +2,13 @@
  * 紫微斗数核心引擎
  */
 
-import { ChronoEngine, Tiangan, Dizhi, ChronoData } from '@tianwen/chrono-engine';
 import {
-  ZiweiResult,
-  PalaceData,
-  Palace,
-  Star
-} from './types';
+  ChronoEngine,
+  Tiangan,
+  Dizhi,
+  ChronoData,
+} from "@tianwen/chrono-engine";
+import { ZiweiResult, PalaceData, Palace, Star } from "./types";
 import {
   FOURTEEN_MAIN_STARS,
   AUSPICIOUS_STARS,
@@ -19,30 +19,29 @@ import {
   PALACE_WUXING,
   ZIWEI_PATTERNS,
   TIANGAN_STARS,
-  DIZHI_STARS
-} from './constants';
+  DIZHI_STARS,
+} from "./constants";
 
 export class ZiweiEngine {
-
   /**
    * 排盘
    */
-  calculate(date: Date, gender: '男' | '女'): ZiweiResult {
+  calculate(date: Date, gender: "男" | "女"): ZiweiResult {
     const chronoData = ChronoEngine.at(date);
     const palaces = this.buildPalaces(chronoData, gender);
-    const mainPalace = palaces.find(p => p.name === '命宫') || palaces[0];
+    const mainPalace = palaces.find((p) => p.name === "命宫") || palaces[0];
     const luck = this.calculateLuck(palaces);
     const predictions = this.generatePredictions(palaces);
 
     return {
-      type: 'ziwei',
+      type: "ziwei",
       palaces,
       mainPalace,
       chronoData,
       gender,
       interpretation: this.generateInterpretation(luck, palaces),
       luck,
-      predictions
+      predictions,
     };
   }
 
@@ -50,12 +49,43 @@ export class ZiweiEngine {
    * 构建宫位
    */
   private buildPalaces(
-    chronoData: ChronoData, gender: '男' | '女'): PalaceData[] {
+    chronoData: ChronoData,
+    gender: "男" | "女",
+  ): PalaceData[] {
     const palaces: PalaceData[] = [];
     const { ganzhi } = chronoData;
 
-    const tianganList: Tiangan[] = ['甲', '乙', '丙', '丙', '丁', '戊', '戊', '己', '庚', '辛', '壬', '癸'];
-    const dizhiList: Dizhi[] = ['子', '丑', '寅', '卯', '辰', '辰', '巳', '午', '未', '未', '申', '酉', '戌', '戌', '亥'];
+    const tianganList: Tiangan[] = [
+      "甲",
+      "乙",
+      "丙",
+      "丙",
+      "丁",
+      "戊",
+      "戊",
+      "己",
+      "庚",
+      "辛",
+      "壬",
+      "癸",
+    ];
+    const dizhiList: Dizhi[] = [
+      "子",
+      "丑",
+      "寅",
+      "卯",
+      "辰",
+      "辰",
+      "巳",
+      "午",
+      "未",
+      "未",
+      "申",
+      "酉",
+      "戌",
+      "戌",
+      "亥",
+    ];
 
     for (let i = 0; i < 12; i++) {
       const palaceName = PALACE_ORDER[i];
@@ -64,8 +94,18 @@ export class ZiweiEngine {
       const dizhi = dizhiList[i];
       const wuxing = PALACE_WUXING[palaceName];
 
-      const mainStars = this.findMainStars(palaceName, ganzhi.day.gan, i, position);
-      const auxStars = this.findAuxiliaryStars(palaceName, ganzhi.day.zhi, i, ganzhi.hour.zhi);
+      const mainStars = this.findMainStars(
+        palaceName,
+        ganzhi.day.gan,
+        i,
+        position,
+      );
+      const auxStars = this.findAuxiliaryStars(
+        palaceName,
+        ganzhi.day.zhi,
+        i,
+        ganzhi.hour.zhi,
+      );
 
       palaces.push({
         name: palaceName,
@@ -75,7 +115,7 @@ export class ZiweiEngine {
         mainStars,
         auxStars,
         wuxing,
-        isEmpty: this.checkPalaceEmpty(palaceName, ganzhi.day.full)
+        isEmpty: this.checkPalaceEmpty(palaceName, ganzhi.day.full),
       });
     }
 
@@ -89,7 +129,7 @@ export class ZiweiEngine {
     palaceName: Palace,
     dayTiangan: Tiangan,
     offset: number,
-    position: number
+    position: number,
   ): Star[] {
     const stars: Star[] = [];
 
@@ -108,7 +148,8 @@ export class ZiweiEngine {
 
     if (stars.length === 0 && position % 2 === 0) {
       const candidateStars = FOURTEEN_MAIN_STARS.slice(
-        FOURTEEN_MAIN_STARS.length - 3);
+        FOURTEEN_MAIN_STARS.length - 3,
+      );
       if (candidateStars.length > 0) {
         stars.push(...candidateStars.slice(0, 2));
       }
@@ -124,7 +165,7 @@ export class ZiweiEngine {
     palaceName: Palace,
     dayDizhi: Dizhi,
     offset: number,
-    hourDizhi: Dizhi
+    hourDizhi: Dizhi,
   ): Star[] {
     const stars: Star[] = [];
 
@@ -134,12 +175,12 @@ export class ZiweiEngine {
     }
 
     if (offset % 3 === 0) {
-      const luckyStars = ['左辅', '右弼', '文昌', '文曲', '天魁', '天钺'];
+      const luckyStars = ["左辅", "右弼", "文昌", "文曲", "天魁", "天钺"];
       stars.push(...luckyStars.slice(offset % luckyStars.length));
     }
 
     if (offset % 5 === 0) {
-      const loveStars = ['红鸾', '天喜'];
+      const loveStars = ["红鸾", "天喜"];
       stars.push(...loveStars);
     }
 
@@ -150,7 +191,7 @@ export class ZiweiEngine {
    * 检查宫位空亡
    */
   private checkPalaceEmpty(palaceName: Palace, rizhu: string): boolean {
-    const emptyPalaces: Palace[] = ['迁移', '交友'];
+    const emptyPalaces: Palace[] = ["迁移", "交友"];
     return emptyPalaces.includes(palaceName) && Math.random() > 0.7;
   }
 
@@ -172,7 +213,7 @@ export class ZiweiEngine {
       }
     }
 
-    const mainPalace = palaces.find(p => p.name === '命宫');
+    const mainPalace = palaces.find((p) => p.name === "命宫");
     if (mainPalace) {
       for (const star of mainPalace.mainStars) {
         const luck = STAR_LUCK[star] || 50;
@@ -192,15 +233,15 @@ export class ZiweiEngine {
     relationships: string;
     health: string;
   } {
-    const careerPalace = palaces.find(p => p.name === '官禄');
-    const wealthPalace = palaces.find(p => p.name === '财帛');
-    const relationshipsPalace = palaces.find(p => p.name === '夫妻');
-    const healthPalace = palaces.find(p => p.name === '疾厄');
+    const careerPalace = palaces.find((p) => p.name === "官禄");
+    const wealthPalace = palaces.find((p) => p.name === "财帛");
+    const relationshipsPalace = palaces.find((p) => p.name === "夫妻");
+    const healthPalace = palaces.find((p) => p.name === "疾厄");
 
-    const career = this.analyzePalace(careerPalace, '事业');
-    const wealth = this.analyzePalace(wealthPalace, '财运');
-    const relationships = this.analyzePalace(relationshipsPalace, '感情');
-    const health = this.analyzePalace(healthPalace, '健康');
+    const career = this.analyzePalace(careerPalace, "事业");
+    const wealth = this.analyzePalace(wealthPalace, "财运");
+    const relationships = this.analyzePalace(relationshipsPalace, "感情");
+    const health = this.analyzePalace(healthPalace, "健康");
 
     return { career, wealth, relationships, health };
   }
@@ -208,16 +249,17 @@ export class ZiweiEngine {
   /**
    * 分析宫位
    */
-  private analyzePalace(
-    palace: PalaceData | undefined,
-    area: string
-  ): string {
+  private analyzePalace(palace: PalaceData | undefined, area: string): string {
     if (!palace) {
       return `${area}方面运势一般，宜谨慎行事。`;
     }
 
-    const hasGoodStars = palace.mainStars.some(s => AUSPICIOUS_STARS.includes(s));
-    const hasBadStars = palace.mainStars.some(s => INAUSPICIOUS_STARS.includes(s));
+    const hasGoodStars = palace.mainStars.some((s) =>
+      AUSPICIOUS_STARS.includes(s),
+    );
+    const hasBadStars = palace.mainStars.some((s) =>
+      INAUSPICIOUS_STARS.includes(s),
+    );
 
     if (hasGoodStars && !hasBadStars) {
       return `${area}方面运势良好，宜积极行动。`;
@@ -237,21 +279,21 @@ export class ZiweiEngine {
     let interpretation = `综合运势: ${luck}分\n\n`;
 
     if (luck >= 80) {
-      interpretation += '格局大吉，格局良好，宜积极行事。';
+      interpretation += "格局大吉，格局良好，宜积极行事。";
     } else if (luck >= 60) {
-      interpretation += '格局尚可，宜稳扎稳打。';
+      interpretation += "格局尚可，宜稳扎稳打。";
     } else if (luck >= 40) {
-      interpretation += '格局欠佳，宜静待时机。';
+      interpretation += "格局欠佳，宜静待时机。";
     } else {
-      interpretation += '格局一般，宜守不宜攻。';
+      interpretation += "格局一般，宜守不宜攻。";
     }
 
-    interpretation += '\n\n宫位分析:\n';
+    interpretation += "\n\n宫位分析:\n";
 
     for (const palace of palaces.slice(0, 6)) {
       const stars = [...palace.mainStars.slice(0, 2)];
       if (stars.length > 0) {
-        interpretation += `${palace.name}: ${stars.join(', ')}\n`;
+        interpretation += `${palace.name}: ${stars.join(", ")}\n`;
       }
     }
 

@@ -2,7 +2,7 @@ export interface HuangLiInput {
   year: number;
   month: number;
   day: number;
-  calendar?: 'solar' | 'lunar';
+  calendar?: "solar" | "lunar";
 }
 
 export interface DayActivities {

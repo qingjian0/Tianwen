@@ -13,7 +13,7 @@ import {
   HistoricalResonance,
   TemporalPrediction,
   TimelineQueryResult,
-} from './types';
+} from "./types";
 
 export class TemporalMemory {
   private states: Map<string, TimelineState> = new Map();
@@ -70,7 +70,10 @@ export class TemporalMemory {
     this.events.set(event.eventId, event);
   }
 
-  async createSnapshot(userId: string, summary: string): Promise<TimelineSnapshot> {
+  async createSnapshot(
+    userId: string,
+    summary: string,
+  ): Promise<TimelineSnapshot> {
     const timeline = this.userTimelines.get(userId) || [];
     const snapshotId = `snapshot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
@@ -108,11 +111,11 @@ export class TemporalMemory {
 
     if (query.eventType) {
       const typeIds = this.stateIndex.get(query.eventType) || new Set();
-      stateIds = stateIds.filter(id => typeIds.has(id));
+      stateIds = stateIds.filter((id) => typeIds.has(id));
     }
 
     if (query.startTime || query.endTime) {
-      stateIds = stateIds.filter(id => {
+      stateIds = stateIds.filter((id) => {
         const state = this.states.get(id);
         if (!state) return false;
         if (query.startTime && state.timestamp < query.startTime) return false;
@@ -126,13 +129,13 @@ export class TemporalMemory {
     const paginatedIds = stateIds.slice(offset, offset + limit);
 
     const states = paginatedIds
-      .map(id => this.states.get(id))
+      .map((id) => this.states.get(id))
       .filter((s): s is TimelineState => s !== undefined);
 
     const events = await this.getEventsForStates(paginatedIds);
 
     const snapshots = Array.from(this.snapshots.values()).filter(
-      s => s.userId === query.userId
+      (s) => s.userId === query.userId,
     );
 
     const statistics = this.calculateStatistics(states);
@@ -145,7 +148,9 @@ export class TemporalMemory {
     };
   }
 
-  private async getEventsForStates(stateIds: string[]): Promise<TimelineEvent[]> {
+  private async getEventsForStates(
+    stateIds: string[],
+  ): Promise<TimelineEvent[]> {
     const stateEvents: TimelineEvent[] = [];
 
     for (const stateId of stateIds) {
@@ -162,7 +167,9 @@ export class TemporalMemory {
     return stateEvents;
   }
 
-  private calculateStatistics(states: TimelineState[]): TimelineQueryResult['statistics'] {
+  private calculateStatistics(
+    states: TimelineState[],
+  ): TimelineQueryResult["statistics"] {
     const eventTypes: Record<string, number> = {};
     let totalConfidence = 0;
 
@@ -171,12 +178,13 @@ export class TemporalMemory {
       totalConfidence += state.confidence;
     }
 
-    const timestamps = states.map(s => s.timestamp).sort((a, b) => a - b);
+    const timestamps = states.map((s) => s.timestamp).sort((a, b) => a - b);
 
     return {
       totalStates: states.length,
       eventTypes,
-      averageConfidence: states.length > 0 ? totalConfidence / states.length : 0,
+      averageConfidence:
+        states.length > 0 ? totalConfidence / states.length : 0,
       timeRange: {
         start: timestamps[0] || 0,
         end: timestamps[timestamps.length - 1] || 0,
@@ -189,29 +197,33 @@ export class TemporalMemory {
     if (!currentEvent) return null;
 
     const allEvents = Array.from(this.events.values())
-      .filter(e => e.userId === currentEvent.userId)
+      .filter((e) => e.userId === currentEvent.userId)
       .sort((a, b) => a.timestamp - b.timestamp);
 
-    const currentIndex = allEvents.findIndex(e => e.eventId === eventId);
+    const currentIndex = allEvents.findIndex((e) => e.eventId === eventId);
 
-    const previousEvent = currentIndex > 0 ? allEvents[currentIndex - 1] : undefined;
-    const nextEvent = currentIndex < allEvents.length - 1 ? allEvents[currentIndex + 1] : undefined;
+    const previousEvent =
+      currentIndex > 0 ? allEvents[currentIndex - 1] : undefined;
+    const nextEvent =
+      currentIndex < allEvents.length - 1
+        ? allEvents[currentIndex + 1]
+        : undefined;
 
     let continuity = 0;
-    let relationship = 'isolated';
+    let relationship = "isolated";
 
     if (previousEvent && nextEvent) {
       const timeDiff = nextEvent.timestamp - previousEvent.timestamp;
       if (timeDiff < 24 * 60 * 60 * 1000) {
         continuity = 0.8;
-        relationship = 'sequential';
+        relationship = "sequential";
       }
     } else if (previousEvent) {
       continuity = 0.5;
-      relationship = 'ending';
+      relationship = "ending";
     } else if (nextEvent) {
       continuity = 0.5;
-      relationship = 'beginning';
+      relationship = "beginning";
     }
 
     return {
@@ -225,18 +237,26 @@ export class TemporalMemory {
 
   async inheritState(
     stateId: string,
-    depth: number = 3
+    depth: number = 3,
   ): Promise<StateInheritance> {
     const state = this.states.get(stateId);
     if (!state) {
-      return { inheritedProperties: {}, inheritanceStrength: 0, sourceStates: [] };
+      return {
+        inheritedProperties: {},
+        inheritanceStrength: 0,
+        sourceStates: [],
+      };
     }
 
     const sourceStates: TimelineState[] = [state];
     const visited = new Set<string>([stateId]);
     let currentStateId: string | undefined = state.previousStateId;
 
-    while (currentStateId && sourceStates.length < depth && !visited.has(currentStateId)) {
+    while (
+      currentStateId &&
+      sourceStates.length < depth &&
+      !visited.has(currentStateId)
+    ) {
       const prevState = this.states.get(currentStateId);
       if (prevState) {
         sourceStates.push(prevState);
@@ -255,7 +275,7 @@ export class TemporalMemory {
       const weight = Math.pow(0.7, i);
 
       for (const [key, value] of Object.entries(s.properties)) {
-        if (key !== 'input' && key !== 'signalCount') {
+        if (key !== "input" && key !== "signalCount") {
           inheritedProperties[key] = inheritedProperties[key] || [];
           inheritedProperties[key].push({ value, weight, stateId: s.stateId });
         }
@@ -266,22 +286,32 @@ export class TemporalMemory {
 
     const aggregated: Record<string, any> = {};
     for (const [key, entries] of Object.entries(inheritedProperties)) {
-      const arr = entries as Array<{ value: any; weight: number; stateId: string }>;
-      const weightedSum = arr.reduce((sum, e) => sum + (typeof e.value === 'number' ? e.value : 0) * e.weight, 0);
+      const arr = entries as Array<{
+        value: any;
+        weight: number;
+        stateId: string;
+      }>;
+      const weightedSum = arr.reduce(
+        (sum, e) =>
+          sum + (typeof e.value === "number" ? e.value : 0) * e.weight,
+        0,
+      );
       const totalWeight = arr.reduce((sum, e) => sum + e.weight, 0);
-      aggregated[key] = totalWeight > 0 ? weightedSum / totalWeight : arr[0].value;
+      aggregated[key] =
+        totalWeight > 0 ? weightedSum / totalWeight : arr[0].value;
     }
 
     return {
       inheritedProperties: aggregated,
-      inheritanceStrength: sourceStates.length > 0 ? totalConfidence / sourceStates.length : 0,
-      sourceStates: sourceStates.map(s => s.stateId),
+      inheritanceStrength:
+        sourceStates.length > 0 ? totalConfidence / sourceStates.length : 0,
+      sourceStates: sourceStates.map((s) => s.stateId),
     };
   }
 
   async findResonance(
     userId: string,
-    pattern: Partial<TimelineState['properties']>
+    pattern: Partial<TimelineState["properties"]>,
   ): Promise<HistoricalResonance[]> {
     const timeline = this.userTimelines.get(userId) || [];
     const patternStates: TimelineState[] = [];
@@ -297,7 +327,8 @@ export class TemporalMemory {
 
     for (let i = 0; i < patternStates.length; i++) {
       for (let j = i + 1; j < patternStates.length; j++) {
-        const timeDiff = patternStates[j].timestamp - patternStates[i].timestamp;
+        const timeDiff =
+          patternStates[j].timestamp - patternStates[i].timestamp;
         const cycleTime = 365 * 24 * 60 * 60 * 1000;
 
         if (Math.abs(timeDiff % cycleTime) < 7 * 24 * 60 * 60 * 1000) {
@@ -315,7 +346,9 @@ export class TemporalMemory {
 
     for (const [patternKey, states] of resonances.entries()) {
       const uniqueStates = [...new Set(states)];
-      const avgConfidence = uniqueStates.reduce((sum, s) => sum + s.confidence, 0) / uniqueStates.length;
+      const avgConfidence =
+        uniqueStates.reduce((sum, s) => sum + s.confidence, 0) /
+        uniqueStates.length;
 
       results.push({
         pattern: patternKey,
@@ -329,7 +362,10 @@ export class TemporalMemory {
     return results.sort((a, b) => b.resonanceStrength - a.resonanceStrength);
   }
 
-  private matchesPattern(state: TimelineState, pattern: Partial<TimelineState['properties']>): boolean {
+  private matchesPattern(
+    state: TimelineState,
+    pattern: Partial<TimelineState["properties"]>,
+  ): boolean {
     for (const [key, value] of Object.entries(pattern)) {
       if (state.properties[key] !== value) {
         return false;
@@ -340,17 +376,21 @@ export class TemporalMemory {
 
   async predictNext(
     userId: string,
-    baseStateId?: string
+    baseStateId?: string,
   ): Promise<TemporalPrediction | null> {
     const timeline = this.userTimelines.get(userId) || [];
     if (timeline.length < 3) return null;
 
-    const recentStates = timeline.slice(-5).map(id => this.states.get(id)).filter(Boolean) as TimelineState[];
+    const recentStates = timeline
+      .slice(-5)
+      .map((id) => this.states.get(id))
+      .filter(Boolean) as TimelineState[];
 
     const trend = this.analyzeTrend(recentStates);
 
     const lastState = recentStates[recentStates.length - 1];
-    const nextTimestamp = lastState.timestamp + this.estimateTimeInterval(recentStates);
+    const nextTimestamp =
+      lastState.timestamp + this.estimateTimeInterval(recentStates);
 
     const predictedConfidence = Math.min(0.9, lastState.confidence * 0.95);
 
@@ -361,7 +401,7 @@ export class TemporalMemory {
         timestamp: nextTimestamp,
         type: trend,
         content: { trend, confidence: predictedConfidence },
-        relatedEventIds: recentStates.map(s => s.stateId),
+        relatedEventIds: recentStates.map((s) => s.stateId),
       },
       confidence: predictedConfidence,
       basedOnPattern: trend,
@@ -370,7 +410,7 @@ export class TemporalMemory {
   }
 
   private analyzeTrend(states: TimelineState[]): string {
-    if (states.length < 2) return 'stable';
+    if (states.length < 2) return "stable";
 
     let increasing = 0;
     let decreasing = 0;
@@ -383,9 +423,9 @@ export class TemporalMemory {
       }
     }
 
-    if (increasing > decreasing) return 'improving';
-    if (decreasing > increasing) return 'declining';
-    return 'stable';
+    if (increasing > decreasing) return "improving";
+    if (decreasing > increasing) return "declining";
+    return "stable";
   }
 
   private estimateTimeInterval(states: TimelineState[]): number {
@@ -401,7 +441,7 @@ export class TemporalMemory {
 
   private formatTimeframe(milliseconds: number): string {
     const days = Math.floor(milliseconds / (24 * 60 * 60 * 1000));
-    if (days < 1) return 'today';
+    if (days < 1) return "today";
     if (days < 7) return `${days} days`;
     if (days < 30) return `${Math.floor(days / 7)} weeks`;
     if (days < 365) return `${Math.floor(days / 30)} months`;
@@ -410,12 +450,12 @@ export class TemporalMemory {
 
   async getTimeline(
     userId: string,
-    limit: number = 50
+    limit: number = 50,
   ): Promise<TimelineState[]> {
     const stateIds = this.userTimelines.get(userId) || [];
     return stateIds
       .slice(-limit)
-      .map(id => this.states.get(id))
+      .map((id) => this.states.get(id))
       .filter((s): s is TimelineState => s !== undefined);
   }
 

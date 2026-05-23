@@ -2,8 +2,8 @@
  * Case Replay Engine
  */
 
-import { TestCase, ReplayResult, ReplayReport } from './types';
-import { v4 as uuidv4 } from 'uuid';
+import { TestCase, ReplayResult, ReplayReport } from "./types";
+import { v4 as uuidv4 } from "uuid";
 
 export class CaseReplayEngine {
   private testCases: Map<string, TestCase> = new Map();
@@ -14,7 +14,10 @@ export class CaseReplayEngine {
     this.testCases.set(testCase.metadata.id, testCase);
   }
 
-  async runReplay(testCase: TestCase, executeFn: (input: any) => Promise<any>): Promise<ReplayResult> {
+  async runReplay(
+    testCase: TestCase,
+    executeFn: (input: any) => Promise<any>,
+  ): Promise<ReplayResult> {
     const start = performance.now();
 
     try {
@@ -27,14 +30,14 @@ export class CaseReplayEngine {
         actualOutput,
         expectedOutput: testCase.expectedOutput,
         executionTime: performance.now() - start,
-        errors: passed ? [] : ['Output did not match expected']
+        errors: passed ? [] : ["Output did not match expected"],
       };
     } catch (error) {
       return {
         caseId: testCase.metadata.id,
         passed: false,
         executionTime: performance.now() - start,
-        errors: [error instanceof Error ? error.message : String(error)]
+        errors: [error instanceof Error ? error.message : String(error)],
       };
     }
   }
@@ -48,7 +51,7 @@ export class CaseReplayEngine {
       results.push(result);
     }
 
-    const passed = results.filter(r => r.passed).length;
+    const passed = results.filter((r) => r.passed).length;
 
     return {
       totalCases: this.testCases.size,
@@ -57,8 +60,8 @@ export class CaseReplayEngine {
       duration: performance.now() - start,
       results,
       metrics: {
-        overallAccuracy: passed / this.testCases.size
-      }
+        overallAccuracy: passed / this.testCases.size,
+      },
     };
   }
 
@@ -69,7 +72,7 @@ export class CaseReplayEngine {
       const actualVal = actual[key];
       const expectedVal = expected[key];
 
-      if (typeof expectedVal === 'number' && typeof actualVal === 'number') {
+      if (typeof expectedVal === "number" && typeof actualVal === "number") {
         if (Math.abs(actualVal - expectedVal) > 0.1) return false;
       } else if (Array.isArray(expectedVal)) {
         if (!Array.isArray(actualVal)) return false;

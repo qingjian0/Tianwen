@@ -2,9 +2,18 @@
  * 共振计算器
  */
 
-import { ResonanceResult, SignalComparison, ResonanceAnalysis } from './types';
-import { ResonanceType, RESONANCE_LABELS, RESONANCE_THRESHOLDS } from './constants';
-import { Signal, SignalProcessor, SignalPolarity, SignalSource } from '@tianwen/signal-system';
+import { ResonanceResult, SignalComparison, ResonanceAnalysis } from "./types";
+import {
+  ResonanceType,
+  RESONANCE_LABELS,
+  RESONANCE_THRESHOLDS,
+} from "./constants";
+import {
+  Signal,
+  SignalProcessor,
+  SignalPolarity,
+  SignalSource,
+} from "@tianwen/signal-system";
 
 export class ResonanceCalculator {
   /**
@@ -14,11 +23,21 @@ export class ResonanceCalculator {
     const analysisA = SignalProcessor.analyze(signalsA);
     const analysisB = SignalProcessor.analyze(signalsB);
 
-    const polarityAgreement = this.calculatePolarityAgreement(analysisA, analysisB);
-    const strengthCorrelation = this.calculateStrengthCorrelation(analysisA, analysisB);
+    const polarityAgreement = this.calculatePolarityAgreement(
+      analysisA,
+      analysisB,
+    );
+    const strengthCorrelation = this.calculateStrengthCorrelation(
+      analysisA,
+      analysisB,
+    );
     const resonanceScore = (polarityAgreement + strengthCorrelation) / 2;
 
-    const type = this.determineResonanceType(resonanceScore, analysisA, analysisB);
+    const type = this.determineResonanceType(
+      resonanceScore,
+      analysisA,
+      analysisB,
+    );
     const confidence = Math.min(analysisA.confidence, analysisB.confidence);
 
     return {
@@ -27,14 +46,16 @@ export class ResonanceCalculator {
       confidence,
       label: RESONANCE_LABELS[type],
       description: this.generateDescription(type, resonanceScore),
-      timestamp: new Date()
+      timestamp: new Date(),
     };
   }
 
   /**
    * 分析多组信号的总体共振
    */
-  static analyzeMultiple(signalGroups: Record<SignalSource, Signal[]>): ResonanceAnalysis {
+  static analyzeMultiple(
+    signalGroups: Record<SignalSource, Signal[]>,
+  ): ResonanceAnalysis {
     const sources = Object.keys(signalGroups) as SignalSource[];
     const comparisons: SignalComparison[] = [];
 
@@ -42,14 +63,17 @@ export class ResonanceCalculator {
       for (let j = i + 1; j < sources.length; j++) {
         const sourceA = sources[i];
         const sourceB = sources[j];
-        const resonance = this.calculate(signalGroups[sourceA], signalGroups[sourceB]);
-        
+        const resonance = this.calculate(
+          signalGroups[sourceA],
+          signalGroups[sourceB],
+        );
+
         comparisons.push({
           sourceA,
           sourceB,
           signalsA: signalGroups[sourceA],
           signalsB: signalGroups[sourceB],
-          resonance
+          resonance,
         });
       }
     }
@@ -64,7 +88,7 @@ export class ResonanceCalculator {
       comparisons,
       harmonySignals,
       conflictSignals,
-      recommendations
+      recommendations,
     };
   }
 
@@ -73,7 +97,7 @@ export class ResonanceCalculator {
    */
   private static calculatePolarityAgreement(
     analysisA: ReturnType<typeof SignalProcessor.analyze>,
-    analysisB: ReturnType<typeof SignalProcessor.analyze>
+    analysisB: ReturnType<typeof SignalProcessor.analyze>,
   ): number {
     const netA = analysisA.netPolarity;
     const netB = analysisB.netPolarity;
@@ -85,7 +109,7 @@ export class ResonanceCalculator {
    */
   private static calculateStrengthCorrelation(
     analysisA: ReturnType<typeof SignalProcessor.analyze>,
-    analysisB: ReturnType<typeof SignalProcessor.analyze>
+    analysisB: ReturnType<typeof SignalProcessor.analyze>,
   ): number {
     return 1 - Math.abs(analysisA.averageStrength - analysisB.averageStrength);
   }
@@ -96,63 +120,80 @@ export class ResonanceCalculator {
   private static determineResonanceType(
     score: number,
     analysisA: ReturnType<typeof SignalProcessor.analyze>,
-    analysisB: ReturnType<typeof SignalProcessor.analyze>
+    analysisB: ReturnType<typeof SignalProcessor.analyze>,
   ): ResonanceType {
     const bothPositive = analysisA.netPolarity > 0 && analysisB.netPolarity > 0;
     const bothNegative = analysisA.netPolarity < 0 && analysisB.netPolarity < 0;
 
     if (score >= RESONANCE_THRESHOLDS.HIGH) {
-      return bothPositive || bothNegative ? ResonanceType.AMPLIFICATION : ResonanceType.HARMONY;
+      return bothPositive || bothNegative
+        ? ResonanceType.AMPLIFICATION
+        : ResonanceType.HARMONY;
     } else if (score >= RESONANCE_THRESHOLDS.MEDIUM) {
       return ResonanceType.HARMONY;
     } else if (score <= RESONANCE_THRESHOLDS.LOW) {
       return ResonanceType.CONFLICT;
     } else {
-      const oppositePolarity = (analysisA.netPolarity > 0 && analysisB.netPolarity < 0) ||
-                             (analysisA.netPolarity < 0 && analysisB.netPolarity > 0);
-      return oppositePolarity ? ResonanceType.SUPPRESSION : ResonanceType.NEUTRAL;
+      const oppositePolarity =
+        (analysisA.netPolarity > 0 && analysisB.netPolarity < 0) ||
+        (analysisA.netPolarity < 0 && analysisB.netPolarity > 0);
+      return oppositePolarity
+        ? ResonanceType.SUPPRESSION
+        : ResonanceType.NEUTRAL;
     }
   }
 
   /**
    * 生成描述
    */
-  private static generateDescription(type: ResonanceType, score: number): string {
+  private static generateDescription(
+    type: ResonanceType,
+    score: number,
+  ): string {
     switch (type) {
       case ResonanceType.HARMONY:
-        return '多个系统信号和谐一致';
+        return "多个系统信号和谐一致";
       case ResonanceType.CONFLICT:
-        return '系统间存在明显冲突';
+        return "系统间存在明显冲突";
       case ResonanceType.AMPLIFICATION:
-        return '信号互相放大增强';
+        return "信号互相放大增强";
       case ResonanceType.SUPPRESSION:
-        return '信号相互抑制抵消';
+        return "信号相互抑制抵消";
       default:
-        return '无明显共振关系';
+        return "无明显共振关系";
     }
   }
 
   /**
    * 计算总体共振
    */
-  private static calculateOverall(comparisons: SignalComparison[]): ResonanceResult {
+  private static calculateOverall(
+    comparisons: SignalComparison[],
+  ): ResonanceResult {
     if (comparisons.length === 0) {
       return {
         type: ResonanceType.NEUTRAL,
         score: 0.5,
         confidence: 0,
         label: RESONANCE_LABELS[ResonanceType.NEUTRAL],
-        description: '无信号组可比较',
-        timestamp: new Date()
+        description: "无信号组可比较",
+        timestamp: new Date(),
       };
     }
 
-    const avgScore = comparisons.reduce((sum, c) => sum + c.resonance.score, 0) / comparisons.length;
-    const avgConfidence = comparisons.reduce((sum, c) => sum + c.resonance.confidence, 0) / comparisons.length;
-    
-    const type = avgScore >= RESONANCE_THRESHOLDS.HIGH ? ResonanceType.HARMONY :
-                 avgScore <= RESONANCE_THRESHOLDS.LOW ? ResonanceType.CONFLICT :
-                 ResonanceType.NEUTRAL;
+    const avgScore =
+      comparisons.reduce((sum, c) => sum + c.resonance.score, 0) /
+      comparisons.length;
+    const avgConfidence =
+      comparisons.reduce((sum, c) => sum + c.resonance.confidence, 0) /
+      comparisons.length;
+
+    const type =
+      avgScore >= RESONANCE_THRESHOLDS.HIGH
+        ? ResonanceType.HARMONY
+        : avgScore <= RESONANCE_THRESHOLDS.LOW
+          ? ResonanceType.CONFLICT
+          : ResonanceType.NEUTRAL;
 
     return {
       type,
@@ -160,30 +201,36 @@ export class ResonanceCalculator {
       confidence: avgConfidence,
       label: RESONANCE_LABELS[type],
       description: this.generateDescription(type, avgScore),
-      timestamp: new Date()
+      timestamp: new Date(),
     };
   }
 
   /**
    * 提取和谐信号
    */
-  private static extractHarmonySignals(comparisons: SignalComparison[]): Signal[] {
-    const harmonyComparisons = comparisons.filter(c =>
-      c.resonance.type === ResonanceType.HARMONY ||
-      c.resonance.type === ResonanceType.AMPLIFICATION
+  private static extractHarmonySignals(
+    comparisons: SignalComparison[],
+  ): Signal[] {
+    const harmonyComparisons = comparisons.filter(
+      (c) =>
+        c.resonance.type === ResonanceType.HARMONY ||
+        c.resonance.type === ResonanceType.AMPLIFICATION,
     );
-    return harmonyComparisons.flatMap(c => [...c.signalsA, ...c.signalsB]);
+    return harmonyComparisons.flatMap((c) => [...c.signalsA, ...c.signalsB]);
   }
 
   /**
    * 提取冲突信号
    */
-  private static extractConflictSignals(comparisons: SignalComparison[]): Signal[] {
-    const conflictComparisons = comparisons.filter(c =>
-      c.resonance.type === ResonanceType.CONFLICT ||
-      c.resonance.type === ResonanceType.SUPPRESSION
+  private static extractConflictSignals(
+    comparisons: SignalComparison[],
+  ): Signal[] {
+    const conflictComparisons = comparisons.filter(
+      (c) =>
+        c.resonance.type === ResonanceType.CONFLICT ||
+        c.resonance.type === ResonanceType.SUPPRESSION,
     );
-    return conflictComparisons.flatMap(c => [...c.signalsA, ...c.signalsB]);
+    return conflictComparisons.flatMap((c) => [...c.signalsA, ...c.signalsB]);
   }
 
   /**
@@ -191,17 +238,22 @@ export class ResonanceCalculator {
    */
   private static generateRecommendations(
     overall: ResonanceResult,
-    comparisons: SignalComparison[]
+    comparisons: SignalComparison[],
   ): string[] {
     const recommendations: string[] = [];
 
-    if (overall.type === ResonanceType.HARMONY || overall.type === ResonanceType.AMPLIFICATION) {
-      recommendations.push('多系统信号一致，可信度高');
+    if (
+      overall.type === ResonanceType.HARMONY ||
+      overall.type === ResonanceType.AMPLIFICATION
+    ) {
+      recommendations.push("多系统信号一致，可信度高");
     } else if (overall.type === ResonanceType.CONFLICT) {
-      recommendations.push('系统间存在冲突，建议审慎决策');
+      recommendations.push("系统间存在冲突，建议审慎决策");
     }
 
-    const conflicts = comparisons.filter(c => c.resonance.type === ResonanceType.CONFLICT);
+    const conflicts = comparisons.filter(
+      (c) => c.resonance.type === ResonanceType.CONFLICT,
+    );
     if (conflicts.length > 0) {
       recommendations.push(`存在${conflicts.length}组系统冲突，需进一步分析`);
     }

@@ -3,14 +3,14 @@
  * 根据天问系统 API 设计文档 v1.0
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from "events";
 import {
   WebSocketMessage,
   ProgressUpdate,
   CompletedUpdate,
   SystemStatus,
-  WebSocketError
-} from './types';
+  WebSocketError,
+} from "./types";
 
 export class WebSocketService extends EventEmitter {
   private clients: Map<string, any>;
@@ -27,29 +27,29 @@ export class WebSocketService extends EventEmitter {
 
   addClient(clientId: string, socket: any): void {
     this.clients.set(clientId, socket);
-    this.subscriptions.set(clientId, new Set(['system']));
+    this.subscriptions.set(clientId, new Set(["system"]));
 
-    socket.on('close', () => {
+    socket.on("close", () => {
       this.removeClient(clientId);
     });
 
-    socket.on('error', (error: Error) => {
+    socket.on("error", (error: Error) => {
       console.error(`WebSocket error for client ${clientId}:`, error);
     });
 
-    socket.on('message', (message: string) => {
+    socket.on("message", (message: string) => {
       this.handleClientMessage(clientId, message);
     });
 
     this.sendToClient(clientId, {
-      channel: 'system',
-      event: 'connected',
+      channel: "system",
+      event: "connected",
       data: {
-        message: 'Connected to Tianwen WebSocket Server',
+        message: "Connected to Tianwen WebSocket Server",
         clientId,
-        channels: this.getChannels()
+        channels: this.getChannels(),
       },
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 
@@ -93,32 +93,37 @@ export class WebSocketService extends EventEmitter {
     }
   }
 
-  sendPredictionProgress(id: string, stage: string, progress: number, message?: string): void {
+  sendPredictionProgress(
+    id: string,
+    stage: string,
+    progress: number,
+    message?: string,
+  ): void {
     const update: ProgressUpdate = { id, stage, progress, message };
     const messageObj: WebSocketMessage = {
-      channel: 'predictions',
-      event: 'progress',
+      channel: "predictions",
+      event: "progress",
       data: update,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
-    this.broadcast('predictions', messageObj);
+    this.broadcast("predictions", messageObj);
   }
 
-  sendPredictionCompleted(id: string, status: 'completed' | 'failed'): void {
+  sendPredictionCompleted(id: string, status: "completed" | "failed"): void {
     const update: CompletedUpdate = {
       id,
       status,
-      outputUrl: `/api/predictions/${id}`
+      outputUrl: `/api/predictions/${id}`,
     };
     const messageObj: WebSocketMessage = {
-      channel: 'predictions',
-      event: 'completed',
+      channel: "predictions",
+      event: "completed",
       data: update,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
-    this.broadcast('predictions', messageObj);
+    this.broadcast("predictions", messageObj);
   }
 
   sendSystemStatus(): void {
@@ -126,26 +131,26 @@ export class WebSocketService extends EventEmitter {
       cpuUsage: Math.floor(Math.random() * 30) + 20,
       memoryUsage: Math.floor(Math.random() * 20) + 60,
       activeConnections: this.clients.size,
-      totalPredictions: 0
+      totalPredictions: 0,
     };
 
     const messageObj: WebSocketMessage = {
-      channel: 'system',
-      event: 'status',
+      channel: "system",
+      event: "status",
       data: status,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
-    this.broadcast('system', messageObj);
+    this.broadcast("system", messageObj);
   }
 
   sendError(clientId: string, code: number, message: string): void {
     const error: WebSocketError = { code, message };
     const messageObj: WebSocketMessage = {
-      channel: 'system',
-      event: 'error',
+      channel: "system",
+      event: "error",
       data: error,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
     this.sendToClient(clientId, messageObj);
@@ -153,10 +158,10 @@ export class WebSocketService extends EventEmitter {
 
   sendNotification(title: string, content: string): void {
     const messageObj: WebSocketMessage = {
-      channel: 'system',
-      event: 'notification',
+      channel: "system",
+      event: "notification",
       data: { title, content },
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
     this.broadcastToAll(messageObj);
@@ -164,13 +169,13 @@ export class WebSocketService extends EventEmitter {
 
   sendRuleUpdate(): void {
     const messageObj: WebSocketMessage = {
-      channel: 'rules',
-      event: 'updated',
+      channel: "rules",
+      event: "updated",
       data: { timestamp: new Date().toISOString() },
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
-    this.broadcast('rules', messageObj);
+    this.broadcast("rules", messageObj);
   }
 
   getConnectedClients(): number {
@@ -178,20 +183,20 @@ export class WebSocketService extends EventEmitter {
   }
 
   getChannels(): string[] {
-    return ['predictions', 'rules', 'system'];
+    return ["predictions", "rules", "system"];
   }
 
   private handleClientMessage(clientId: string, message: string): void {
     try {
       const data = JSON.parse(message);
-      
-      if (data.action === 'subscribe') {
+
+      if (data.action === "subscribe") {
         this.subscribe(clientId, data.channel);
-      } else if (data.action === 'unsubscribe') {
+      } else if (data.action === "unsubscribe") {
         this.unsubscribe(clientId, data.channel);
       }
     } catch (error) {
-      console.error('Invalid WebSocket message:', error);
+      console.error("Invalid WebSocket message:", error);
     }
   }
 

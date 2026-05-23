@@ -91,21 +91,21 @@ GET /api/health
 ## 使用示例
 
 ```typescript
-import { PredictionService, RuleService } from '@tianwen/api';
+import { PredictionService, RuleService } from "@tianwen/api";
 
 const predictionService = new PredictionService();
 const ruleService = new RuleService();
 
 // 创建预测
 const result = await predictionService.predict({
-  question: '今日财运如何？',
-  category: 'wealth',
-  system: 'meihua',
-  mode: 'single'
+  question: "今日财运如何？",
+  category: "wealth",
+  system: "meihua",
+  mode: "single",
 });
 
 // 获取规则
-const rules = await ruleService.getRulesByCategory('bazi');
+const rules = await ruleService.getRulesByCategory("bazi");
 ```
 
 ## 开发
@@ -123,4 +123,4 @@ pnpm run test
 
 ---
 
-*Phase 7 - RESTful + WebSocket API - 2026年5月*
+_Phase 7 - RESTful + WebSocket API - 2026年5月_

@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { ReactNode } from 'react';
-import { motion, Variants } from 'framer-motion';
+import { ReactNode } from "react";
+import { motion, Variants } from "framer-motion";
 
 interface AnimatedCardProps {
   children: ReactNode;
@@ -13,29 +13,30 @@ const cardVariants: Variants = {
   hidden: {
     opacity: 0,
     scale: 0.5,
-    filter: 'blur(10px)',
+    filter: "blur(10px)",
   },
   visible: {
     opacity: 1,
     scale: 1,
-    filter: 'blur(0px)',
+    filter: "blur(0px)",
     transition: {
       duration: 0.6,
-      ease: 'easeOut',
+      ease: "easeOut",
     },
   },
   hover: {
-    boxShadow: '0 0 30px rgba(212, 175, 55, 0.5), 0 0 50px rgba(212, 175, 55, 0.3)',
+    boxShadow:
+      "0 0 30px rgba(212, 175, 55, 0.5), 0 0 50px rgba(212, 175, 55, 0.3)",
     transition: {
       duration: 0.3,
-      ease: 'easeInOut',
+      ease: "easeInOut",
     },
   },
 };
 
 export const AnimatedCard = ({
   children,
-  className = '',
+  className = "",
   delay = 0,
 }: AnimatedCardProps) => {
   return (
@@ -72,7 +73,7 @@ const containerVariants: Variants = {
 export const StaggerReveal = ({
   children,
   staggerDelay = 0.1,
-  className = '',
+  className = "",
 }: StaggerRevealProps) => {
   return (
     <motion.div
@@ -102,12 +103,12 @@ const itemVariants: Variants = {
     y: 0,
     transition: {
       duration: 0.5,
-      ease: 'easeOut',
+      ease: "easeOut",
     },
   },
 };
 
-export const StaggerItem = ({ children, className = '' }: StaggerItemProps) => {
+export const StaggerItem = ({ children, className = "" }: StaggerItemProps) => {
   return (
     <motion.div variants={itemVariants} className={className}>
       {children}
@@ -117,21 +118,21 @@ export const StaggerItem = ({ children, className = '' }: StaggerItemProps) => {
 
 interface GlowTextProps {
   children: ReactNode;
-  intensity?: 'low' | 'medium' | 'high';
+  intensity?: "low" | "medium" | "high";
   className?: string;
   animate?: boolean;
 }
 
 const glowStyles = {
-  low: 'text-shadow-[0_0_10px_rgba(212,175,55,0.3)]',
-  medium: 'text-shadow-[0_0_20px_rgba(212,175,55,0.5)]',
-  high: 'text-shadow-[0_0_30px_rgba(212,175,55,0.7)]',
+  low: "text-shadow-[0_0_10px_rgba(212,175,55,0.3)]",
+  medium: "text-shadow-[0_0_20px_rgba(212,175,55,0.5)]",
+  high: "text-shadow-[0_0_30px_rgba(212,175,55,0.7)]",
 };
 
 export const GlowText = ({
   children,
-  intensity = 'medium',
-  className = '',
+  intensity = "medium",
+  className = "",
   animate = false,
 }: GlowTextProps) => {
   if (animate) {
@@ -141,18 +142,18 @@ export const GlowText = ({
         animate={{
           textShadow: [
             glowStyles[intensity],
-            intensity === 'high'
-              ? '0 0 40px rgba(212, 175, 55, 0.9)'
-              : intensity === 'medium'
-              ? '0 0 30px rgba(212, 175, 55, 0.7)'
-              : '0 0 20px rgba(212, 175, 55, 0.5)',
+            intensity === "high"
+              ? "0 0 40px rgba(212, 175, 55, 0.9)"
+              : intensity === "medium"
+                ? "0 0 30px rgba(212, 175, 55, 0.7)"
+                : "0 0 20px rgba(212, 175, 55, 0.5)",
             glowStyles[intensity],
           ],
         }}
         transition={{
           duration: 2,
           repeat: Infinity,
-          ease: 'easeInOut',
+          ease: "easeInOut",
         }}
       >
         {children}
@@ -161,7 +162,9 @@ export const GlowText = ({
   }
 
   return (
-    <span className={`inline-block text-[#D4AF37] ${glowStyles[intensity]} ${className}`}>
+    <span
+      className={`inline-block text-[#D4AF37] ${glowStyles[intensity]} ${className}`}
+    >
       {children}
     </span>
   );
@@ -172,20 +175,20 @@ interface FadeInProps {
   delay?: number;
   duration?: number;
   className?: string;
-  direction?: 'up' | 'down' | 'left' | 'right' | 'none';
+  direction?: "up" | "down" | "left" | "right" | "none";
 }
 
 const fadeInVariants: Variants = {
   hidden: (direction: string) => {
     const getInitialPosition = () => {
       switch (direction) {
-        case 'up':
+        case "up":
           return { y: 20 };
-        case 'down':
+        case "down":
           return { y: -20 };
-        case 'left':
+        case "left":
           return { x: 20 };
-        case 'right':
+        case "right":
           return { x: -20 };
         default:
           return {};
@@ -203,7 +206,7 @@ const fadeInVariants: Variants = {
     x: 0,
     transition: {
       duration: 0.5,
-      ease: 'easeOut',
+      ease: "easeOut",
     },
   },
 };
@@ -212,8 +215,8 @@ export const FadeIn = ({
   children,
   delay = 0,
   duration = 0.5,
-  className = '',
-  direction = 'up',
+  className = "",
+  direction = "up",
 }: FadeInProps) => {
   return (
     <motion.div
@@ -224,7 +227,7 @@ export const FadeIn = ({
       transition={{
         delay,
         duration,
-        ease: 'easeOut',
+        ease: "easeOut",
       }}
       className={className}
     >

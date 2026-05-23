@@ -9,9 +9,9 @@ import {
   ManualDivinationState,
   CoinResult,
   YarrowResult,
-  YarrowStep
-} from './types';
-import { hexagrams, getHexagramById } from '@tianwen/meihua';
+  YarrowStep,
+} from "./types";
+import { hexagrams, getHexagramById } from "@tianwen/meihua";
 
 export class ManualDivinationEngine {
   private state: ManualDivinationState;
@@ -28,7 +28,7 @@ export class ManualDivinationEngine {
       currentStep: 0,
       steps,
       collectedData: {},
-      completed: false
+      completed: false,
     };
   }
 
@@ -38,136 +38,136 @@ export class ManualDivinationEngine {
 
   getStepsForMethod(method: DivinationMethod): DivinationStep[] {
     switch (method) {
-      case 'coin':
+      case "coin":
         return [
           {
-            type: 'coin-toss',
-            description: '掷三枚铜钱得到初爻（从下往上）',
+            type: "coin-toss",
+            description: "掷三枚铜钱得到初爻（从下往上）",
             stepNumber: 1,
             totalSteps: 6,
-            userInputRequired: true
+            userInputRequired: true,
           },
           {
-            type: 'coin-toss',
-            description: '掷三枚铜钱得到二爻',
+            type: "coin-toss",
+            description: "掷三枚铜钱得到二爻",
             stepNumber: 2,
             totalSteps: 6,
-            userInputRequired: true
+            userInputRequired: true,
           },
           {
-            type: 'coin-toss',
-            description: '掷三枚铜钱得到三爻',
+            type: "coin-toss",
+            description: "掷三枚铜钱得到三爻",
             stepNumber: 3,
             totalSteps: 6,
-            userInputRequired: true
+            userInputRequired: true,
           },
           {
-            type: 'coin-toss',
-            description: '掷三枚铜钱得到四爻',
+            type: "coin-toss",
+            description: "掷三枚铜钱得到四爻",
             stepNumber: 4,
             totalSteps: 6,
-            userInputRequired: true
+            userInputRequired: true,
           },
           {
-            type: 'coin-toss',
-            description: '掷三枚铜钱得到五爻',
+            type: "coin-toss",
+            description: "掷三枚铜钱得到五爻",
             stepNumber: 5,
             totalSteps: 6,
-            userInputRequired: true
+            userInputRequired: true,
           },
           {
-            type: 'coin-toss',
-            description: '掷三枚铜钱得到上爻',
+            type: "coin-toss",
+            description: "掷三枚铜钱得到上爻",
             stepNumber: 6,
             totalSteps: 6,
-            userInputRequired: true
-          }
+            userInputRequired: true,
+          },
         ];
-      case 'yarrow':
+      case "yarrow":
         return [
           {
-            type: 'yarrow',
-            description: '蓍草演算 - 第一爻',
+            type: "yarrow",
+            description: "蓍草演算 - 第一爻",
             stepNumber: 1,
             totalSteps: 6,
-            userInputRequired: true
+            userInputRequired: true,
           },
           {
-            type: 'yarrow',
-            description: '蓍草演算 - 第二爻',
+            type: "yarrow",
+            description: "蓍草演算 - 第二爻",
             stepNumber: 2,
             totalSteps: 6,
-            userInputRequired: true
+            userInputRequired: true,
           },
           {
-            type: 'yarrow',
-            description: '蓍草演算 - 第三爻',
+            type: "yarrow",
+            description: "蓍草演算 - 第三爻",
             stepNumber: 3,
             totalSteps: 6,
-            userInputRequired: true
+            userInputRequired: true,
           },
           {
-            type: 'yarrow',
-            description: '蓍草演算 - 第四爻',
+            type: "yarrow",
+            description: "蓍草演算 - 第四爻",
             stepNumber: 4,
             totalSteps: 6,
-            userInputRequired: true
+            userInputRequired: true,
           },
           {
-            type: 'yarrow',
-            description: '蓍草演算 - 第五爻',
+            type: "yarrow",
+            description: "蓍草演算 - 第五爻",
             stepNumber: 5,
             totalSteps: 6,
-            userInputRequired: true
+            userInputRequired: true,
           },
           {
-            type: 'yarrow',
-            description: '蓍草演算 - 第六爻',
+            type: "yarrow",
+            description: "蓍草演算 - 第六爻",
             stepNumber: 6,
             totalSteps: 6,
-            userInputRequired: true
-          }
+            userInputRequired: true,
+          },
         ];
-      case 'number':
+      case "number":
         return [
           {
-            type: 'number-input',
-            description: '输入第一个数字',
+            type: "number-input",
+            description: "输入第一个数字",
             stepNumber: 1,
             totalSteps: 3,
-            userInputRequired: true
+            userInputRequired: true,
           },
           {
-            type: 'number-input',
-            description: '输入第二个数字',
+            type: "number-input",
+            description: "输入第二个数字",
             stepNumber: 2,
             totalSteps: 3,
-            userInputRequired: true
+            userInputRequired: true,
           },
           {
-            type: 'number-input',
-            description: '输入第三个数字（动爻数）',
+            type: "number-input",
+            description: "输入第三个数字（动爻数）",
             stepNumber: 3,
             totalSteps: 3,
-            userInputRequired: true
-          }
+            userInputRequired: true,
+          },
         ];
-      case 'specify-hexagram':
+      case "specify-hexagram":
         return [
           {
-            type: 'select-hexagram',
-            description: '选择本卦',
+            type: "select-hexagram",
+            description: "选择本卦",
             stepNumber: 1,
             totalSteps: 2,
-            userInputRequired: true
+            userInputRequired: true,
           },
           {
-            type: 'select-changes',
-            description: '选择动爻',
+            type: "select-changes",
+            description: "选择动爻",
             stepNumber: 2,
             totalSteps: 2,
-            userInputRequired: true
-          }
+            userInputRequired: true,
+          },
         ];
       default:
         return [];
@@ -178,7 +178,7 @@ export class ManualDivinationEngine {
     const lines = this.state.collectedData.lines || [];
     lines.push(coins);
     this.state.collectedData.lines = lines;
-    
+
     if (lines.length === 6) {
       this.complete();
     } else {
@@ -190,7 +190,7 @@ export class ManualDivinationEngine {
     const lines = this.state.collectedData.lines || [];
     lines.push(result);
     this.state.collectedData.lines = lines;
-    
+
     if (lines.length === 6) {
       this.complete();
     } else {
@@ -232,16 +232,16 @@ export class ManualDivinationEngine {
 
   private calculateResult(): any {
     const { method, collectedData } = this.state;
-    
+
     switch (this.config.method) {
-      case 'coin':
+      case "coin":
         return this.buildFromCoinLines(collectedData.lines || []);
-      case 'number':
+      case "number":
         return this.buildFromNumbers(collectedData.numbers || []);
-      case 'specify-hexagram':
+      case "specify-hexagram":
         return this.buildFromSelection(
           collectedData.hexagramId,
-          collectedData.changingLines
+          collectedData.changingLines,
         );
       default:
         return null;
@@ -249,22 +249,22 @@ export class ManualDivinationEngine {
   }
 
   private buildFromCoinLines(lines: CoinResult[]): any {
-    const lineValues = lines.map(l => l.sum);
+    const lineValues = lines.map((l) => l.sum);
     return this.buildHexagramFromLineValues(lineValues);
   }
 
   private buildFromNumbers(nums: number[]): any {
     const [n1, n2, n3] = nums;
-    const lower = (n1 % 8) || 8;
-    const upper = (n2 % 8) || 8;
-    const changing = (n3 % 6) || 6;
-    
+    const lower = n1 % 8 || 8;
+    const upper = n2 % 8 || 8;
+    const changing = n3 % 6 || 6;
+
     const hexagramId = (upper - 1) * 8 + lower;
     const hexagram = getHexagramById(hexagramId);
-    
+
     return {
       hexagram,
-      changingLines: [changing]
+      changingLines: [changing],
     };
   }
 
@@ -272,33 +272,33 @@ export class ManualDivinationEngine {
     const hexagram = getHexagramById(hexagramId);
     return {
       hexagram,
-      changingLines
+      changingLines,
     };
   }
 
   private buildHexagramFromLineValues(lineValues: number[]): any {
-    let binary = '';
+    let binary = "";
     const changingLines: number[] = [];
-    
+
     lineValues.forEach((val, idx) => {
       if (val === 6 || val === 7) {
-        binary = '0' + binary; // 阴
+        binary = "0" + binary; // 阴
       } else {
-        binary = '1' + binary; // 阳
+        binary = "1" + binary; // 阳
       }
-      
+
       if (val === 6 || val === 9) {
         changingLines.push(idx + 1);
       }
     });
-    
+
     const hexagramId = parseInt(binary, 2) + 1;
     const hexagram = getHexagramById(hexagramId);
-    
+
     return {
       hexagram,
       lineValues,
-      changingLines
+      changingLines,
     };
   }
 
@@ -317,29 +317,29 @@ export class ManualDivinationEngine {
   static simulateYarrow(): YarrowResult {
     const steps: YarrowStep[] = [];
     let stalks = 50 - 1; // 大衍之数五十，其用四十有九
-    
+
     for (let i = 0; i < 3; i++) {
       const left = Math.floor(Math.random() * (stalks - 1)) + 1;
       const right = stalks - left;
       const rightMod4 = right % 4;
       const rightRemainder = rightMod4 === 0 ? 4 : rightMod4;
-      
+
       steps.push({
         step: i + 1,
         stalksLeft: left,
         stalksRight: right,
-        remainder: rightRemainder
+        remainder: rightRemainder,
       });
-      
+
       stalks = left + (right - rightRemainder);
     }
-    
+
     let result = 6;
     if (stalks === 36) result = 9;
     else if (stalks === 32) result = 8;
     else if (stalks === 28) result = 7;
     else if (stalks === 24) result = 6;
-    
+
     return { steps, result };
   }
 }

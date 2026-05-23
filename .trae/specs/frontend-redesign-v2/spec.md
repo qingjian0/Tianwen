@@ -5,12 +5,14 @@
 当前天问系统虽然实现了功能性的三栏布局，但缺乏令人难忘的视觉体验和深度的文化内涵。根据天府 AI 的设计风格启示，用户期望看到的是：
 
 **核心问题：**
+
 - 视觉设计过于平淡，缺乏东方玄学的神秘感和权威感
 - 动效设计碎片化，缺乏统一的视觉叙事
 - 文化元素表达浅显（仅用 emoji 和基础符号）
 - 专业感与美感未能兼顾
 
 **机会点：**
+
 - 将天问系统打造成华夏术数领域的标杆产品
 - 创造独特的"数字玄学"美学语言
 - 通过精致动效传递占卜的神圣感与仪式感
@@ -18,6 +20,7 @@
 ## 2. 设计理念：数字玄学美学
 
 ### 2.1 视觉基调
+
 **选择方向：奢华精致 + 东方神秘 + 现代极简**
 
 融合紫禁城皇家气派与现代数字界面，营造"数字神殿"的氛围。
@@ -32,9 +35,11 @@
 ```
 
 ### 2.3 差异化亮点
+
 **一个让人记住的设计：动态卦象系统**
 
 当用户进行占卜时，卦盘不是静态展示，而是：
+
 1. 从混沌中浮现（如太极化生）
 2. 阴阳爻逐爻显现（如星辰点亮）
 3. 动爻特殊标记（如火焰燃烧）
@@ -43,61 +48,69 @@
 ## 3. 色彩系统 (Color System)
 
 ### 3.1 主色调
+
 ```css
 /* 帝王金 - 皇家权威 */
---imperial-gold: #D4AF37;
---imperial-gold-light: #F4D03F;
---imperial-gold-dark: #B8860B;
+--imperial-gold: #d4af37;
+--imperial-gold-light: #f4d03f;
+--imperial-gold-dark: #b8860b;
 
 /* 朱砂红 - 神圣警示 */
---vermillion: #C41E3A;
---vermillion-light: #E63946;
---vermillion-dark: #8B0000;
+--vermillion: #c41e3a;
+--vermillion-light: #e63946;
+--vermillion-dark: #8b0000;
 
 /* 天际蓝 - 宇宙深邃 */
---celestial-blue: #1E3A5F;
---celestial-blue-dark: #0A1628;
---celestial-blue-light: #2D5A8A;
+--celestial-blue: #1e3a5f;
+--celestial-blue-dark: #0a1628;
+--celestial-blue-light: #2d5a8a;
 
 /* 墨色 - 文化底蕴 */
---ink-black: #0A0A0F;
---ink-dark: #12121A;
---ink-medium: #1A1A25;
+--ink-black: #0a0a0f;
+--ink-dark: #12121a;
+--ink-medium: #1a1a25;
 --ink-light: #252530;
 ```
 
 ### 3.2 功能色
+
 ```css
 /* 五行色彩 */
---wood-green: #228B22;
---fire-red: #DC2626;
---earth-yellow: #CA8A04;
---metal-white: #E5E7EB;
---water-blue: #2563EB;
+--wood-green: #228b22;
+--fire-red: #dc2626;
+--earth-yellow: #ca8a04;
+--metal-white: #e5e7eb;
+--water-blue: #2563eb;
 
 /* 状态色 */
---success-jade: #22C55E;
---warning-amber: #F59E0B;
---danger-vermillion: #EF4444;
---info-sapphire: #3B82F6;
+--success-jade: #22c55e;
+--warning-amber: #f59e0b;
+--danger-vermillion: #ef4444;
+--info-sapphire: #3b82f6;
 
 /* 文字层次 */
---text-primary: #F5F5F5;
---text-secondary: #A0A0B0;
---text-muted: #6B6B7B;
---text-disabled: #4B4B5B;
+--text-primary: #f5f5f5;
+--text-secondary: #a0a0b0;
+--text-muted: #6b6b7b;
+--text-disabled: #4b4b5b;
 ```
 
 ### 3.3 渐变与光效
+
 ```css
 /* 帝王金渐变 */
-background: linear-gradient(135deg, #F4D03F 0%, #D4AF37 50%, #B8860B 100%);
+background: linear-gradient(135deg, #f4d03f 0%, #d4af37 50%, #b8860b 100%);
 
 /* 宇宙深邃渐变 */
-background: radial-gradient(ellipse at center, #1A1A25 0%, #0A0A0F 70%, #000000 100%);
+background: radial-gradient(
+  ellipse at center,
+  #1a1a25 0%,
+  #0a0a0f 70%,
+  #000000 100%
+);
 
 /* 能量光环 */
-box-shadow: 
+box-shadow:
   0 0 20px rgba(212, 175, 55, 0.3),
   0 0 40px rgba(212, 175, 55, 0.2),
   0 0 60px rgba(212, 175, 55, 0.1);
@@ -106,48 +119,50 @@ box-shadow:
 ## 4. 字体系统 (Typography)
 
 ### 4.1 字体选择
+
 ```css
 /* 标题字体 - 书法韵律 */
-font-family: 'Noto Serif SC', 'STSong', 'SimSun', serif;
+font-family: "Noto Serif SC", "STSong", "SimSun", serif;
 /* 用于：页面标题、卦名、神煞名称 */
 
 /* 正文字体 - 宋体典雅 */
-font-family: 'KaiTi', 'STKaiti', 'Noto Serif SC', serif;
+font-family: "KaiTi", "STKaiti", "Noto Serif SC", serif;
 /* 用于：正文内容、说明文字 */
 
 /* 数据字体 - 等宽精确 */
-font-family: 'JetBrains Mono', 'Fira Code', monospace;
+font-family: "JetBrains Mono", "Fira Code", monospace;
 /* 用于：数字、时间、干支符号 */
 
 /* 英文辅助 */
-font-family: 'Inter', system-ui, sans-serif;
+font-family: "Inter", system-ui, sans-serif;
 /* 用于：系统提示、辅助信息 */
 ```
 
 ### 4.2 字体层次
+
 ```css
 /* 页面大标题 */
-font-size: 3rem;      /* 48px */
+font-size: 3rem; /* 48px */
 font-weight: 700;
 letter-spacing: 0.1em;
 text-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
 
 /* 区块标题 */
-font-size: 1.5rem;    /* 24px */
+font-size: 1.5rem; /* 24px */
 font-weight: 600;
 letter-spacing: 0.05em;
 
 /* 卡片标题 */
-font-size: 1.125rem;  /* 18px */
+font-size: 1.125rem; /* 18px */
 font-weight: 600;
 
 /* 正文内容 */
-font-size: 0.875rem;  /* 14px */
+font-size: 0.875rem; /* 14px */
 font-weight: 400;
 line-height: 1.75;
 
 /* 辅助说明 */
-font-size: 0.75rem;   /* 12px */
+font-size: 0.75rem; /* 12px */
 font-weight: 400;
 color: var(--text-muted);
 ```
@@ -160,29 +175,34 @@ color: var(--text-muted);
 
 ```css
 /* 默认卡片 */
-background: linear-gradient(145deg, rgba(26, 26, 37, 0.9), rgba(18, 18, 26, 0.95));
+background: linear-gradient(
+  145deg,
+  rgba(26, 26, 37, 0.9),
+  rgba(18, 18, 26, 0.95)
+);
 border: 1px solid rgba(212, 175, 55, 0.2);
 border-radius: 8px;
-box-shadow: 
+box-shadow:
   0 4px 24px rgba(0, 0, 0, 0.4),
   inset 0 1px 0 rgba(255, 255, 255, 0.05);
 
 /* 悬停态 */
 transform: translateY(-2px);
 border-color: rgba(212, 175, 55, 0.5);
-box-shadow: 
+box-shadow:
   0 8px 32px rgba(0, 0, 0, 0.5),
   0 0 20px rgba(212, 175, 55, 0.2),
   inset 0 1px 0 rgba(255, 255, 255, 0.08);
 
 /* 高亮卡片（用于重点展示） */
 border-color: rgba(212, 175, 55, 0.6);
-box-shadow: 
+box-shadow:
   0 0 30px rgba(212, 175, 55, 0.3),
   inset 0 0 20px rgba(212, 175, 55, 0.05);
 ```
 
 **结构：**
+
 ```
 ┌─────────────────────────────────┐
 │  ╔═══════════════════════════╗  │  ← 金色细边框（顶部）
@@ -201,11 +221,11 @@ box-shadow:
 
 ```css
 /* 主按钮 - 帝王金 */
-background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);
-color: #0A0A0F;
+background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
+color: #0a0a0f;
 font-weight: 600;
 border: none;
-box-shadow: 
+box-shadow:
   0 4px 15px rgba(212, 175, 55, 0.4),
   inset 0 1px 0 rgba(255, 255, 255, 0.3);
 
@@ -213,13 +233,13 @@ transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
 /* 悬停态 */
 transform: translateY(-2px) scale(1.02);
-box-shadow: 
+box-shadow:
   0 8px 25px rgba(212, 175, 55, 0.5),
   inset 0 1px 0 rgba(255, 255, 255, 0.4);
 
 /* 点击态 */
 transform: translateY(0) scale(0.98);
-box-shadow: 
+box-shadow:
   0 2px 8px rgba(212, 175, 55, 0.3),
   inset 0 2px 4px rgba(0, 0, 0, 0.2);
 
@@ -244,13 +264,13 @@ background: rgba(26, 26, 37, 0.8);
 border: 1px solid rgba(212, 175, 55, 0.3);
 border-radius: 6px;
 color: var(--text-primary);
-font-family: 'JetBrains Mono', monospace;
+font-family: "JetBrains Mono", monospace;
 
 transition: all 0.3s ease;
 
 /* 聚焦态 */
 border-color: var(--imperial-gold);
-box-shadow: 
+box-shadow:
   0 0 15px rgba(212, 175, 55, 0.2),
   inset 0 0 10px rgba(212, 175, 55, 0.05);
 
@@ -288,6 +308,7 @@ color: var(--info-sapphire);
 ## 6. 动效系统 (Motion Design)
 
 ### 6.1 核心理念
+
 **动效不仅是装饰，而是叙事的载体**
 
 - **入场动画**：如星辰显现，层层递进
@@ -319,6 +340,7 @@ animation-iteration-count: infinite;
 ### 6.3 关键动画
 
 #### 6.3.1 星辰显现（Stagger Reveal）
+
 ```css
 @keyframes starAppear {
   0% {
@@ -338,22 +360,30 @@ animation-iteration-count: infinite;
   opacity: 0;
 }
 
-.stagger-item:nth-child(1) { animation-delay: 0ms; }
-.stagger-item:nth-child(2) { animation-delay: 100ms; }
-.stagger-item:nth-child(3) { animation-delay: 200ms; }
+.stagger-item:nth-child(1) {
+  animation-delay: 0ms;
+}
+.stagger-item:nth-child(2) {
+  animation-delay: 100ms;
+}
+.stagger-item:nth-child(3) {
+  animation-delay: 200ms;
+}
 /* ... 依次递增 100ms */
 ```
 
 #### 6.3.2 金色脉冲（Glow Pulse）
+
 ```css
 @keyframes glowPulse {
-  0%, 100% {
-    box-shadow: 
+  0%,
+  100% {
+    box-shadow:
       0 0 10px rgba(212, 175, 55, 0.3),
       0 0 20px rgba(212, 175, 55, 0.2);
   }
   50% {
-    box-shadow: 
+    box-shadow:
       0 0 20px rgba(212, 175, 55, 0.5),
       0 0 40px rgba(212, 175, 55, 0.3),
       0 0 60px rgba(212, 175, 55, 0.1);
@@ -366,10 +396,15 @@ animation-iteration-count: infinite;
 ```
 
 #### 6.3.3 阴阳旋转（YinYang Rotate）
+
 ```css
 @keyframes yinYangRotate {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .taiji-symbol {
@@ -378,17 +413,19 @@ animation-iteration-count: infinite;
 ```
 
 #### 6.3.4 火焰燃烧（Fire Burn - 用于动爻）
+
 ```css
 @keyframes fireBurn {
-  0%, 100% {
+  0%,
+  100% {
     color: var(--vermillion);
-    text-shadow: 
+    text-shadow:
       0 0 5px var(--vermillion),
       0 0 10px rgba(196, 30, 58, 0.5);
   }
   50% {
     color: var(--vermillion-light);
-    text-shadow: 
+    text-shadow:
       0 0 10px var(--vermillion-light),
       0 0 20px rgba(230, 57, 70, 0.7),
       0 0 30px rgba(196, 30, 58, 0.5);
@@ -416,14 +453,24 @@ animation-iteration-count: infinite;
 ### 7.2 各层实现
 
 #### Layer 1: 水墨渐变
+
 ```css
-background: 
-  radial-gradient(ellipse at 30% 20%, rgba(30, 58, 95, 0.3) 0%, transparent 50%),
-  radial-gradient(ellipse at 70% 80%, rgba(26, 26, 37, 0.5) 0%, transparent 60%),
-  linear-gradient(180deg, #12121A 0%, #0A0A0F 50%, #050508 100%);
+background:
+  radial-gradient(
+    ellipse at 30% 20%,
+    rgba(30, 58, 95, 0.3) 0%,
+    transparent 50%
+  ),
+  radial-gradient(
+    ellipse at 70% 80%,
+    rgba(26, 26, 37, 0.5) 0%,
+    transparent 60%
+  ),
+  linear-gradient(180deg, #12121a 0%, #0a0a0f 50%, #050508 100%);
 ```
 
 #### Layer 2: 能量光晕
+
 ```css
 /* 中心光晕 */
 position: absolute;
@@ -441,12 +488,20 @@ background: radial-gradient(
 animation: auraPulse 8s ease-in-out infinite;
 
 @keyframes auraPulse {
-  0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
-  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
 }
 ```
 
 #### Layer 3: 星宿连线
+
 ```css
 /* 使用 SVG 绘制二十八宿简化连线 */
 .celestial-pattern {
@@ -457,12 +512,17 @@ animation: auraPulse 8s ease-in-out infinite;
 }
 
 @keyframes driftPattern {
-  0% { transform: translate(0, 0) rotate(0deg); }
-  100% { transform: translate(-50px, -30px) rotate(5deg); }
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50px, -30px) rotate(5deg);
+  }
 }
 ```
 
 #### Layer 4: 星空粒子
+
 ```css
 /* 使用 CSS 或 Canvas 绘制 */
 .star-particle {
@@ -475,8 +535,13 @@ animation: auraPulse 8s ease-in-out infinite;
 }
 
 @keyframes twinkle {
-  0%, 100% { opacity: 0.2; }
-  50% { opacity: 0.8; }
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.8;
+  }
 }
 ```
 
@@ -506,6 +571,7 @@ animation: auraPulse 8s ease-in-out infinite;
 ```
 
 ### 8.2 间距系统
+
 ```css
 /* 间距 token */
 --space-xs: 4px;
@@ -523,6 +589,7 @@ card-gap: var(--space-md);
 ```
 
 ### 8.3 响应式断点
+
 ```css
 /* 移动端：< 768px */
 三栏 → 单栏（侧边栏变为抽屉）
@@ -549,7 +616,7 @@ card-gap: var(--space-md);
 }
 .card:hover {
   transform: translateY(-4px);
-  box-shadow: 
+  box-shadow:
     0 12px 40px rgba(0, 0, 0, 0.5),
     0 0 20px rgba(212, 175, 55, 0.15);
   border-color: rgba(212, 175, 55, 0.4);
@@ -558,8 +625,7 @@ card-gap: var(--space-md);
 /* 按钮悬停 */
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 
-    0 8px 25px rgba(212, 175, 55, 0.5);
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.5);
 }
 
 /* 链接悬停 */
@@ -575,8 +641,7 @@ card-gap: var(--space-md);
 /* 按钮点击 */
 .btn:active {
   transform: translateY(0) scale(0.98);
-  box-shadow: 
-    0 2px 8px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
 }
 
 /* 卡片点击 */
@@ -607,8 +672,12 @@ card-gap: var(--space-md);
 }
 
 @keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 /* 按钮加载态 */
@@ -617,7 +686,7 @@ card-gap: var(--space-md);
   opacity: 0.7;
 }
 .btn.loading::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 16px;
   height: 16px;
@@ -662,24 +731,26 @@ card-gap: var(--space-md);
 ## 10. 无障碍设计 (Accessibility)
 
 ### 10.1 色彩对比度
+
 ```css
 /* 主要文字 */
-color: #F5F5F5;
-background: #12121A;
+color: #f5f5f5;
+background: #12121a;
 /* 对比度：13.5:1 ✓ */
 
 /* 次要文字 */
-color: #A0A0B0;
-background: #12121A;
+color: #a0a0b0;
+background: #12121a;
 /* 对比度：7.2:1 ✓ */
 
 /* 辅助文字 */
-color: #6B6B7B;
-background: #12121A;
+color: #6b6b7b;
+background: #12121a;
 /* 对比度：4.5:1 ✓ */
 ```
 
 ### 10.2 焦点指示
+
 ```css
 /* 键盘焦点样式 */
 :focus-visible {
@@ -690,6 +761,7 @@ background: #12121A;
 ```
 
 ### 10.3 ARIA 标签
+
 ```tsx
 <button aria-label="切换导航菜单" aria-expanded={isOpen}>
   <IconMenu />
@@ -703,12 +775,15 @@ background: #12121A;
 ## 11. 性能优化 (Performance)
 
 ### 11.1 动画优化
+
 ```css
 /* 使用 transform 和 opacity，避免触发重排 */
 .element {
   transform: translateY(0);
   opacity: 1;
-  transition: transform 0.3s, opacity 0.3s;
+  transition:
+    transform 0.3s,
+    opacity 0.3s;
 }
 
 /* 使用 will-change 提示浏览器 */
@@ -718,35 +793,33 @@ background: #12121A;
 ```
 
 ### 11.2 图片优化
+
 ```tsx
 // 使用 Next.js Image 组件
-import Image from 'next/image';
+import Image from "next/image";
 
-<Image
-  src="/icons/hexagram.svg"
-  alt="卦象符号"
-  width={48}
-  height={48}
-/>
+<Image src="/icons/hexagram.svg" alt="卦象符号" width={48} height={48} />;
 ```
 
 ### 11.3 代码分割
+
 ```tsx
 // 使用动态导入减少初始加载
 const HexagramVisualization = dynamic(
-  () => import('@/components/HexagramVisualization'),
-  { 
+  () => import("@/components/HexagramVisualization"),
+  {
     loading: () => <Skeleton variant="rect" />,
-    ssr: false 
-  }
+    ssr: false,
+  },
 );
 ```
 
 ## 12. 关键技术实现
 
 ### 12.1 使用 Framer Motion 实现复杂动画
+
 ```tsx
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from "framer-motion";
 
 // 星辰显现动画
 const containerVariants = {
@@ -761,15 +834,15 @@ const containerVariants = {
 };
 
 const itemVariants = {
-  hidden: { 
-    opacity: 0, 
+  hidden: {
+    opacity: 0,
     y: 20,
-    filter: 'blur(10px)'
+    filter: "blur(10px)",
   },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
-    filter: 'blur(0)',
+    filter: "blur(0)",
     transition: {
       duration: 0.6,
       ease: [0.4, 0, 0.2, 1],
@@ -778,34 +851,31 @@ const itemVariants = {
 };
 
 // 使用
-<motion.div
-  variants={containerVariants}
-  initial="hidden"
-  animate="visible"
->
-  {[1, 2, 3].map(i => (
+<motion.div variants={containerVariants} initial="hidden" animate="visible">
+  {[1, 2, 3].map((i) => (
     <motion.div key={i} variants={itemVariants}>
       内容 {i}
     </motion.div>
   ))}
-</motion.div>
+</motion.div>;
 ```
 
 ### 12.2 自定义 Hook 管理动画状态
+
 ```tsx
 // useAnimatedEntry.ts
 export const useAnimatedEntry = (delay = 0) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  
+
   return {
     ref,
     variants: {
       hidden: { opacity: 0, y: 30 },
-      visible: { 
-        opacity: 1, 
+      visible: {
+        opacity: 1,
         y: 0,
-        transition: { duration: 0.6, delay }
+        transition: { duration: 0.6, delay },
       },
     },
     isInView,
@@ -846,6 +916,7 @@ apps/web/src/
 ## 14. 验收标准
 
 ### 14.1 视觉验收
+
 - [ ] 整体风格统一，具有东方玄学的神秘感和权威感
 - [ ] 色彩搭配协调，帝王金、朱砂红、天际蓝层次分明
 - [ ] 动效流畅自然，不卡顿，不闪烁
@@ -853,18 +924,21 @@ apps/web/src/
 - [ ] 卡片、按钮、输入框等组件精致且一致
 
 ### 14.2 交互验收
+
 - [ ] 所有可交互元素有明确的悬停、点击反馈
 - [ ] 页面加载有骨架屏，不出现白屏或布局跳动
 - [ ] 动画性能优良，60fps流畅运行
 - [ ] 响应式布局适配移动端、平板、桌面端
 
 ### 14.3 功能验收
+
 - [ ] 三栏布局清晰，操作区与结果区分离
 - [ ] 占卜表单可正常填写和提交
 - [ ] 卦象可视化动画正常播放
 - [ ] 历史记录、搜索、设置等功能可用
 
 ### 14.4 技术验收
+
 - [ ] 无编译错误和警告
 - [ ] Lighthouse 性能评分 > 80
 - [ ] 无控制台错误

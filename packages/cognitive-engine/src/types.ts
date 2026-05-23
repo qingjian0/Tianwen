@@ -2,15 +2,15 @@
  * Cognitive Engine - 类型定义
  */
 
-export type InferenceNodeType = 
-  | 'signal'
-  | 'state_transition'
-  | 'symbolic_reasoning'
-  | 'temporal_propagation'
-  | 'event_hypothesis'
-  | 'confidence_update'
-  | 'contradiction'
-  | 'conclusion';
+export type InferenceNodeType =
+  | "signal"
+  | "state_transition"
+  | "symbolic_reasoning"
+  | "temporal_propagation"
+  | "event_hypothesis"
+  | "confidence_update"
+  | "contradiction"
+  | "conclusion";
 
 export interface InferenceNode {
   nodeId: string;
@@ -26,7 +26,7 @@ export interface InferenceEdge {
   edgeId: string;
   from: string;
   to: string;
-  relation: 'causes' | 'supports' | 'contradicts' | 'temporal' | 'derived';
+  relation: "causes" | "supports" | "contradicts" | "temporal" | "derived";
   weight: number;
 }
 
@@ -72,7 +72,7 @@ export interface ConfidenceUpdate {
 
 export interface ContradictionHandleResult {
   resolved: boolean;
-  strategy: 'hierarchical' | 'temporal' | 'weighting' | 'none';
+  strategy: "hierarchical" | "temporal" | "weighting" | "none";
   winner?: string;
   loser?: string;
   resolution?: string;

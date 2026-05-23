@@ -13,7 +13,7 @@ import {
   ContradictionPath,
   ReinforcementPath,
   GraphTraversalResult,
-} from './types';
+} from "./types";
 
 export class RuleKnowledgeGraph {
   private nodes: Map<string, RuleNode> = new Map();
@@ -22,9 +22,11 @@ export class RuleKnowledgeGraph {
   private reverseAdjacencyList: Map<string, Set<string>> = new Map();
   private relationIndex: Map<string, RuleRelation[]> = new Map();
 
-  addRule(rule: Omit<RuleNode, 'nodeId' | 'createdAt' | 'updatedAt'>): RuleNode {
+  addRule(
+    rule: Omit<RuleNode, "nodeId" | "createdAt" | "updatedAt">,
+  ): RuleNode {
     const nodeId = `rule_node_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
+
     const node: RuleNode = {
       ...rule,
       nodeId,
@@ -44,7 +46,7 @@ export class RuleKnowledgeGraph {
     targetRuleId: string,
     relationType: RelationType,
     weight: number = 0.5,
-    metadata?: Record<string, any>
+    metadata?: Record<string, any>,
   ): RuleRelation | null {
     const sourceNode = this.findNodeByRuleId(sourceRuleId);
     const targetNode = this.findNodeByRuleId(targetRuleId);
@@ -93,18 +95,20 @@ export class RuleKnowledgeGraph {
     let filteredNodes = Array.from(this.nodes.values());
 
     if (query.ruleId) {
-      filteredNodes = filteredNodes.filter(n => n.ruleId === query.ruleId);
+      filteredNodes = filteredNodes.filter((n) => n.ruleId === query.ruleId);
     }
 
     if (query.category) {
-      filteredNodes = filteredNodes.filter(n => n.category === query.category);
+      filteredNodes = filteredNodes.filter(
+        (n) => n.category === query.category,
+      );
     }
 
     let filteredRelations = [...this.relations];
 
     if (query.relationType) {
       filteredRelations = filteredRelations.filter(
-        r => r.relationType === query.relationType
+        (r) => r.relationType === query.relationType,
       );
     }
 
@@ -113,13 +117,18 @@ export class RuleKnowledgeGraph {
 
     for (const node of filteredNodes) {
       if (query.maxDepth && query.maxDepth > 0) {
-        const nodePaths = this.findAllPaths(node.nodeId, query.maxDepth, visited);
+        const nodePaths = this.findAllPaths(
+          node.nodeId,
+          query.maxDepth,
+          visited,
+        );
         paths.push(...nodePaths);
       }
     }
 
     const totalPossible = filteredNodes.length * filteredNodes.length;
-    const density = totalPossible > 0 ? filteredRelations.length / totalPossible : 0;
+    const density =
+      totalPossible > 0 ? filteredRelations.length / totalPossible : 0;
 
     return {
       nodes: filteredNodes.slice(0, query.limit || 50),
@@ -128,15 +137,21 @@ export class RuleKnowledgeGraph {
       statistics: {
         totalNodes: filteredNodes.length,
         totalRelations: filteredRelations.length,
-        avgWeight: filteredRelations.length > 0
-          ? filteredRelations.reduce((sum, r) => sum + r.weight, 0) / filteredRelations.length
-          : 0,
+        avgWeight:
+          filteredRelations.length > 0
+            ? filteredRelations.reduce((sum, r) => sum + r.weight, 0) /
+              filteredRelations.length
+            : 0,
         density,
       },
     };
   }
 
-  private findAllPaths(startNodeId: string, maxDepth: number, visited: Set<string>): string[][] {
+  private findAllPaths(
+    startNodeId: string,
+    maxDepth: number,
+    visited: Set<string>,
+  ): string[][] {
     const paths: string[][] = [];
 
     const dfs = (currentId: string, path: string[], depth: number) => {
@@ -175,7 +190,10 @@ export class RuleKnowledgeGraph {
           sourceId: node.ruleId,
           targetId: targetNode.ruleId,
           relationType: this.getRelationType(node.nodeId, targetNodeId),
-          semanticSimilarity: this.calculateSemanticSimilarity(node, targetNode),
+          semanticSimilarity: this.calculateSemanticSimilarity(
+            node,
+            targetNode,
+          ),
           evidence: this.findRelationEvidence(node.nodeId, targetNodeId),
         });
       }
@@ -189,7 +207,10 @@ export class RuleKnowledgeGraph {
           sourceId: sourceNode.ruleId,
           targetId: node.ruleId,
           relationType: this.getRelationType(sourceNodeId, node.nodeId),
-          semanticSimilarity: this.calculateSemanticSimilarity(sourceNode, node),
+          semanticSimilarity: this.calculateSemanticSimilarity(
+            sourceNode,
+            node,
+          ),
           evidence: this.findRelationEvidence(sourceNodeId, node.nodeId),
         });
       }
@@ -200,13 +221,17 @@ export class RuleKnowledgeGraph {
 
   private getRelationType(sourceId: string, targetId: string): string {
     const relation = this.relations.find(
-      r => this.findNodeByNodeId(r.sourceRuleId)?.nodeId === sourceId &&
-           this.findNodeByNodeId(r.targetRuleId)?.nodeId === targetId
+      (r) =>
+        this.findNodeByNodeId(r.sourceRuleId)?.nodeId === sourceId &&
+        this.findNodeByNodeId(r.targetRuleId)?.nodeId === targetId,
     );
-    return relation?.relationType || 'unknown';
+    return relation?.relationType || "unknown";
   }
 
-  private calculateSemanticSimilarity(nodeA: RuleNode, nodeB: RuleNode): number {
+  private calculateSemanticSimilarity(
+    nodeA: RuleNode,
+    nodeB: RuleNode,
+  ): number {
     let similarity = 0;
     let factors = 0;
 
@@ -217,14 +242,18 @@ export class RuleKnowledgeGraph {
 
     const keysA = Object.keys(nodeA.properties).sort();
     const keysB = Object.keys(nodeB.properties).sort();
-    const commonKeys = keysA.filter(k => keysB.includes(k));
+    const commonKeys = keysA.filter((k) => keysB.includes(k));
     if (commonKeys.length > 0) {
-      const keyOverlap = commonKeys.length / Math.max(keysA.length, keysB.length);
+      const keyOverlap =
+        commonKeys.length / Math.max(keysA.length, keysB.length);
       similarity += keyOverlap * 0.3;
     }
     factors += 0.3;
 
-    const propSimilarity = this.calculatePropertySimilarity(nodeA.properties, nodeB.properties);
+    const propSimilarity = this.calculatePropertySimilarity(
+      nodeA.properties,
+      nodeB.properties,
+    );
     similarity += propSimilarity * 0.3;
     factors += 0.3;
 
@@ -233,7 +262,7 @@ export class RuleKnowledgeGraph {
 
   private calculatePropertySimilarity(
     propsA: Record<string, any>,
-    propsB: Record<string, any>
+    propsB: Record<string, any>,
   ): number {
     const allKeys = new Set([...Object.keys(propsA), ...Object.keys(propsB)]);
     if (allKeys.size === 0) return 0;
@@ -246,11 +275,11 @@ export class RuleKnowledgeGraph {
 
       if (valA === valB) {
         totalSimilarity += 1;
-      } else if (typeof valA === 'number' && typeof valB === 'number') {
+      } else if (typeof valA === "number" && typeof valB === "number") {
         const diff = Math.abs(valA - valB);
         const max = Math.max(Math.abs(valA), Math.abs(valB));
         totalSimilarity += max > 0 ? 1 - diff / max : 1;
-      } else if (typeof valA === 'string' && typeof valB === 'string') {
+      } else if (typeof valA === "string" && typeof valB === "string") {
         const distance = this.levenshteinDistance(valA, valB);
         const maxLen = Math.max(valA.length, valB.length);
         totalSimilarity += maxLen > 0 ? 1 - distance / maxLen : 1;
@@ -282,7 +311,7 @@ export class RuleKnowledgeGraph {
           matrix[i][j] = Math.min(
             matrix[i - 1][j - 1] + 1,
             matrix[i][j - 1] + 1,
-            matrix[i - 1][j] + 1
+            matrix[i - 1][j] + 1,
           );
         }
       }
@@ -319,7 +348,10 @@ export class RuleKnowledgeGraph {
     const weightedRelations: WeightedRelation[] = [];
 
     for (const relation of this.relations) {
-      if (relation.sourceRuleId === ruleId || relation.targetRuleId === ruleId) {
+      if (
+        relation.sourceRuleId === ruleId ||
+        relation.targetRuleId === ruleId
+      ) {
         const reinforcement = this.calculateReinforcement(relation);
 
         weightedRelations.push({
@@ -342,33 +374,46 @@ export class RuleKnowledgeGraph {
 
     let reinforcement = 1;
 
-    if (relation.relationType === 'supports' || relation.relationType === 'refines') {
+    if (
+      relation.relationType === "supports" ||
+      relation.relationType === "refines"
+    ) {
       reinforcement *= 1 + sourceNode.confidence * 0.5;
-    } else if (relation.relationType === 'contradicts' || relation.relationType === 'conflicts_with') {
+    } else if (
+      relation.relationType === "contradicts" ||
+      relation.relationType === "conflicts_with"
+    ) {
       reinforcement *= 0.5;
     }
 
-    const incomingCount = (this.reverseAdjacencyList.get(sourceNode.nodeId) || new Set()).size;
+    const incomingCount = (
+      this.reverseAdjacencyList.get(sourceNode.nodeId) || new Set()
+    ).size;
     reinforcement *= 1 + Math.log(incomingCount + 1) * 0.1;
 
     return Math.min(2, reinforcement);
   }
 
-  findContradictionPath(ruleAId: string, ruleBId: string): ContradictionPath | null {
+  findContradictionPath(
+    ruleAId: string,
+    ruleBId: string,
+  ): ContradictionPath | null {
     const nodeA = this.findNodeByRuleId(ruleAId);
     const nodeB = this.findNodeByRuleId(ruleBId);
 
     if (!nodeA || !nodeB) return null;
 
     const contradictionRelations = this.relations.filter(
-      r => r.relationType === 'contradicts' || r.relationType === 'conflicts_with'
+      (r) =>
+        r.relationType === "contradicts" || r.relationType === "conflicts_with",
     );
 
-    const contradictionPoints: ContradictionPath['contradictionPoints'] = [];
+    const contradictionPoints: ContradictionPath["contradictionPoints"] = [];
 
     for (const relation of contradictionRelations) {
       if (
-        (relation.sourceRuleId === ruleAId && relation.targetRuleId === ruleBId) ||
+        (relation.sourceRuleId === ruleAId &&
+          relation.targetRuleId === ruleBId) ||
         (relation.sourceRuleId === ruleBId && relation.targetRuleId === ruleAId)
       ) {
         contradictionPoints.push({
@@ -386,12 +431,17 @@ export class RuleKnowledgeGraph {
     return {
       path,
       contradictionPoints,
-      resolutionStrategy: this.determineResolutionStrategy(contradictionPoints, path),
+      resolutionStrategy: this.determineResolutionStrategy(
+        contradictionPoints,
+        path,
+      ),
     };
   }
 
   private findShortestPath(startId: string, endId: string): string[] {
-    const queue: Array<{ id: string; path: string[] }> = [{ id: startId, path: [startId] }];
+    const queue: Array<{ id: string; path: string[] }> = [
+      { id: startId, path: [startId] },
+    ];
     const visited = new Set<string>();
 
     while (queue.length > 0) {
@@ -416,19 +466,24 @@ export class RuleKnowledgeGraph {
   }
 
   private determineResolutionStrategy(
-    contradictions: ContradictionPath['contradictionPoints'],
-    path: string[]
+    contradictions: ContradictionPath["contradictionPoints"],
+    path: string[],
   ): string {
-    if (contradictions.length === 0) return 'no_contradiction';
+    if (contradictions.length === 0) return "no_contradiction";
 
-    const avgSeverity = contradictions.reduce((sum, c) => sum + c.severity, 0) / contradictions.length;
+    const avgSeverity =
+      contradictions.reduce((sum, c) => sum + c.severity, 0) /
+      contradictions.length;
 
-    if (avgSeverity > 0.7) return 'hierarchical';
-    if (avgSeverity > 0.4) return 'weighting';
-    return 'temporal';
+    if (avgSeverity > 0.7) return "hierarchical";
+    if (avgSeverity > 0.4) return "weighting";
+    return "temporal";
   }
 
-  findReinforcementPath(startRuleId: string, endRuleId: string): ReinforcementPath | null {
+  findReinforcementPath(
+    startRuleId: string,
+    endRuleId: string,
+  ): ReinforcementPath | null {
     const startNode = this.findNodeByRuleId(startRuleId);
     const endNode = this.findNodeByRuleId(endRuleId);
 
@@ -444,7 +499,7 @@ export class RuleKnowledgeGraph {
       const sourceId = path[i];
       const targetId = path[i + 1];
 
-      const relation = this.relations.find(r => {
+      const relation = this.relations.find((r) => {
         const source = this.findNodeByNodeId(r.sourceRuleId);
         const target = this.findNodeByNodeId(r.targetRuleId);
         return source?.nodeId === sourceId && target?.nodeId === targetId;
@@ -474,7 +529,12 @@ export class RuleKnowledgeGraph {
         nodes: [],
         relations: [],
         paths: [],
-        statistics: { totalNodes: 0, totalRelations: 0, avgWeight: 0, density: 0 },
+        statistics: {
+          totalNodes: 0,
+          totalRelations: 0,
+          avgWeight: 0,
+          density: 0,
+        },
       };
     }
 
@@ -492,7 +552,8 @@ export class RuleKnowledgeGraph {
         }
       }
 
-      const reverseNeighbors = this.reverseAdjacencyList.get(startId) || new Set();
+      const reverseNeighbors =
+        this.reverseAdjacencyList.get(startId) || new Set();
       for (const neighborId of reverseNeighbors) {
         if (!includedNodes.has(neighborId)) {
           includedNodes.add(neighborId);
@@ -507,15 +568,18 @@ export class RuleKnowledgeGraph {
       const sourceNode = this.findNodeByNodeId(relation.sourceRuleId);
       const targetNode = this.findNodeByNodeId(relation.targetRuleId);
 
-      if (sourceNode && targetNode &&
-          includedNodes.has(sourceNode.nodeId) &&
-          includedNodes.has(targetNode.nodeId)) {
+      if (
+        sourceNode &&
+        targetNode &&
+        includedNodes.has(sourceNode.nodeId) &&
+        includedNodes.has(targetNode.nodeId)
+      ) {
         includedRelations.push(relation);
       }
     }
 
     const nodes = Array.from(includedNodes)
-      .map(id => this.nodes.get(id))
+      .map((id) => this.nodes.get(id))
       .filter((n): n is RuleNode => n !== undefined);
 
     return {
@@ -525,10 +589,15 @@ export class RuleKnowledgeGraph {
       statistics: {
         totalNodes: nodes.length,
         totalRelations: includedRelations.length,
-        avgWeight: includedRelations.length > 0
-          ? includedRelations.reduce((sum, r) => sum + r.weight, 0) / includedRelations.length
-          : 0,
-        density: nodes.length > 1 ? includedRelations.length / (nodes.length * (nodes.length - 1)) : 0,
+        avgWeight:
+          includedRelations.length > 0
+            ? includedRelations.reduce((sum, r) => sum + r.weight, 0) /
+              includedRelations.length
+            : 0,
+        density:
+          nodes.length > 1
+            ? includedRelations.length / (nodes.length * (nodes.length - 1))
+            : 0,
       },
     };
   }
@@ -558,12 +627,15 @@ export class RuleKnowledgeGraph {
       totalNodes: this.nodes.size,
       totalRelations: this.relations.length,
       relationTypes,
-      avgWeight: this.relations.length > 0
-        ? this.relations.reduce((sum, r) => sum + r.weight, 0) / this.relations.length
-        : 0,
-      density: this.nodes.size > 1
-        ? this.relations.length / (this.nodes.size * (this.nodes.size - 1))
-        : 0,
+      avgWeight:
+        this.relations.length > 0
+          ? this.relations.reduce((sum, r) => sum + r.weight, 0) /
+            this.relations.length
+          : 0,
+      density:
+        this.nodes.size > 1
+          ? this.relations.length / (this.nodes.size * (this.nodes.size - 1))
+          : 0,
     };
   }
 
@@ -575,13 +647,15 @@ export class RuleKnowledgeGraph {
     this.reverseAdjacencyList.delete(node.nodeId);
 
     this.relations = this.relations.filter(
-      r => r.sourceRuleId !== ruleId && r.targetRuleId !== ruleId
+      (r) => r.sourceRuleId !== ruleId && r.targetRuleId !== ruleId,
     );
 
     for (const [type, rels] of this.relationIndex.entries()) {
       this.relationIndex.set(
         type,
-        rels.filter(r => r.sourceRuleId !== ruleId && r.targetRuleId !== ruleId)
+        rels.filter(
+          (r) => r.sourceRuleId !== ruleId && r.targetRuleId !== ruleId,
+        ),
       );
     }
 

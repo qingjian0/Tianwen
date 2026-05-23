@@ -1,34 +1,64 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { Input } from '@/components/ui/Input';
-import { PageLayout } from '@/components/layout/PageLayout';
-import { MeihuaEngine } from '@tianwen/meihua';
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Input } from "@/components/ui/Input";
+import { PageLayout } from "@/components/layout/PageLayout";
+import { MeihuaEngine } from "@tianwen/meihua";
 
 // 初始化引擎
 const meihuaEngine = new MeihuaEngine();
 
 const TRIGRAMS = [
-  { name: '乾', symbol: '☰', element: '金', palace: '乾' },
-  { name: '兑', symbol: '☱', element: '金', palace: '兑' },
-  { name: '离', symbol: '☲', element: '火', palace: '离' },
-  { name: '震', symbol: '☳', element: '木', palace: '震' },
-  { name: '巽', symbol: '☴', element: '木', palace: '巽' },
-  { name: '坎', symbol: '☵', element: '水', palace: '坎' },
-  { name: '艮', symbol: '☶', element: '土', palace: '艮' },
-  { name: '坤', symbol: '☷', element: '土', palace: '坤' },
+  { name: "乾", symbol: "☰", element: "金", palace: "乾" },
+  { name: "兑", symbol: "☱", element: "金", palace: "兑" },
+  { name: "离", symbol: "☲", element: "火", palace: "离" },
+  { name: "震", symbol: "☳", element: "木", palace: "震" },
+  { name: "巽", symbol: "☴", element: "木", palace: "巽" },
+  { name: "坎", symbol: "☵", element: "水", palace: "坎" },
+  { name: "艮", symbol: "☶", element: "土", palace: "艮" },
+  { name: "坤", symbol: "☷", element: "土", palace: "坤" },
 ];
 
 const DivinationMethods = [
-  { id: 'time', name: '时间起卦', icon: '⏰', description: '根据年日月时数起卦' },
-  { id: 'number', name: '单数字起卦', icon: '🔢', description: '单个数字，拆为上下卦' },
-  { id: 'number2', name: '双数字起卦', icon: '✨', description: '两个数字，定上下卦与动爻' },
-  { id: 'number3', name: '三数字起卦', icon: '🎲', description: '三个数字，上卦下卦动爻' },
-  { id: 'random', name: '随机起卦', icon: '🌟', description: '至诚之道，感而遂通' },
-  { id: 'manual', name: '手动起卦', icon: '✍️', description: '手动选择上下卦和动爻' },
+  {
+    id: "time",
+    name: "时间起卦",
+    icon: "⏰",
+    description: "根据年日月时数起卦",
+  },
+  {
+    id: "number",
+    name: "单数字起卦",
+    icon: "🔢",
+    description: "单个数字，拆为上下卦",
+  },
+  {
+    id: "number2",
+    name: "双数字起卦",
+    icon: "✨",
+    description: "两个数字，定上下卦与动爻",
+  },
+  {
+    id: "number3",
+    name: "三数字起卦",
+    icon: "🎲",
+    description: "三个数字，上卦下卦动爻",
+  },
+  {
+    id: "random",
+    name: "随机起卦",
+    icon: "🌟",
+    description: "至诚之道，感而遂通",
+  },
+  {
+    id: "manual",
+    name: "手动起卦",
+    icon: "✍️",
+    description: "手动选择上下卦和动爻",
+  },
 ];
 
 const HexagramDisplay = ({
@@ -41,7 +71,9 @@ const HexagramDisplay = ({
   highlightLine?: number | null;
 }) => (
   <div className="flex flex-col items-center">
-    <h4 className="text-sm font-kai text-text-muted mb-4 tracking-widest">{title}</h4>
+    <h4 className="text-sm font-kai text-text-muted mb-4 tracking-widest">
+      {title}
+    </h4>
     <div className="flex flex-col-reverse gap-2">
       {hexagram.map((line, idx) => {
         const isChanging = line >= 2;
@@ -50,7 +82,7 @@ const HexagramDisplay = ({
         return (
           <motion.div
             key={idx}
-            className={`relative flex items-center justify-center transition-all duration-300 ${isHighlighted ? 'scale-110' : ''}`}
+            className={`relative flex items-center justify-center transition-all duration-300 ${isHighlighted ? "scale-110" : ""}`}
             initial={{ opacity: 0, scaleX: 0 }}
             animate={{ opacity: 1, scaleX: 1 }}
             transition={{ delay: idx * 0.1, duration: 0.4 }}
@@ -58,25 +90,19 @@ const HexagramDisplay = ({
             {line === 0 || line === 2 ? (
               <div
                 className={`h-2.5 w-28 rounded-sm transition-all duration-300 ${
-                  isChanging
-                    ? 'bg-vermillion'
-                    : 'bg-imperial-gold'
+                  isChanging ? "bg-vermillion" : "bg-imperial-gold"
                 }`}
               />
             ) : (
               <div className="flex gap-4">
                 <div
                   className={`h-2.5 w-12 rounded-sm transition-all duration-300 ${
-                    isChanging
-                      ? 'bg-vermillion'
-                      : 'bg-imperial-gold'
+                    isChanging ? "bg-vermillion" : "bg-imperial-gold"
                   }`}
                 />
                 <div
                   className={`h-2.5 w-12 rounded-sm transition-all duration-300 ${
-                    isChanging
-                      ? 'bg-vermillion'
-                      : 'bg-imperial-gold'
+                    isChanging ? "bg-vermillion" : "bg-imperial-gold"
                   }`}
                 />
               </div>
@@ -97,22 +123,22 @@ const HexagramDisplay = ({
 );
 
 export default function MeihuaPage() {
-  const [step, setStep] = useState<'intro' | 'form' | 'result'>('intro');
-  const [method, setMethod] = useState<string>('');
-  const [upperNum, setUpperNum] = useState<string>('');
-  const [lowerNum, setLowerNum] = useState<string>('');
-  const [changingNum, setChangingNum] = useState<string>('');
+  const [step, setStep] = useState<"intro" | "form" | "result">("intro");
+  const [method, setMethod] = useState<string>("");
+  const [upperNum, setUpperNum] = useState<string>("");
+  const [lowerNum, setLowerNum] = useState<string>("");
+  const [changingNum, setChangingNum] = useState<string>("");
   // 新添加的配置
   const [addShichen, setAddShichen] = useState<boolean>(true);
   const [useTrueSun, setUseTrueSun] = useState<boolean>(false);
-  const [longitude, setLongitude] = useState<string>('116.4');
-  const [latitude, setLatitude] = useState<string>('39.9');
+  const [longitude, setLongitude] = useState<string>("116.4");
+  const [latitude, setLatitude] = useState<string>("39.9");
   const [result, setResult] = useState<{
     original: number[];
     mutual: number[];
     changed: number[];
-    upperTrigram: typeof TRIGRAMS[0];
-    lowerTrigram: typeof TRIGRAMS[0];
+    upperTrigram: (typeof TRIGRAMS)[0];
+    lowerTrigram: (typeof TRIGRAMS)[0];
     changingLine: number | null;
   } | null>(null);
 
@@ -138,7 +164,14 @@ export default function MeihuaPage() {
 
   const getMutualHexagram = (original: number[]) => {
     if (original.length !== 6) return [];
-    return [original[1], original[2], original[3], original[2], original[3], original[4]];
+    return [
+      original[1],
+      original[2],
+      original[3],
+      original[2],
+      original[3],
+      original[4],
+    ];
   };
 
   const getChangedHexagram = (original: number[]) => {
@@ -158,7 +191,7 @@ export default function MeihuaPage() {
   };
 
   const handleStartDivination = () => {
-    setStep('form');
+    setStep("form");
   };
 
   const handleDivination = () => {
@@ -168,8 +201,8 @@ export default function MeihuaPage() {
     let changingLine: number | null = null;
 
     switch (method) {
-      case 'dice':
-      case 'random':
+      case "dice":
+      case "random":
         hexagram = [];
         for (let i = 0; i < 6; i++) {
           hexagram.push(generateLine());
@@ -179,11 +212,13 @@ export default function MeihuaPage() {
         changingLine = getChangingLine(hexagram);
         break;
 
-      case 'number':
-      case 'double':
+      case "number":
+      case "double":
         upper = upperNum ? (parseInt(upperNum) - 1) % 8 : generateTrigram();
         lower = lowerNum ? (parseInt(lowerNum) - 1) % 8 : generateTrigram();
-        const cl = changingNum ? parseInt(changingNum) % 6 : Math.floor(Math.random() * 6) + 1;
+        const cl = changingNum
+          ? parseInt(changingNum) % 6
+          : Math.floor(Math.random() * 6) + 1;
         hexagram = getHexagramFromTrigrams(upper, lower);
         if (cl !== 0) {
           const lineIndex = 6 - cl;
@@ -193,7 +228,10 @@ export default function MeihuaPage() {
         break;
 
       default:
-        hexagram = getHexagramFromTrigrams(generateTrigram(), generateTrigram());
+        hexagram = getHexagramFromTrigrams(
+          generateTrigram(),
+          generateTrigram(),
+        );
         upper = generateTrigram();
         lower = generateTrigram();
     }
@@ -206,23 +244,23 @@ export default function MeihuaPage() {
       lowerTrigram: TRIGRAMS[lower < 0 ? 7 : lower],
       changingLine,
     });
-    setStep('result');
+    setStep("result");
   };
 
   const reset = () => {
-    setStep('intro');
-    setMethod('');
+    setStep("intro");
+    setMethod("");
     setResult(null);
-    setUpperNum('');
-    setLowerNum('');
-    setChangingNum('');
+    setUpperNum("");
+    setLowerNum("");
+    setChangingNum("");
   };
 
   return (
     <PageLayout>
       <div className="max-w-6xl mx-auto">
         {/* Hero Section */}
-        {step === 'intro' && (
+        {step === "intro" && (
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -242,8 +280,7 @@ export default function MeihuaPage() {
             </p>
             <p className="text-text-secondary max-w-2xl mx-auto text-lg leading-relaxed font-kai mb-12">
               梅花易数是宋朝邵康节先生发明的占卜方法，
-              通过数、象、理的结合，洞察天地之机，
-              预测事物发展的吉凶祸福。
+              通过数、象、理的结合，洞察天地之机， 预测事物发展的吉凶祸福。
             </p>
             <Button
               size="lg"
@@ -256,7 +293,7 @@ export default function MeihuaPage() {
         )}
 
         {/* Feature Cards Grid */}
-        {step === 'intro' && (
+        {step === "intro" && (
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -272,8 +309,7 @@ export default function MeihuaPage() {
                   起卦方式
                 </h3>
                 <p className="text-text-secondary font-kai leading-relaxed">
-                  支持骰子、报数、双数、随机四种起卦方式，
-                  随心而动，至诚感通。
+                  支持骰子、报数、双数、随机四种起卦方式， 随心而动，至诚感通。
                 </p>
               </Card>
 
@@ -285,8 +321,7 @@ export default function MeihuaPage() {
                   卦象解读
                 </h3>
                 <p className="text-text-secondary font-kai leading-relaxed">
-                  本卦、互卦、变卦三位一体，
-                  深入解析事情的始末与变化。
+                  本卦、互卦、变卦三位一体， 深入解析事情的始末与变化。
                 </p>
               </Card>
 
@@ -298,8 +333,7 @@ export default function MeihuaPage() {
                   历史记录
                 </h3>
                 <p className="text-text-secondary font-kai leading-relaxed">
-                  保存每次占卜记录，
-                  便于回顾与验证，温故而知新。
+                  保存每次占卜记录， 便于回顾与验证，温故而知新。
                 </p>
               </Card>
             </div>
@@ -307,186 +341,188 @@ export default function MeihuaPage() {
         )}
 
         {/* Form Section */}
-      {step === 'form' && (
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-20"
-        >
-          <Card className="max-w-4xl mx-auto">
-            <div className="text-center mb-10">
-              <h2 className="text-3xl font-song font-bold text-text-primary mb-4">
-                选择起卦方式
-              </h2>
-              <p className="text-text-muted font-kai">
-                请选择一种方式开始起卦
-              </p>
-            </div>
-
-            {/* Method Selection */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-10">
-              {DivinationMethods.map((m, idx) => (
-                <motion.button
-                  key={m.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.1 }}
-                  onClick={() => setMethod(m.id)}
-                  className={`p-6 rounded-xl border-2 transition-all duration-300 ${
-                    method === m.id
-                      ? 'border-imperial-gold bg-imperial-gold/10'
-                      : 'border-border hover:border-imperial-gold/40 bg-bg-secondary'
-                  }`}
-                >
-                  <div className="text-3xl mb-3">{m.icon}</div>
-                  <div className="text-sm font-song font-bold text-text-primary">
-                    {m.name}
-                  </div>
-                </motion.button>
-              ))}
-            </div>
-
-            {/* Configuration Options */}
-            <div className="mb-8 p-6 bg-bg-secondary rounded-xl border border-border">
-              <h3 className="text-xl font-song font-bold text-text-primary mb-4">配置选项</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-kai text-text-primary">加时辰起卦</p>
-                    <p className="text-sm text-text-muted">是否在计算时加入时辰</p>
-                  </div>
-                  <button
-                    onClick={() => setAddShichen(!addShichen)}
-                    className={`w-14 h-7 rounded-full transition-colors ${
-                      addShichen ? 'bg-imperial-gold' : 'bg-gray-300'
-                    }`}
-                  >
-                    <div
-                      className={`w-5 h-5 rounded-full bg-white shadow transition-transform ${
-                        addShichen ? 'translate-x-7' : 'translate-x-1'
-                      }`}
-                    />
-                  </button>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-kai text-text-primary">真太阳时</p>
-                    <p className="text-sm text-text-muted">是否使用真太阳时</p>
-                  </div>
-                  <button
-                    onClick={() => setUseTrueSun(!useTrueSun)}
-                    className={`w-14 h-7 rounded-full transition-colors ${
-                      useTrueSun ? 'bg-imperial-gold' : 'bg-gray-300'
-                    }`}
-                  >
-                    <div
-                      className={`w-5 h-5 rounded-full bg-white shadow transition-transform ${
-                        useTrueSun ? 'translate-x-7' : 'translate-x-1'
-                      }`}
-                    />
-                  </button>
-                </div>
+        {step === "form" && (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="mb-20"
+          >
+            <Card className="max-w-4xl mx-auto">
+              <div className="text-center mb-10">
+                <h2 className="text-3xl font-song font-bold text-text-primary mb-4">
+                  选择起卦方式
+                </h2>
+                <p className="text-text-muted font-kai">
+                  请选择一种方式开始起卦
+                </p>
               </div>
-              {useTrueSun && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                  <div>
-                    <Input
-                      label="经度"
-                      type="number"
-                      step="0.1"
-                      placeholder="例如：116.4"
-                      value={longitude}
-                      onChange={(e) => setLongitude(e.target.value)}
-                      inputSize="lg"
-                    />
+
+              {/* Method Selection */}
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-10">
+                {DivinationMethods.map((m, idx) => (
+                  <motion.button
+                    key={m.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.1 }}
+                    onClick={() => setMethod(m.id)}
+                    className={`p-6 rounded-xl border-2 transition-all duration-300 ${
+                      method === m.id
+                        ? "border-imperial-gold bg-imperial-gold/10"
+                        : "border-border hover:border-imperial-gold/40 bg-bg-secondary"
+                    }`}
+                  >
+                    <div className="text-3xl mb-3">{m.icon}</div>
+                    <div className="text-sm font-song font-bold text-text-primary">
+                      {m.name}
+                    </div>
+                  </motion.button>
+                ))}
+              </div>
+
+              {/* Configuration Options */}
+              <div className="mb-8 p-6 bg-bg-secondary rounded-xl border border-border">
+                <h3 className="text-xl font-song font-bold text-text-primary mb-4">
+                  配置选项
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-kai text-text-primary">加时辰起卦</p>
+                      <p className="text-sm text-text-muted">
+                        是否在计算时加入时辰
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setAddShichen(!addShichen)}
+                      className={`w-14 h-7 rounded-full transition-colors ${
+                        addShichen ? "bg-imperial-gold" : "bg-gray-300"
+                      }`}
+                    >
+                      <div
+                        className={`w-5 h-5 rounded-full bg-white shadow transition-transform ${
+                          addShichen ? "translate-x-7" : "translate-x-1"
+                        }`}
+                      />
+                    </button>
                   </div>
-                  <div>
-                    <Input
-                      label="纬度"
-                      type="number"
-                      step="0.1"
-                      placeholder="例如：39.9"
-                      value={latitude}
-                      onChange={(e) => setLatitude(e.target.value)}
-                      inputSize="lg"
-                    />
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-kai text-text-primary">真太阳时</p>
+                      <p className="text-sm text-text-muted">
+                        是否使用真太阳时
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setUseTrueSun(!useTrueSun)}
+                      className={`w-14 h-7 rounded-full transition-colors ${
+                        useTrueSun ? "bg-imperial-gold" : "bg-gray-300"
+                      }`}
+                    >
+                      <div
+                        className={`w-5 h-5 rounded-full bg-white shadow transition-transform ${
+                          useTrueSun ? "translate-x-7" : "translate-x-1"
+                        }`}
+                      />
+                    </button>
                   </div>
                 </div>
+                {useTrueSun && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <div>
+                      <Input
+                        label="经度"
+                        type="number"
+                        step="0.1"
+                        placeholder="例如：116.4"
+                        value={longitude}
+                        onChange={(e) => setLongitude(e.target.value)}
+                        inputSize="lg"
+                      />
+                    </div>
+                    <div>
+                      <Input
+                        label="纬度"
+                        type="number"
+                        step="0.1"
+                        placeholder="例如：39.9"
+                        value={latitude}
+                        onChange={(e) => setLatitude(e.target.value)}
+                        inputSize="lg"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Input Fields */}
+              {(method === "number" ||
+                method === "number2" ||
+                method === "number3") && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  className="space-y-6 mb-8"
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {(method === "number" ||
+                      method === "number2" ||
+                      method === "number3") && (
+                      <div>
+                        <Input
+                          label="第一个数字"
+                          type="number"
+                          placeholder="请输入数字"
+                          value={upperNum}
+                          onChange={(e) => setUpperNum(e.target.value)}
+                          inputSize="lg"
+                        />
+                      </div>
+                    )}
+                    {(method === "number2" || method === "number3") && (
+                      <div>
+                        <Input
+                          label="第二个数字"
+                          type="number"
+                          placeholder="请输入数字"
+                          value={lowerNum}
+                          onChange={(e) => setLowerNum(e.target.value)}
+                          inputSize="lg"
+                        />
+                      </div>
+                    )}
+                    {method === "number3" && (
+                      <div>
+                        <Input
+                          label="第三个数字（动爻）"
+                          type="number"
+                          placeholder="请输入数字"
+                          value={changingNum}
+                          onChange={(e) => setChangingNum(e.target.value)}
+                          inputSize="lg"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
               )}
-            </div>
 
-            {/* Input Fields */}
-            {(method === 'number' || method === 'number2' || method === 'number3') && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                className="space-y-6 mb-8"
-              >
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {(method === 'number' || method === 'number2' || method === 'number3') && (
-                    <div>
-                      <Input
-                        label="第一个数字"
-                        type="number"
-                        placeholder="请输入数字"
-                        value={upperNum}
-                        onChange={(e) => setUpperNum(e.target.value)}
-                        inputSize="lg"
-                      />
-                    </div>
-                  )}
-                  {(method === 'number2' || method === 'number3') && (
-                    <div>
-                      <Input
-                        label="第二个数字"
-                        type="number"
-                        placeholder="请输入数字"
-                        value={lowerNum}
-                        onChange={(e) => setLowerNum(e.target.value)}
-                        inputSize="lg"
-                      />
-                    </div>
-                  )}
-                  {method === 'number3' && (
-                    <div>
-                      <Input
-                        label="第三个数字（动爻）"
-                        type="number"
-                        placeholder="请输入数字"
-                        value={changingNum}
-                        onChange={(e) => setChangingNum(e.target.value)}
-                        inputSize="lg"
-                      />
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            )}
-
-            {/* Action Buttons */}
-            <div className="flex justify-center gap-4 pt-6 border-t border-border">
-              <Button
-                variant="secondary"
-                size="lg"
-                onClick={reset}
-              >
-                返回
-              </Button>
-              <Button
-                size="lg"
-                onClick={handleDivination}
-                disabled={!method}
-              >
-                起卦
-              </Button>
-            </div>
-          </Card>
-        </motion.div>
-      )}
+              {/* Action Buttons */}
+              <div className="flex justify-center gap-4 pt-6 border-t border-border">
+                <Button variant="secondary" size="lg" onClick={reset}>
+                  返回
+                </Button>
+                <Button size="lg" onClick={handleDivination} disabled={!method}>
+                  起卦
+                </Button>
+              </div>
+            </Card>
+          </motion.div>
+        )}
 
         {/* Result Section */}
-        {step === 'result' && result && (
+        {step === "result" && result && (
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -564,14 +600,17 @@ export default function MeihuaPage() {
                   变卦为事之终，预示事情的最终结果。
                 </p>
                 <p>
-                  上卦 <span className="text-imperial-gold font-song">
+                  上卦{" "}
+                  <span className="text-imperial-gold font-song">
                     {result.upperTrigram.name}
-                  </span> 为体，
-                  下卦 <span className="text-imperial-gold font-song">
+                  </span>{" "}
+                  为体， 下卦{" "}
+                  <span className="text-imperial-gold font-song">
                     {result.lowerTrigram.name}
-                  </span> 为用。
-                  {result.upperTrigram.element} 与 {result.lowerTrigram.element} 的生克关系，
-                  决定了事情的吉凶祸福。
+                  </span>{" "}
+                  为用。
+                  {result.upperTrigram.element} 与 {result.lowerTrigram.element}{" "}
+                  的生克关系， 决定了事情的吉凶祸福。
                 </p>
                 {result.changingLine && (
                   <p className="text-vermillion">
@@ -587,11 +626,7 @@ export default function MeihuaPage() {
             </Card>
 
             <div className="flex justify-center gap-4 pt-6">
-              <Button
-                variant="secondary"
-                size="lg"
-                onClick={reset}
-              >
+              <Button variant="secondary" size="lg" onClick={reset}>
                 重新起卦
               </Button>
             </div>
@@ -599,7 +634,7 @@ export default function MeihuaPage() {
         )}
 
         {/* Footer Quote */}
-        {step === 'intro' && (
+        {step === "intro" && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

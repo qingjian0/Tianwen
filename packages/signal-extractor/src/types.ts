@@ -1,7 +1,7 @@
-import { Signal } from '@tianwen/signal-system';
-import { MeihuaResult } from '@tianwen/meihua';
-import { LiuYaoResult } from '@tianwen/liuyao';
-import { BaZiResult } from '@tianwen/bazi-engine';
+import { Signal } from "@tianwen/signal-system";
+import { MeihuaResult } from "@tianwen/meihua";
+import { LiuYaoResult } from "@tianwen/liuyao";
+import { BaZiResult } from "@tianwen/bazi-engine";
 
 // 统一术数结果类型
 export type DivinationResult = MeihuaResult | LiuYaoResult | BaZiResult;
@@ -16,7 +16,7 @@ export interface ExtractionConfig {
 
 // 提取结果
 export interface ExtractedSignals {
-  system: 'meihua' | 'liuyao' | 'bazi';
+  system: "meihua" | "liuyao" | "bazi";
   signals: Signal[];
   keyFindings: string[];
   timingHints?: {

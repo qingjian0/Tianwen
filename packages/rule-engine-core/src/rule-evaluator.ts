@@ -5,16 +5,20 @@ import {
   RuleMatchResult,
   RuleExecutionResult,
   RuleEngineConfig,
-  RuleEffect
-} from './types';
+  RuleEffect,
+} from "./types";
 import {
   DEFAULT_RULE_ENGINE_CONFIG,
   WUXING_OPERATIONS,
   DIZHI_HE,
   DIZHI_CHONG,
-  DIZHI_XING
-} from './constants';
-import { RuleConflictResolver, ConflictResolutionResult, ResolutionStrategy } from './conflict-resolver';
+  DIZHI_XING,
+} from "./constants";
+import {
+  RuleConflictResolver,
+  ConflictResolutionResult,
+  ResolutionStrategy,
+} from "./conflict-resolver";
 
 // 条件评估器
 export class ConditionEvaluator {
@@ -27,15 +31,15 @@ export class ConditionEvaluator {
   // 评估单个条件
   evaluate(condition: RuleCondition): boolean {
     switch (condition.type) {
-      case 'simple':
+      case "simple":
         return this.evaluateSimpleCondition(condition);
-      case 'and':
+      case "and":
         return this.evaluateAndCondition(condition);
-      case 'or':
+      case "or":
         return this.evaluateOrCondition(condition);
-      case 'not':
+      case "not":
         return this.evaluateNotCondition(condition);
-      case 'nested':
+      case "nested":
         return this.evaluateNestedCondition(condition);
       default:
         throw new Error(`Unknown condition type: ${condition.type}`);
@@ -49,57 +53,62 @@ export class ConditionEvaluator {
     }
 
     const fieldValue = this.getFieldValue(condition.field);
-    
+
     switch (condition.operator) {
-      case 'equals':
+      case "equals":
         return fieldValue === condition.value;
-      case 'notEquals':
+      case "notEquals":
         return fieldValue !== condition.value;
-      case 'greaterThan':
+      case "greaterThan":
         return fieldValue > condition.value;
-      case 'lessThan':
+      case "lessThan":
         return fieldValue < condition.value;
-      case 'greaterOrEqual':
+      case "greaterOrEqual":
         return fieldValue >= condition.value;
-      case 'lessOrEqual':
+      case "lessOrEqual":
         return fieldValue <= condition.value;
-      case 'contains':
+      case "contains":
         return String(fieldValue).includes(String(condition.value));
-      case 'notContains':
+      case "notContains":
         return !String(fieldValue).includes(String(condition.value));
-      case 'in':
-        return Array.isArray(condition.value) && condition.value.includes(fieldValue);
-      case 'notIn':
-        return !Array.isArray(condition.value) || !condition.value.includes(fieldValue);
-      case 'startsWith':
+      case "in":
+        return (
+          Array.isArray(condition.value) && condition.value.includes(fieldValue)
+        );
+      case "notIn":
+        return (
+          !Array.isArray(condition.value) ||
+          !condition.value.includes(fieldValue)
+        );
+      case "startsWith":
         return String(fieldValue).startsWith(String(condition.value));
-      case 'endsWith':
+      case "endsWith":
         return String(fieldValue).endsWith(String(condition.value));
-      case 'matches':
+      case "matches":
         return new RegExp(condition.value).test(String(fieldValue));
-      case 'isTrue':
+      case "isTrue":
         return fieldValue === true;
-      case 'isFalse':
+      case "isFalse":
         return fieldValue === false;
-      case 'isNull':
+      case "isNull":
         return fieldValue === null || fieldValue === undefined;
-      case 'isNotNull':
+      case "isNotNull":
         return fieldValue !== null && fieldValue !== undefined;
-      case 'exists':
+      case "exists":
         return fieldValue !== null && fieldValue !== undefined;
-      case 'notExists':
+      case "notExists":
         return fieldValue === null || fieldValue === undefined;
-      case 'wuxingSheng':
+      case "wuxingSheng":
         return this.evaluateWuxingSheng(fieldValue, condition.value);
-      case 'wuxingKe':
+      case "wuxingKe":
         return this.evaluateWuxingKe(fieldValue, condition.value);
-      case 'wuxingBihe':
+      case "wuxingBihe":
         return fieldValue === condition.value;
-      case 'ganzhiHe':
+      case "ganzhiHe":
         return this.evaluateGanzhiHe(fieldValue, condition.value);
-      case 'ganzhiChong':
+      case "ganzhiChong":
         return this.evaluateGanzhiChong(fieldValue, condition.value);
-      case 'ganzhiXing':
+      case "ganzhiXing":
         return this.evaluateGanzhiXing(fieldValue, condition.value);
       default:
         throw new Error(`Unknown operator: ${condition.operator}`);
@@ -111,7 +120,7 @@ export class ConditionEvaluator {
     if (!condition.conditions || condition.conditions.length === 0) {
       return true;
     }
-    return condition.conditions.every(c => this.evaluate(c));
+    return condition.conditions.every((c) => this.evaluate(c));
   }
 
   // 评估 OR 条件
@@ -119,7 +128,7 @@ export class ConditionEvaluator {
     if (!condition.conditions || condition.conditions.length === 0) {
       return false;
     }
-    return condition.conditions.some(c => this.evaluate(c));
+    return condition.conditions.some((c) => this.evaluate(c));
   }
 
   // 评估 NOT 条件
@@ -127,7 +136,7 @@ export class ConditionEvaluator {
     if (!condition.conditions || condition.conditions.length === 0) {
       return false;
     }
-    return !condition.conditions.some(c => this.evaluate(c));
+    return !condition.conditions.some((c) => this.evaluate(c));
   }
 
   // 评估嵌套条件
@@ -135,42 +144,53 @@ export class ConditionEvaluator {
     if (!condition.conditions || condition.conditions.length === 0) {
       return true;
     }
-    return condition.conditions.every(c => this.evaluate(c));
+    return condition.conditions.every((c) => this.evaluate(c));
   }
 
   // 获取字段值
   private getFieldValue(fieldPath: string): any {
-    const parts = fieldPath.split('.');
+    const parts = fieldPath.split(".");
     let value: any = this.context.data;
-    
+
     for (const part of parts) {
       if (value === null || value === undefined) {
         return undefined;
       }
       value = value[part];
     }
-    
+
     return value;
   }
 
   // 评估五行生
   private evaluateWuxingSheng(from: string, to: string): boolean {
-    return WUXING_OPERATIONS.sheng[from as keyof typeof WUXING_OPERATIONS.sheng] === to;
+    return (
+      WUXING_OPERATIONS.sheng[from as keyof typeof WUXING_OPERATIONS.sheng] ===
+      to
+    );
   }
 
   // 评估五行克
   private evaluateWuxingKe(from: string, to: string): boolean {
-    return WUXING_OPERATIONS.ke[from as keyof typeof WUXING_OPERATIONS.ke] === to;
+    return (
+      WUXING_OPERATIONS.ke[from as keyof typeof WUXING_OPERATIONS.ke] === to
+    );
   }
 
   // 评估干支合
   private evaluateGanzhiHe(a: string, b: string): boolean {
-    return DIZHI_HE[a as keyof typeof DIZHI_HE] === b || DIZHI_HE[b as keyof typeof DIZHI_HE] === a;
+    return (
+      DIZHI_HE[a as keyof typeof DIZHI_HE] === b ||
+      DIZHI_HE[b as keyof typeof DIZHI_HE] === a
+    );
   }
 
   // 评估干支冲
   private evaluateGanzhiChong(a: string, b: string): boolean {
-    return DIZHI_CHONG[a as keyof typeof DIZHI_CHONG] === b || DIZHI_CHONG[b as keyof typeof DIZHI_CHONG] === a;
+    return (
+      DIZHI_CHONG[a as keyof typeof DIZHI_CHONG] === b ||
+      DIZHI_CHONG[b as keyof typeof DIZHI_CHONG] === a
+    );
   }
 
   // 评估干支刑
@@ -189,11 +209,14 @@ export class ConditionEvaluator {
     return matches;
   }
 
-  private collectMatchingConditions(condition: RuleCondition, matches: RuleCondition[]): void {
+  private collectMatchingConditions(
+    condition: RuleCondition,
+    matches: RuleCondition[],
+  ): void {
     if (this.evaluate(condition)) {
       matches.push(condition);
     }
-    
+
     if (condition.conditions) {
       for (const subCondition of condition.conditions) {
         this.collectMatchingConditions(subCondition, matches);
@@ -205,18 +228,21 @@ export class ConditionEvaluator {
   calculateMatchScore(condition: RuleCondition): number {
     const conditions = this.countConditions(condition);
     const matchingConditions = this.getMatchingConditions(condition).length;
-    
+
     if (conditions === 0) return 1.0;
     return matchingConditions / conditions;
   }
 
   private countConditions(condition: RuleCondition): number {
-    let count = condition.type === 'simple' ? 1 : 0;
-    
+    let count = condition.type === "simple" ? 1 : 0;
+
     if (condition.conditions) {
-      count += condition.conditions.reduce((sum, c) => sum + this.countConditions(c), 0);
+      count += condition.conditions.reduce(
+        (sum, c) => sum + this.countConditions(c),
+        0,
+      );
     }
-    
+
     return count;
   }
 }
@@ -235,17 +261,17 @@ export class EffectApplier {
   applyEffect(effect: RuleEffect): boolean {
     try {
       switch (effect.type) {
-        case 'signal':
+        case "signal":
           return this.applySignalEffect(effect);
-        case 'probability':
+        case "probability":
           return this.applyProbabilityEffect(effect);
-        case 'fortune':
+        case "fortune":
           return this.applyFortuneEffect(effect);
-        case 'timing':
+        case "timing":
           return this.applyTimingEffect(effect);
-        case 'confidence':
+        case "confidence":
           return this.applyConfidenceEffect(effect);
-        case 'priority':
+        case "priority":
           return this.applyPriorityEffect(effect);
         default:
           throw new Error(`Unknown effect type: ${effect.type}`);
@@ -259,13 +285,13 @@ export class EffectApplier {
   // 应用信号效果
   private applySignalEffect(effect: RuleEffect): boolean {
     if (!this.result.signals) this.result.signals = [];
-    
-    if (effect.action === 'set') {
+
+    if (effect.action === "set") {
       this.result.signals = [effect.signalId || effect.value];
     } else {
       this.result.signals.push(effect.signalId || effect.value);
     }
-    
+
     return true;
   }
 
@@ -274,32 +300,35 @@ export class EffectApplier {
     if (this.result.probability === undefined) {
       this.result.probability = 0.5;
     }
-    
-    const value = typeof effect.value === 'number' ? effect.value : parseFloat(String(effect.value));
-    
+
+    const value =
+      typeof effect.value === "number"
+        ? effect.value
+        : parseFloat(String(effect.value));
+
     switch (effect.action) {
-      case 'add':
+      case "add":
         this.result.probability += value;
         break;
-      case 'subtract':
+      case "subtract":
         this.result.probability -= value;
         break;
-      case 'multiply':
+      case "multiply":
         this.result.probability *= value;
         break;
-      case 'divide':
+      case "divide":
         if (value !== 0) {
           this.result.probability /= value;
         }
         break;
-      case 'set':
+      case "set":
         this.result.probability = value;
         break;
     }
-    
+
     // 限制在 0-1 范围内
     this.result.probability = Math.max(0, Math.min(1, this.result.probability));
-    
+
     return true;
   }
 
@@ -308,49 +337,56 @@ export class EffectApplier {
     if (this.result.fortune === undefined) {
       this.result.fortune = 0;
     }
-    
-    const value = typeof effect.value === 'number' ? effect.value : parseFloat(String(effect.value));
-    
+
+    const value =
+      typeof effect.value === "number"
+        ? effect.value
+        : parseFloat(String(effect.value));
+
     switch (effect.action) {
-      case 'add':
+      case "add":
         this.result.fortune += value;
         break;
-      case 'subtract':
+      case "subtract":
         this.result.fortune -= value;
         break;
-      case 'multiply':
+      case "multiply":
         this.result.fortune *= value;
         break;
-      case 'divide':
+      case "divide":
         if (value !== 0) {
           this.result.fortune /= value;
         }
         break;
-      case 'set':
+      case "set":
         this.result.fortune = value;
         break;
     }
-    
+
     return true;
   }
 
   // 应用时间效果
   private applyTimingEffect(effect: RuleEffect): boolean {
     if (!this.result.timing) this.result.timing = {};
-    
-    const value = typeof effect.value === 'number' ? effect.value : parseFloat(String(effect.value));
-    
+
+    const value =
+      typeof effect.value === "number"
+        ? effect.value
+        : parseFloat(String(effect.value));
+
     switch (effect.action) {
-      case 'set':
+      case "set":
         this.result.timing[effect.target] = effect.value;
         break;
-      case 'add':
-        this.result.timing[effect.target] = (this.result.timing[effect.target] || 0) + value;
+      case "add":
+        this.result.timing[effect.target] =
+          (this.result.timing[effect.target] || 0) + value;
         break;
       default:
         this.result.timing[effect.target] = effect.value;
     }
-    
+
     return true;
   }
 
@@ -359,26 +395,29 @@ export class EffectApplier {
     if (this.result.confidence === undefined) {
       this.result.confidence = 0.8;
     }
-    
-    const value = typeof effect.value === 'number' ? effect.value : parseFloat(String(effect.value));
-    
+
+    const value =
+      typeof effect.value === "number"
+        ? effect.value
+        : parseFloat(String(effect.value));
+
     switch (effect.action) {
-      case 'add':
+      case "add":
         this.result.confidence += value;
         break;
-      case 'subtract':
+      case "subtract":
         this.result.confidence -= value;
         break;
-      case 'multiply':
+      case "multiply":
         this.result.confidence *= value;
         break;
-      case 'set':
+      case "set":
         this.result.confidence = value;
         break;
     }
-    
+
     this.result.confidence = Math.max(0, Math.min(1, this.result.confidence));
-    
+
     return true;
   }
 
@@ -428,12 +467,12 @@ export class RuleEngine {
 
   // 获取活跃规则
   getActiveRules(): Rule[] {
-    return this.rules.filter(rule => rule.metadata.status === 'active');
+    return this.rules.filter((rule) => rule.metadata.status === "active");
   }
 
   // 按类别获取规则
   getRulesByCategory(category: string): Rule[] {
-    return this.rules.filter(rule => rule.metadata.category === category);
+    return this.rules.filter((rule) => rule.metadata.category === category);
   }
 
   // 匹配规则
@@ -445,10 +484,12 @@ export class RuleEngine {
 
     for (const rule of activeRules) {
       const ruleStart = Date.now();
-      const matchedConditions = evaluator.getMatchingConditions(rule.conditions);
+      const matchedConditions = evaluator.getMatchingConditions(
+        rule.conditions,
+      );
       const matched = evaluator.evaluate(rule.conditions);
       const matchScore = evaluator.calculateMatchScore(rule.conditions);
-      const totalConditions = evaluator['countConditions'](rule.conditions);
+      const totalConditions = evaluator["countConditions"](rule.conditions);
 
       results.push({
         rule,
@@ -457,7 +498,7 @@ export class RuleEngine {
         conditionsSatisfied: matchedConditions.length,
         totalConditions,
         matchScore,
-        executionTimeMs: Date.now() - ruleStart
+        executionTimeMs: Date.now() - ruleStart,
       });
     }
 
@@ -467,7 +508,7 @@ export class RuleEngine {
   // 匹配规则（包含冲突处理）
   matchRulesWithConflictResolution(
     context: RuleContext,
-    strategy: ResolutionStrategy = 'priority_based'
+    strategy: ResolutionStrategy = "priority_based",
   ): ConflictResolutionResult {
     const matches = this.matchRules(context);
     return this.conflictResolver.resolveConflicts(matches, strategy);
@@ -476,9 +517,12 @@ export class RuleEngine {
   // 执行规则（包含冲突处理）
   executeRulesWithConflictResolution(
     context: RuleContext,
-    strategy: ResolutionStrategy = 'priority_based'
+    strategy: ResolutionStrategy = "priority_based",
   ): RuleExecutionResult[] {
-    const conflictResult = this.matchRulesWithConflictResolution(context, strategy);
+    const conflictResult = this.matchRulesWithConflictResolution(
+      context,
+      strategy,
+    );
     const executionResults: RuleExecutionResult[] = [];
     const skippedRuleSet = new Set(conflictResult.skippedRuleIds);
 
@@ -513,7 +557,7 @@ export class RuleEngine {
         skippedEffects,
         errors: errors.length > 0 ? errors : undefined,
         warnings: warnings.length > 0 ? warnings : undefined,
-        executionTimeMs: Date.now() - ruleStart
+        executionTimeMs: Date.now() - ruleStart,
       });
     }
 
@@ -556,7 +600,7 @@ export class RuleEngine {
         skippedEffects,
         errors: errors.length > 0 ? errors : undefined,
         warnings: warnings.length > 0 ? warnings : undefined,
-        executionTimeMs: Date.now() - ruleStart
+        executionTimeMs: Date.now() - ruleStart,
       });
     }
 
@@ -566,10 +610,13 @@ export class RuleEngine {
   // 执行并获取结果（包含冲突处理）
   executeAndGetResultWithConflictResolution(
     context: RuleContext,
-    strategy: ResolutionStrategy = 'priority_based'
+    strategy: ResolutionStrategy = "priority_based",
   ): { result: any; conflictResolution: ConflictResolutionResult } {
     const applier = new EffectApplier(context);
-    const conflictResolution = this.matchRulesWithConflictResolution(context, strategy);
+    const conflictResolution = this.matchRulesWithConflictResolution(
+      context,
+      strategy,
+    );
     const skippedRuleSet = new Set(conflictResolution.skippedRuleIds);
 
     for (const matchResult of conflictResolution.resolvedMatches) {

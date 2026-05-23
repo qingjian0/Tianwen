@@ -1,66 +1,69 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { PageLayout } from '@/components/layout/PageLayout';
-import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { PageLayout } from "@/components/layout/PageLayout";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 // 九星数据
 const NINE_STARS = [
-  { name: '天蓬星', color: 'vermillion' },
-  { name: '天芮星', color: 'imperial-gold' },
-  { name: '天冲星', color: 'jade' },
-  { name: '天辅星', color: 'imperial-gold' },
-  { name: '天禽星', color: 'imperial-gold' },
-  { name: '天心星', color: 'imperial-gold' },
-  { name: '天柱星', color: 'imperial-gold' },
-  { name: '天任星', color: 'imperial-gold' },
-  { name: '天英星', color: 'vermillion' },
+  { name: "天蓬星", color: "vermillion" },
+  { name: "天芮星", color: "imperial-gold" },
+  { name: "天冲星", color: "jade" },
+  { name: "天辅星", color: "imperial-gold" },
+  { name: "天禽星", color: "imperial-gold" },
+  { name: "天心星", color: "imperial-gold" },
+  { name: "天柱星", color: "imperial-gold" },
+  { name: "天任星", color: "imperial-gold" },
+  { name: "天英星", color: "vermillion" },
 ];
 
 // 八门数据
 const EIGHT_GATES = [
-  { name: '休门' },
-  { name: '生门' },
-  { name: '伤门' },
-  { name: '杜门' },
-  { name: '景门' },
-  { name: '死门' },
-  { name: '惊门' },
-  { name: '开门' },
+  { name: "休门" },
+  { name: "生门" },
+  { name: "伤门" },
+  { name: "杜门" },
+  { name: "景门" },
+  { name: "死门" },
+  { name: "惊门" },
+  { name: "开门" },
 ];
 
 // 九宫格位置（洛书布局）
 const NINE_PALACES = [
-  { position: '巽', palace: '东南' },
-  { position: '离', palace: '正南' },
-  { position: '坤', palace: '西南' },
-  { position: '震', palace: '正东' },
-  { position: '中', palace: '中宫' },
-  { position: '兑', palace: '正西' },
-  { position: '艮', palace: '东北' },
-  { position: '坎', palace: '正北' },
-  { position: '乾', palace: '西北' },
+  { position: "巽", palace: "东南" },
+  { position: "离", palace: "正南" },
+  { position: "坤", palace: "西南" },
+  { position: "震", palace: "正东" },
+  { position: "中", palace: "中宫" },
+  { position: "兑", palace: "正西" },
+  { position: "艮", palace: "东北" },
+  { position: "坎", palace: "正北" },
+  { position: "乾", palace: "西北" },
 ];
 
 // 功能卡片数据
 const features = [
   {
-    title: '排盘方式',
-    description: '支持多种排盘方式，包括时家奇门、日家奇门、月家奇门等，灵活满足不同预测需求。',
-    icon: '📊',
+    title: "排盘方式",
+    description:
+      "支持多种排盘方式，包括时家奇门、日家奇门、月家奇门等，灵活满足不同预测需求。",
+    icon: "📊",
   },
   {
-    title: '九星八门',
-    description: '详细展示九星八门在九宫的分布，结合天干地支、八神八诈，呈现完整的奇门格局。',
-    icon: '⭐',
+    title: "九星八门",
+    description:
+      "详细展示九星八门在九宫的分布，结合天干地支、八神八诈，呈现完整的奇门格局。",
+    icon: "⭐",
   },
   {
-    title: '格局分析',
-    description: '自动分析格局吉凶，提供伏吟、反吟、五不遇时等特殊格局的详细解读。',
-    icon: '📜',
+    title: "格局分析",
+    description:
+      "自动分析格局吉凶，提供伏吟、反吟、五不遇时等特殊格局的详细解读。",
+    icon: "📜",
   },
 ];
 
@@ -74,20 +77,31 @@ const NinePalaceGrid = ({ data }: { data: any[] }) => (
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: index * 0.1 }}
         className={`aspect-square border border-imperial-gold/30 bg-bg-card/50 rounded-lg flex flex-col items-center justify-center p-2 ${
-          index === 4 ? 'border-2 border-imperial-gold/50 bg-imperial-gold/5' : ''
+          index === 4
+            ? "border-2 border-imperial-gold/50 bg-imperial-gold/5"
+            : ""
         }`}
       >
-        <div className="text-imperial-gold font-song text-sm mb-1">{palace.position}宫</div>
-        <div className="text-xs text-text-primary font-song mb-1">{palace.star}</div>
-        <div className="text-xs text-text-secondary font-kai">{palace.gate}</div>
-        <div className="text-[10px] text-text-muted mt-1">{palace.heavenlyStem}{palace.earthlyBranch}</div>
+        <div className="text-imperial-gold font-song text-sm mb-1">
+          {palace.position}宫
+        </div>
+        <div className="text-xs text-text-primary font-song mb-1">
+          {palace.star}
+        </div>
+        <div className="text-xs text-text-secondary font-kai">
+          {palace.gate}
+        </div>
+        <div className="text-[10px] text-text-muted mt-1">
+          {palace.heavenlyStem}
+          {palace.earthlyBranch}
+        </div>
       </motion.div>
     ))}
   </div>
 );
 
 export default function QimenPage() {
-  const [dateTime, setDateTime] = useState('');
+  const [dateTime, setDateTime] = useState("");
   const [showResult, setShowResult] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -96,8 +110,10 @@ export default function QimenPage() {
     ...palace,
     star: NINE_STARS[index].name,
     gate: EIGHT_GATES[index % 8].name,
-    heavenlyStem: ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬'][index],
-    earthlyBranch: ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申'][index],
+    heavenlyStem: ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬"][index],
+    earthlyBranch: ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申"][
+      index
+    ],
   }));
 
   const handleGenerate = () => {
@@ -110,7 +126,7 @@ export default function QimenPage() {
 
   const reset = () => {
     setShowResult(false);
-    setDateTime('');
+    setDateTime("");
   };
 
   return (
@@ -133,7 +149,7 @@ export default function QimenPage() {
           <p className="text-text-secondary font-kai tracking-widest text-lg">
             帝王之学 · 三式之首
           </p>
-          
+
           <div className="mt-8 max-w-2xl mx-auto">
             <p className="text-text-secondary font-kai leading-relaxed">
               奇门遁甲是中国古代最高层次的预测学，为三式之首。通过九宫八卦、天干地支、九星八门的排列组合，
@@ -145,8 +161,8 @@ export default function QimenPage() {
             <Button
               size="lg"
               onClick={() => {
-                const element = document.getElementById('form-section');
-                element?.scrollIntoView({ behavior: 'smooth' });
+                const element = document.getElementById("form-section");
+                element?.scrollIntoView({ behavior: "smooth" });
               }}
             >
               开始排盘
@@ -163,7 +179,9 @@ export default function QimenPage() {
         >
           <div className="flex items-center gap-6 mb-8">
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-imperial-gold/30 to-transparent" />
-            <span className="text-text-secondary font-kai tracking-[0.3em]">核心功能</span>
+            <span className="text-text-secondary font-kai tracking-[0.3em]">
+              核心功能
+            </span>
             <div className="h-px flex-1 bg-gradient-to-l from-transparent via-imperial-gold/30 to-transparent" />
           </div>
 
@@ -253,7 +271,7 @@ export default function QimenPage() {
                     disabled={!dateTime}
                     className="w-full"
                   >
-                    {isGenerating ? '排盘中...' : '生成排盘'}
+                    {isGenerating ? "排盘中..." : "生成排盘"}
                   </Button>
                 </div>
               </div>
@@ -276,7 +294,8 @@ export default function QimenPage() {
                   九宫排盘
                 </h2>
                 <p className="text-text-secondary font-kai">
-                  {new Date(dateTime || Date.now()).toLocaleString('zh-CN')} · 时家奇门
+                  {new Date(dateTime || Date.now()).toLocaleString("zh-CN")} ·
+                  时家奇门
                 </p>
               </div>
 
@@ -297,7 +316,9 @@ export default function QimenPage() {
                         key={index}
                         className="flex justify-between items-center py-2 px-3 bg-bg-card/30 rounded"
                       >
-                        <span className="text-text-primary font-song">{star.name}</span>
+                        <span className="text-text-primary font-song">
+                          {star.name}
+                        </span>
                         <span className="text-text-secondary text-sm font-kai">
                           {mockPalaceData[index].position}宫
                         </span>
@@ -317,9 +338,15 @@ export default function QimenPage() {
                         key={index}
                         className="flex justify-between items-center py-2 px-3 bg-bg-card/30 rounded"
                       >
-                        <span className="text-text-primary font-song">{gate.name}</span>
+                        <span className="text-text-primary font-song">
+                          {gate.name}
+                        </span>
                         <span className="text-text-secondary text-sm font-kai">
-                          {mockPalaceData[index !== 4 ? index : index + 1].position}宫
+                          {
+                            mockPalaceData[index !== 4 ? index : index + 1]
+                              .position
+                          }
+                          宫
                         </span>
                       </div>
                     ))}
@@ -337,10 +364,23 @@ export default function QimenPage() {
               <div className="text-text-secondary font-kai leading-relaxed space-y-4">
                 <p>
                   此局为 <span className="text-imperial-gold">时家奇门</span>，
-                  值符 <span className="text-imperial-gold">{mockPalaceData[0].star}</span> 落
-                  <span className="text-imperial-gold">{mockPalaceData[0].position}</span>宫，
-                  值使 <span className="text-imperial-gold">{mockPalaceData[0].gate}</span> 落
-                  <span className="text-imperial-gold">{mockPalaceData[1].position}</span>宫。
+                  值符{" "}
+                  <span className="text-imperial-gold">
+                    {mockPalaceData[0].star}
+                  </span>{" "}
+                  落
+                  <span className="text-imperial-gold">
+                    {mockPalaceData[0].position}
+                  </span>
+                  宫， 值使{" "}
+                  <span className="text-imperial-gold">
+                    {mockPalaceData[0].gate}
+                  </span>{" "}
+                  落
+                  <span className="text-imperial-gold">
+                    {mockPalaceData[1].position}
+                  </span>
+                  宫。
                 </p>
                 <p>
                   天盘与地盘的组合揭示了当前的能量场状态，
@@ -354,11 +394,7 @@ export default function QimenPage() {
             </Card>
 
             <div className="flex justify-center gap-4">
-              <Button
-                size="lg"
-                variant="ghost"
-                onClick={reset}
-              >
+              <Button size="lg" variant="ghost" onClick={reset}>
                 重新排盘
               </Button>
             </div>

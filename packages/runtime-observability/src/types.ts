@@ -17,7 +17,7 @@ export interface NodeTiming {
   duration: number;
   startTime: number;
   endTime: number;
-  status: 'completed' | 'failed' | 'skipped';
+  status: "completed" | "failed" | "skipped";
 }
 
 export interface RuleHitStats {

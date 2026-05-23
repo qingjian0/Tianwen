@@ -9,7 +9,7 @@ import {
   CalibrationResult,
   CalibrationReport,
   PredictionOutcome,
-} from './types';
+} from "./types";
 
 const DEFAULT_CONFIG: CalibrationConfig = {
   learningRate: 0.1,
@@ -38,7 +38,7 @@ export class CalibrationEngine {
     }
 
     calibration.totalEvaluations++;
-    
+
     if (outcome.correct) {
       calibration.correctOutcomes++;
     } else {
@@ -70,14 +70,14 @@ export class CalibrationEngine {
     const error = accuracy - calibration.currentConfidence;
     const adjustment = error * this.config.learningRate;
 
-    calibration.historicalConfidence = 
-      calibration.historicalConfidence * this.config.decayFactor + 
+    calibration.historicalConfidence =
+      calibration.historicalConfidence * this.config.decayFactor +
       calibration.currentConfidence * (1 - this.config.decayFactor);
 
     let newConfidence = calibration.currentConfidence + adjustment;
     newConfidence = Math.max(
       this.config.minConfidence,
-      Math.min(this.config.maxConfidence, newConfidence)
+      Math.min(this.config.maxConfidence, newConfidence),
     );
 
     calibration.currentConfidence = newConfidence;
@@ -89,7 +89,8 @@ export class CalibrationEngine {
     for (const calibration of this.calibrations.values()) {
       if (calibration.totalEvaluations < 3) continue;
 
-      const accuracy = calibration.correctOutcomes / calibration.totalEvaluations;
+      const accuracy =
+        calibration.correctOutcomes / calibration.totalEvaluations;
       const oldConfidence = calibration.currentConfidence;
 
       this.updateConfidence(calibration);
@@ -103,9 +104,10 @@ export class CalibrationEngine {
       });
     }
 
-    const overallAccuracy = results.length > 0
-      ? results.reduce((sum, r) => sum + r.accuracy, 0) / results.length
-      : 0;
+    const overallAccuracy =
+      results.length > 0
+        ? results.reduce((sum, r) => sum + r.accuracy, 0) / results.length
+        : 0;
 
     return {
       timestamp: Date.now(),
@@ -131,7 +133,7 @@ export class CalibrationEngine {
 
   getOutcomes(ruleId?: string): PredictionOutcome[] {
     if (ruleId) {
-      return this.outcomes.filter(o => o.ruleId === ruleId);
+      return this.outcomes.filter((o) => o.ruleId === ruleId);
     }
     return [...this.outcomes];
   }
@@ -147,24 +149,26 @@ export class CalibrationEngine {
       calibration = this.createCalibration(ruleId);
       this.calibrations.set(ruleId, calibration);
     }
-    
+
     calibration.currentConfidence = Math.max(
       this.config.minConfidence,
-      Math.min(this.config.maxConfidence, confidence)
+      Math.min(this.config.maxConfidence, confidence),
     );
   }
 
   applyBayesianUpdate(
     ruleId: string,
     priorConfidence: number,
-    evidence: { success: number; total: number }
+    evidence: { success: number; total: number },
   ): number {
     const alpha = evidence.success + 1;
     const beta = evidence.total - evidence.success + 1;
-    
+
     const posteriorMean = alpha / (alpha + beta);
-    
-    return this.config.learningRate * posteriorMean + 
-           (1 - this.config.learningRate) * priorConfidence;
+
+    return (
+      this.config.learningRate * posteriorMean +
+      (1 - this.config.learningRate) * priorConfidence
+    );
   }
 }

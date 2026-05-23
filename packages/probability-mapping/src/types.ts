@@ -1,5 +1,5 @@
-import { Signal } from '@tianwen/signal-system';
-import { ProbabilityScore } from '@tianwen/probability-engine';
+import { Signal } from "@tianwen/signal-system";
+import { ProbabilityScore } from "@tianwen/probability-engine";
 
 // 映射配置
 export interface MappingConfig {

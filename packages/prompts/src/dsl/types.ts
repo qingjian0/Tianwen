@@ -11,9 +11,9 @@ export interface PromptDSL {
     start?: Date;
     end?: Date;
   };
-  style?: 'conservative' | 'balanced' | 'aggressive';
-  outputMode?: 'concise' | 'detailed' | 'narrative';
+  style?: "conservative" | "balanced" | "aggressive";
+  outputMode?: "concise" | "detailed" | "narrative";
 }
 
-export type PromptStyle = 'conservative' | 'balanced' | 'aggressive';
-export type OutputMode = 'concise' | 'detailed' | 'narrative';
+export type PromptStyle = "conservative" | "balanced" | "aggressive";
+export type OutputMode = "concise" | "detailed" | "narrative";

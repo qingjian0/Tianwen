@@ -2,15 +2,19 @@
  * 吉凶计算器
  */
 
-import { FortuneScore, FortuneFactors, FortuneAnalysis } from './types';
+import { FortuneScore, FortuneFactors, FortuneAnalysis } from "./types";
 import {
   FortuneLevel,
   FORTUNE_THRESHOLDS,
   FORTUNE_LABELS,
-  FORTUNE_DESCRIPTIONS
-} from './constants';
-import { Signal, SignalProcessor, SignalPolarity } from '@tianwen/signal-system';
-import { ProbabilityScore } from '@tianwen/probability-engine';
+  FORTUNE_DESCRIPTIONS,
+} from "./constants";
+import {
+  Signal,
+  SignalProcessor,
+  SignalPolarity,
+} from "@tianwen/signal-system";
+import { ProbabilityScore } from "@tianwen/probability-engine";
 
 export class FortuneCalculator {
   /**
@@ -18,14 +22,15 @@ export class FortuneCalculator {
    */
   static calculateFromSignals(signals: Signal[]): FortuneScore {
     const analysis = SignalProcessor.analyze(signals);
-    
-    const positiveRatio = analysis.totalSignals > 0
-      ? analysis.positiveSignals.length / analysis.totalSignals
-      : 0.5;
-    
+
+    const positiveRatio =
+      analysis.totalSignals > 0
+        ? analysis.positiveSignals.length / analysis.totalSignals
+        : 0.5;
+
     const weightedScore = (positiveRatio + analysis.netPolarity + 1) / 3;
     const score = Math.max(0, Math.min(1, weightedScore));
-    
+
     const level = this.determineLevel(score);
     const confidence = analysis.confidence;
 
@@ -35,7 +40,7 @@ export class FortuneCalculator {
       confidence,
       label: FORTUNE_LABELS[level],
       description: FORTUNE_DESCRIPTIONS[level],
-      timestamp: new Date()
+      timestamp: new Date(),
     };
   }
 
@@ -52,7 +57,7 @@ export class FortuneCalculator {
       confidence: probability.confidence,
       label: FORTUNE_LABELS[level],
       description: FORTUNE_DESCRIPTIONS[level],
-      timestamp: new Date()
+      timestamp: new Date(),
     };
   }
 
@@ -60,7 +65,8 @@ export class FortuneCalculator {
    * 确定吉凶等级
    */
   private static determineLevel(score: number): FortuneLevel {
-    if (score >= FORTUNE_THRESHOLDS.GREAT_FORTUNE) return FortuneLevel.GREAT_FORTUNE;
+    if (score >= FORTUNE_THRESHOLDS.GREAT_FORTUNE)
+      return FortuneLevel.GREAT_FORTUNE;
     if (score >= FORTUNE_THRESHOLDS.FORTUNE) return FortuneLevel.FORTUNE;
     if (score >= FORTUNE_THRESHOLDS.NEUTRAL) return FortuneLevel.NEUTRAL;
     if (score >= FORTUNE_THRESHOLDS.WARNING) return FortuneLevel.WARNING;

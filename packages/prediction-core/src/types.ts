@@ -2,10 +2,10 @@
  * 推演核心类型定义
  */
 
-import { z } from 'zod';
-import { PredictionCategory, PredictionMode, PipelineStage } from './constants';
-import { Signal, SignalSource } from '@tianwen/signal-system';
-import { WeightConfig } from '@tianwen/weight-system';
+import { z } from "zod";
+import { PredictionCategory, PredictionMode, PipelineStage } from "./constants";
+import { Signal, SignalSource } from "@tianwen/signal-system";
+import { WeightConfig } from "@tianwen/weight-system";
 
 export interface PredictionContext {
   id: string;
@@ -28,7 +28,7 @@ export const PredictionContextSchema = z.object({
   userContext: z.record(z.unknown()).optional(),
   weightConfig: z.any(),
   mode: z.nativeEnum(PredictionMode),
-  metadata: z.record(z.unknown()).optional()
+  metadata: z.record(z.unknown()).optional(),
 });
 
 export interface PredictionOutput {
@@ -62,7 +62,7 @@ export const TimingWindowSchema = z.object({
   end: z.date(),
   strength: z.number().min(0).max(1),
   description: z.string().optional(),
-  tags: z.array(z.string()).optional()
+  tags: z.array(z.string()).optional(),
 });
 
 export interface PipelineState {

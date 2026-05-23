@@ -1,6 +1,11 @@
-import { LUNAR_INFO, LUNAR_MONTHS, LUNAR_DAYS, ZODIAC } from './constants';
-import { getYearGanZhi, getMonthGanZhi, getDayGanZhi, getHourGanZhi } from './ganzhi';
-import { Tiangan, Dizhi } from './types';
+import { LUNAR_INFO, LUNAR_MONTHS, LUNAR_DAYS, ZODIAC } from "./constants";
+import {
+  getYearGanZhi,
+  getMonthGanZhi,
+  getDayGanZhi,
+  getHourGanZhi,
+} from "./ganzhi";
+import { Tiangan, Dizhi } from "./types";
 
 const BASE_YEAR = 1900;
 const BASE_MONTH = 1;
@@ -15,7 +20,7 @@ const BASE_LUNAR_DAY = 1;
 function getLunarYearDays(year: number): number {
   let sum = 348;
   for (let i = 0x8000; i > 0x8; i >>= 1) {
-    sum += (LUNAR_INFO[year - BASE_YEAR] & i) ? 1 : 0;
+    sum += LUNAR_INFO[year - BASE_YEAR] & i ? 1 : 0;
   }
   return sum + getLeapMonthDays(year);
 }
@@ -25,7 +30,7 @@ function getLunarYearDays(year: number): number {
  */
 function getLeapMonthDays(year: number): number {
   if (getLeapMonth(year)) {
-    return (LUNAR_INFO[year - BASE_YEAR] & 0x10000) ? 30 : 29;
+    return LUNAR_INFO[year - BASE_YEAR] & 0x10000 ? 30 : 29;
   }
   return 0;
 }
@@ -41,7 +46,7 @@ function getLeapMonth(year: number): number {
  * 获取农历某年某月的天数
  */
 function getLunarMonthDays(year: number, month: number): number {
-  return (LUNAR_INFO[year - BASE_YEAR] & (0x10000 >> month)) ? 30 : 29;
+  return LUNAR_INFO[year - BASE_YEAR] & (0x10000 >> month) ? 30 : 29;
 }
 
 /**
@@ -51,41 +56,41 @@ export function solarToLunar(year: number, month: number, day: number) {
   let baseDate = new Date(BASE_YEAR, BASE_MONTH - 1, BASE_DAY);
   let objDate = new Date(year, month - 1, day);
   let offset = Math.floor((objDate.getTime() - baseDate.getTime()) / 86400000);
-  
+
   let temp = 0;
   let lunarYear = BASE_LUNAR_YEAR;
   let lunarMonth = BASE_LUNAR_MONTH;
   let lunarDay = BASE_LUNAR_DAY + offset;
-  
+
   while (lunarDay > (temp = getLunarYearDays(lunarYear))) {
     lunarDay -= temp;
     lunarYear++;
   }
-  
+
   let leap = getLeapMonth(lunarYear);
   let isLeap = false;
-  
+
   for (lunarMonth = 1; lunarMonth < 13; lunarMonth++) {
     let days = 0;
-    if (leap > 0 && lunarMonth === (leap + 1) && !isLeap) {
+    if (leap > 0 && lunarMonth === leap + 1 && !isLeap) {
       lunarMonth--;
       isLeap = true;
       days = getLeapMonthDays(lunarYear);
     } else {
       days = getLunarMonthDays(lunarYear, lunarMonth);
     }
-    
-    if (isLeap && lunarMonth === (leap + 1)) isLeap = false;
-    
+
+    if (isLeap && lunarMonth === leap + 1) isLeap = false;
+
     if (lunarDay <= days) break;
     lunarDay -= days;
   }
-  
+
   return {
     year: lunarYear,
     month: lunarMonth,
     day: lunarDay,
-    isLeapMonth: isLeap
+    isLeapMonth: isLeap,
   };
 }
 
@@ -99,8 +104,11 @@ export function getZodiac(year: number): string {
 /**
  * 获取农历月份名称
  */
-export function getLunarMonthName(month: number, isLeap: boolean = false): string {
-  return (isLeap ? '闰' : '') + LUNAR_MONTHS[month - 1];
+export function getLunarMonthName(
+  month: number,
+  isLeap: boolean = false,
+): string {
+  return (isLeap ? "闰" : "") + LUNAR_MONTHS[month - 1];
 }
 
 /**

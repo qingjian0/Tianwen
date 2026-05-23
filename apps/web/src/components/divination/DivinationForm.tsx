@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Button, RoyalButton } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Card } from '@/components/ui/Card';
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button, RoyalButton } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Card } from "@/components/ui/Card";
 
 interface DivinationFormProps {
   onSubmit: (data: FormData) => void;
@@ -26,23 +26,23 @@ interface FormData {
 }
 
 const divinationMethods = [
-  { id: 'dice', name: '骰子', icon: '🎲', desc: '随机起卦' },
-  { id: 'number', name: '报数', icon: '🔢', desc: '输入数字' },
-  { id: 'double', name: '双数', icon: '⚖️', desc: '两个数字' },
-  { id: 'random', name: '随机', icon: '✨', desc: '系统随机' },
+  { id: "dice", name: "骰子", icon: "🎲", desc: "随机起卦" },
+  { id: "number", name: "报数", icon: "🔢", desc: "输入数字" },
+  { id: "double", name: "双数", icon: "⚖️", desc: "两个数字" },
+  { id: "random", name: "随机", icon: "✨", desc: "系统随机" },
 ];
 
 export const DivinationForm = ({ onSubmit }: DivinationFormProps) => {
-  const [method, setMethod] = useState('dice');
-  const [number1, setNumber1] = useState('');
-  const [number2, setNumber2] = useState('');
-  const [number3, setNumber3] = useState('');
+  const [method, setMethod] = useState("dice");
+  const [number1, setNumber1] = useState("");
+  const [number2, setNumber2] = useState("");
+  const [number3, setNumber3] = useState("");
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [advancedValues, setAdvancedValues] = useState({
-    switchGeneral: 'day',
+    switchGeneral: "day",
     zhongqi: false,
-    dayNight: 'day',
-    harmMethod: 'standard',
+    dayNight: "day",
+    harmMethod: "standard",
   });
   const [isShaking, setIsShaking] = useState(false);
 
@@ -62,7 +62,7 @@ export const DivinationForm = ({ onSubmit }: DivinationFormProps) => {
   const handleSubmit = () => {
     onSubmit({
       time: new Date().toISOString(),
-      location: '',
+      location: "",
       method,
       number1,
       number2,
@@ -74,7 +74,9 @@ export const DivinationForm = ({ onSubmit }: DivinationFormProps) => {
   return (
     <div className="space-y-6">
       <Card variant="default">
-        <h3 className="font-song text-lg font-bold text-text-primary mb-4">起卦方式</h3>
+        <h3 className="font-song text-lg font-bold text-text-primary mb-4">
+          起卦方式
+        </h3>
         <div className="grid grid-cols-2 gap-3">
           {divinationMethods.map((item) => (
             <motion.button
@@ -82,8 +84,8 @@ export const DivinationForm = ({ onSubmit }: DivinationFormProps) => {
               onClick={() => setMethod(item.id)}
               className={`relative p-4 rounded-lg border-2 transition-all duration-300 ${
                 method === item.id
-                  ? 'border-gold bg-gold/10 shadow-gold-glow text-gold'
-                  : 'border-border bg-bg-medium text-text-secondary hover:border-gold/50 hover:bg-bg-light hover:text-gold hover:shadow-gold-glow/50'
+                  ? "border-gold bg-gold/10 shadow-gold-glow text-gold"
+                  : "border-border bg-bg-medium text-text-secondary hover:border-gold/50 hover:bg-bg-light hover:text-gold hover:shadow-gold-glow/50"
               }`}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -91,8 +93,12 @@ export const DivinationForm = ({ onSubmit }: DivinationFormProps) => {
               <div className="flex flex-col items-center gap-2">
                 <span className="text-2xl">{item.icon}</span>
                 <div className="text-left">
-                  <div className="font-kai text-sm font-medium">{item.name}</div>
-                  <div className="text-xs text-text-muted mt-0.5">{item.desc}</div>
+                  <div className="font-kai text-sm font-medium">
+                    {item.name}
+                  </div>
+                  <div className="text-xs text-text-muted mt-0.5">
+                    {item.desc}
+                  </div>
                 </div>
               </div>
               {method === item.id && (
@@ -105,12 +111,14 @@ export const DivinationForm = ({ onSubmit }: DivinationFormProps) => {
 
       <Card variant="default">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-song text-lg font-bold text-text-primary">起卦参数</h3>
-          {method === 'dice' && (
+          <h3 className="font-song text-lg font-bold text-text-primary">
+            起卦参数
+          </h3>
+          {method === "dice" && (
             <RoyalButton
               size="sm"
               onClick={handleDiceRoll}
-              className={isShaking ? 'animate-shake' : ''}
+              className={isShaking ? "animate-shake" : ""}
             >
               🎲 摇卦
             </RoyalButton>
@@ -119,9 +127,27 @@ export const DivinationForm = ({ onSubmit }: DivinationFormProps) => {
 
         <div className="grid grid-cols-3 gap-4">
           {[
-            { value: number1, setValue: setNumber1, label: '上卦', placeholder: '1-9', max: '9' },
-            { value: number2, setValue: setNumber2, label: '下卦', placeholder: '1-9', max: '9' },
-            { value: number3, setValue: setNumber3, label: '动爻', placeholder: '1-6', max: '6' },
+            {
+              value: number1,
+              setValue: setNumber1,
+              label: "上卦",
+              placeholder: "1-9",
+              max: "9",
+            },
+            {
+              value: number2,
+              setValue: setNumber2,
+              label: "下卦",
+              placeholder: "1-9",
+              max: "9",
+            },
+            {
+              value: number3,
+              setValue: setNumber3,
+              label: "动爻",
+              placeholder: "1-6",
+              max: "6",
+            },
           ].map((field, idx) => (
             <motion.div
               key={idx}
@@ -162,19 +188,24 @@ export const DivinationForm = ({ onSubmit }: DivinationFormProps) => {
           {showAdvanced && (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
+              animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
               className="overflow-hidden"
             >
               <div className="pt-4 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs text-text-muted font-kai mb-2 block">换将</label>
+                    <label className="text-xs text-text-muted font-kai mb-2 block">
+                      换将
+                    </label>
                     <select
                       value={advancedValues.switchGeneral}
                       onChange={(e) =>
-                        setAdvancedValues({ ...advancedValues, switchGeneral: e.target.value })
+                        setAdvancedValues({
+                          ...advancedValues,
+                          switchGeneral: e.target.value,
+                        })
                       }
                       className="w-full px-3 py-2.5 bg-bg-medium border border-border rounded-lg text-text-primary focus:outline-none focus:border-gold transition-colors"
                     >
@@ -184,25 +215,37 @@ export const DivinationForm = ({ onSubmit }: DivinationFormProps) => {
                     </select>
                   </div>
                   <div>
-                    <label className="text-xs text-text-muted font-kai mb-2 block">中气</label>
+                    <label className="text-xs text-text-muted font-kai mb-2 block">
+                      中气
+                    </label>
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={advancedValues.zhongqi}
                         onChange={(e) =>
-                          setAdvancedValues({ ...advancedValues, zhongqi: e.target.checked })
+                          setAdvancedValues({
+                            ...advancedValues,
+                            zhongqi: e.target.checked,
+                          })
                         }
                         className="w-4 h-4 rounded border-border bg-bg-medium text-gold focus:ring-gold"
                       />
-                      <span className="text-sm text-text-secondary">启用中气</span>
+                      <span className="text-sm text-text-secondary">
+                        启用中气
+                      </span>
                     </label>
                   </div>
                   <div>
-                    <label className="text-xs text-text-muted font-kai mb-2 block">昼夜</label>
+                    <label className="text-xs text-text-muted font-kai mb-2 block">
+                      昼夜
+                    </label>
                     <select
                       value={advancedValues.dayNight}
                       onChange={(e) =>
-                        setAdvancedValues({ ...advancedValues, dayNight: e.target.value })
+                        setAdvancedValues({
+                          ...advancedValues,
+                          dayNight: e.target.value,
+                        })
                       }
                       className="w-full px-3 py-2.5 bg-bg-medium border border-border rounded-lg text-text-primary focus:outline-none focus:border-gold transition-colors"
                     >
@@ -212,11 +255,16 @@ export const DivinationForm = ({ onSubmit }: DivinationFormProps) => {
                     </select>
                   </div>
                   <div>
-                    <label className="text-xs text-text-muted font-kai mb-2 block">涉害方式</label>
+                    <label className="text-xs text-text-muted font-kai mb-2 block">
+                      涉害方式
+                    </label>
                     <select
                       value={advancedValues.harmMethod}
                       onChange={(e) =>
-                        setAdvancedValues({ ...advancedValues, harmMethod: e.target.value })
+                        setAdvancedValues({
+                          ...advancedValues,
+                          harmMethod: e.target.value,
+                        })
                       }
                       className="w-full px-3 py-2.5 bg-bg-medium border border-border rounded-lg text-text-primary focus:outline-none focus:border-gold transition-colors"
                     >

@@ -1,26 +1,26 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const highFreqModules = [
-  { id: 'liuren', name: '大六壬', icon: '☴', desc: '三传四课，七政三式之首' },
-  { id: 'meihua', name: '梅花易数', icon: '☰', desc: '观梅占数，心易妙法' },
-  { id: 'qimen', name: '奇门遁甲', icon: '☲', desc: '九宫八卦，帝王之学' },
+  { id: "liuren", name: "大六壬", icon: "☴", desc: "三传四课，七政三式之首" },
+  { id: "meihua", name: "梅花易数", icon: "☰", desc: "观梅占数，心易妙法" },
+  { id: "qimen", name: "奇门遁甲", icon: "☲", desc: "九宫八卦，帝王之学" },
 ];
 
 const lowFreqModules = [
-  { id: 'bazi', name: '八字排盘', icon: '☯', desc: '四柱命理，子平之术' },
-  { id: 'fengshui', name: '风水辅助', icon: '☶', desc: '地理风水，方位布局' },
-  { id: 'other', name: '其他术数', icon: '☷', desc: '紫微斗数、六爻纳甲等' },
+  { id: "bazi", name: "八字排盘", icon: "☯", desc: "四柱命理，子平之术" },
+  { id: "fengshui", name: "风水辅助", icon: "☶", desc: "地理风水，方位布局" },
+  { id: "other", name: "其他术数", icon: "☷", desc: "紫微斗数、六爻纳甲等" },
 ];
 
 const historyItems = [
-  { id: 1, module: '大六壬', time: '10分钟前', type: '排盘' },
-  { id: 2, module: '梅花易数', time: '30分钟前', type: '起卦' },
-  { id: 3, module: '奇门遁甲', time: '1小时前', type: '布局' },
+  { id: 1, module: "大六壬", time: "10分钟前", type: "排盘" },
+  { id: 2, module: "梅花易数", time: "30分钟前", type: "起卦" },
+  { id: 3, module: "奇门遁甲", time: "1小时前", type: "布局" },
 ];
 
 const getGanZhi = () => {
@@ -29,10 +29,34 @@ const getGanZhi = () => {
   const month = now.getMonth() + 1;
   const day = now.getDate();
   const hour = now.getHours();
-  
-  const heavenlyStems = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
-  const earthlyBranches = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
-  
+
+  const heavenlyStems = [
+    "甲",
+    "乙",
+    "丙",
+    "丁",
+    "戊",
+    "己",
+    "庚",
+    "辛",
+    "壬",
+    "癸",
+  ];
+  const earthlyBranches = [
+    "子",
+    "丑",
+    "寅",
+    "卯",
+    "辰",
+    "巳",
+    "午",
+    "未",
+    "申",
+    "酉",
+    "戌",
+    "亥",
+  ];
+
   const yearStem = heavenlyStems[(year - 4) % 10];
   const yearBranch = earthlyBranches[(year - 4) % 12];
   const monthStem = heavenlyStems[(month * 2 + 1) % 10];
@@ -41,7 +65,7 @@ const getGanZhi = () => {
   const dayBranch = earthlyBranches[day % 12];
   const hourStem = heavenlyStems[Math.floor((hour + 1) / 2) % 10];
   const hourBranch = earthlyBranches[hour % 12];
-  
+
   return {
     year: `${yearStem}${yearBranch}`,
     month: `${monthStem}${monthBranch}`,
@@ -83,7 +107,7 @@ export const Sidebar = () => {
         initial={{ x: -280 }}
         animate={{ x: isMobileOpen ? 0 : 0 }}
         className={`w-64 bg-bg-dark border-r border-border flex flex-col h-screen sticky top-0 transition-transform duration-300 lg:translate-x-0 ${
-          isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+          isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
         <div className="relative p-5 border-b border-border overflow-hidden">
@@ -94,15 +118,21 @@ export const Sidebar = () => {
               <span className="text-white font-song text-xl font-bold">天</span>
             </div>
             <div>
-              <h1 className="font-song text-xl font-bold text-gradient-gold">天问</h1>
-              <p className="text-xs text-text-muted font-mono tracking-widest">TIANWEN OS</p>
+              <h1 className="font-song text-xl font-bold text-gradient-gold">
+                天问
+              </h1>
+              <p className="text-xs text-text-muted font-mono tracking-widest">
+                TIANWEN OS
+              </p>
             </div>
           </div>
         </div>
 
         <div className="flex-1 overflow-y-auto scrollbar-thin">
           <div className="p-4">
-            <div className="text-xs text-text-muted mb-3 font-kai tracking-wider">高频功能</div>
+            <div className="text-xs text-text-muted mb-3 font-kai tracking-wider">
+              高频功能
+            </div>
             <nav className="space-y-1">
               {highFreqModules.map((item) => (
                 <motion.div
@@ -118,8 +148,8 @@ export const Sidebar = () => {
                     href={`/${item.id}`}
                     className={`flex items-center gap-3 px-3 py-2.5 rounded-sm transition-all duration-200 ${
                       pathname === `/${item.id}`
-                        ? 'bg-gold/10 text-gold border border-gold/30 shadow-gold-glow'
-                        : 'text-text-secondary hover:bg-bg-light hover:text-gold'
+                        ? "bg-gold/10 text-gold border border-gold/30 shadow-gold-glow"
+                        : "text-text-secondary hover:bg-bg-light hover:text-gold"
                     }`}
                   >
                     <span className="text-lg">{item.icon}</span>
@@ -162,7 +192,7 @@ export const Sidebar = () => {
               {expandedLowFreq && (
                 <motion.div
                   initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
+                  animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.2 }}
                   className="overflow-hidden"
@@ -173,7 +203,7 @@ export const Sidebar = () => {
                         key={item.id}
                         href={`/${item.id}`}
                         className="flex items-center gap-3 px-3 py-2 rounded-sm text-text-muted hover:bg-bg-light hover:text-gold transition-all duration-200"
-                        onMouseEnter={() => setHoveredItem('low-' + item.id)}
+                        onMouseEnter={() => setHoveredItem("low-" + item.id)}
                         onMouseLeave={() => setHoveredItem(null)}
                       >
                         <span className="text-base">{item.icon}</span>
@@ -198,7 +228,7 @@ export const Sidebar = () => {
               {expandedHistory && (
                 <motion.div
                   initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
+                  animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.2 }}
                   className="overflow-hidden"
@@ -210,15 +240,21 @@ export const Sidebar = () => {
                         className="flex items-center gap-3 px-3 py-2 rounded-sm hover:bg-bg-light transition-colors cursor-pointer"
                       >
                         <div className="w-6 h-6 rounded-full bg-gold/20 flex items-center justify-center">
-                          <span className="text-xs text-gold">{item.module[0]}</span>
+                          <span className="text-xs text-gold">
+                            {item.module[0]}
+                          </span>
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="text-sm font-kai text-text-secondary truncate">
                             {item.module}
                           </div>
-                          <div className="text-xs text-text-muted">{item.type}</div>
+                          <div className="text-xs text-text-muted">
+                            {item.type}
+                          </div>
                         </div>
-                        <div className="text-xs text-text-muted">{item.time}</div>
+                        <div className="text-xs text-text-muted">
+                          {item.time}
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -236,7 +272,9 @@ export const Sidebar = () => {
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <div className="text-sm font-kai text-text-primary">天机子</div>
-                <div className="px-1.5 py-0.5 bg-gold/20 border border-gold/30 rounded text-xs text-gold font-kai">VIP</div>
+                <div className="px-1.5 py-0.5 bg-gold/20 border border-gold/30 rounded text-xs text-gold font-kai">
+                  VIP
+                </div>
               </div>
               <div className="text-xs text-text-muted font-mono mt-1">
                 {ganZhi.year}年 {ganZhi.month}月 {ganZhi.day}日 {ganZhi.hour}时

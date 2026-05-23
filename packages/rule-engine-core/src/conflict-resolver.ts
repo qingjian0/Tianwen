@@ -3,41 +3,41 @@ import {
   RuleMatchResult,
   RuleExecutionResult,
   RuleContext,
-  RuleEngineConfig
-} from './types';
+  RuleEngineConfig,
+} from "./types";
 import {
   DEFAULT_RULE_ENGINE_CONFIG,
   RULE_PRIORITY_WEIGHTS,
   CLASSIC_SOURCE_WEIGHTS,
   SCHOOL_WEIGHTS,
-  DEFAULT_SOURCE_WEIGHTS
-} from './constants';
+  DEFAULT_SOURCE_WEIGHTS,
+} from "./constants";
 
 // 冲突类型
 export type ConflictType =
-  | 'signal_conflict'      // 信号冲突（正 vs 负）
-  | 'probability_conflict' // 概率调整方向冲突
-  | 'fortune_conflict'     // 吉凶调整方向冲突
-  | 'mutually_exclusive'   // 互斥规则
-  | 'dependency_issue'     // 依赖规则不满足
-  | 'override_relation';   // 覆盖关系
+  | "signal_conflict" // 信号冲突（正 vs 负）
+  | "probability_conflict" // 概率调整方向冲突
+  | "fortune_conflict" // 吉凶调整方向冲突
+  | "mutually_exclusive" // 互斥规则
+  | "dependency_issue" // 依赖规则不满足
+  | "override_relation"; // 覆盖关系
 
 // 冲突详情
 export interface Conflict {
   type: ConflictType;
   rules: string[];
   description: string;
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  severity: "low" | "medium" | "high" | "critical";
 }
 
 // 冲突解决策略
 export type ResolutionStrategy =
-  | 'priority_based'       // 基于优先级
-  | 'source_weight_based'  // 基于来源权重
-  | 'confidence_based'     // 基于置信度
-  | 'consensus_based'      // 基于共识
-  | 'user_override'        // 用户自定义覆盖
-  | 'cancel_all';          // 取消所有冲突规则
+  | "priority_based" // 基于优先级
+  | "source_weight_based" // 基于来源权重
+  | "confidence_based" // 基于置信度
+  | "consensus_based" // 基于共识
+  | "user_override" // 用户自定义覆盖
+  | "cancel_all"; // 取消所有冲突规则
 
 // 冲突解决结果
 export interface ConflictResolutionResult {
@@ -72,7 +72,7 @@ export class RuleConflictResolver {
    */
   detectConflicts(matches: RuleMatchResult[]): Conflict[] {
     const conflicts: Conflict[] = [];
-    const matchedRules = matches.filter(m => m.matched);
+    const matchedRules = matches.filter((m) => m.matched);
 
     if (matchedRules.length < 2) return conflicts;
 
@@ -97,39 +97,51 @@ export class RuleConflictResolver {
   /**
    * 检测信号冲突
    */
-  private detectSignalConflicts(matches: RuleMatchResult[], conflicts: Conflict[]): void {
+  private detectSignalConflicts(
+    matches: RuleMatchResult[],
+    conflicts: Conflict[],
+  ): void {
     const positiveSignals = new Set<string>();
     const negativeSignals = new Set<string>();
-    const ruleSignals = new Map<string, { type: 'positive' | 'negative', rule: Rule }>();
+    const ruleSignals = new Map<
+      string,
+      { type: "positive" | "negative"; rule: Rule }
+    >();
 
     for (const match of matches) {
       for (const effect of match.rule.effects) {
-        if (effect.type === 'signal') {
+        if (effect.type === "signal") {
           const isPositive = this.isSignalPositive(effect);
           if (isPositive) {
             positiveSignals.add(effect.signalId || effect.value.toString());
-            ruleSignals.set(match.rule.metadata.id, { type: 'positive', rule: match.rule });
+            ruleSignals.set(match.rule.metadata.id, {
+              type: "positive",
+              rule: match.rule,
+            });
           } else {
             negativeSignals.add(effect.signalId || effect.value.toString());
-            ruleSignals.set(match.rule.metadata.id, { type: 'negative', rule: match.rule });
+            ruleSignals.set(match.rule.metadata.id, {
+              type: "negative",
+              rule: match.rule,
+            });
           }
         }
       }
     }
 
     const positiveRuleIds = Array.from(ruleSignals.entries())
-      .filter(([_, { type }]) => type === 'positive')
+      .filter(([_, { type }]) => type === "positive")
       .map(([id]) => id);
     const negativeRuleIds = Array.from(ruleSignals.entries())
-      .filter(([_, { type }]) => type === 'negative')
+      .filter(([_, { type }]) => type === "negative")
       .map(([id]) => id);
 
     if (positiveRuleIds.length > 0 && negativeRuleIds.length > 0) {
       conflicts.push({
-        type: 'signal_conflict',
+        type: "signal_conflict",
         rules: [...positiveRuleIds, ...negativeRuleIds],
-        description: '部分规则产生积极信号，部分规则产生消极信号',
-        severity: 'medium'
+        description: "部分规则产生积极信号，部分规则产生消极信号",
+        severity: "medium",
       });
     }
   }
@@ -137,29 +149,41 @@ export class RuleConflictResolver {
   /**
    * 检测概率冲突
    */
-  private detectProbabilityConflicts(matches: RuleMatchResult[], conflicts: Conflict[]): void {
-    const increasingRules = matches.filter(match =>
-      match.rule.effects.some(e =>
-        e.type === 'probability' &&
-        (e.action === 'add' || e.action === 'multiply') &&
-        typeof e.value === 'number' && e.value > 0
-      )
+  private detectProbabilityConflicts(
+    matches: RuleMatchResult[],
+    conflicts: Conflict[],
+  ): void {
+    const increasingRules = matches.filter((match) =>
+      match.rule.effects.some(
+        (e) =>
+          e.type === "probability" &&
+          (e.action === "add" || e.action === "multiply") &&
+          typeof e.value === "number" &&
+          e.value > 0,
+      ),
     );
 
-    const decreasingRules = matches.filter(match =>
-      match.rule.effects.some(e =>
-        e.type === 'probability' &&
-        (e.action === 'subtract' || e.action === 'divide' ||
-          (e.action === 'multiply' && typeof e.value === 'number' && e.value < 1))
-      )
+    const decreasingRules = matches.filter((match) =>
+      match.rule.effects.some(
+        (e) =>
+          e.type === "probability" &&
+          (e.action === "subtract" ||
+            e.action === "divide" ||
+            (e.action === "multiply" &&
+              typeof e.value === "number" &&
+              e.value < 1)),
+      ),
     );
 
     if (increasingRules.length > 0 && decreasingRules.length > 0) {
       conflicts.push({
-        type: 'probability_conflict',
-        rules: [...increasingRules.map(r => r.rule.metadata.id), ...decreasingRules.map(r => r.rule.metadata.id)],
-        description: '部分规则增加概率，部分规则降低概率',
-        severity: 'medium'
+        type: "probability_conflict",
+        rules: [
+          ...increasingRules.map((r) => r.rule.metadata.id),
+          ...decreasingRules.map((r) => r.rule.metadata.id),
+        ],
+        description: "部分规则增加概率，部分规则降低概率",
+        severity: "medium",
       });
     }
   }
@@ -167,29 +191,40 @@ export class RuleConflictResolver {
   /**
    * 检测吉凶冲突
    */
-  private detectFortuneConflicts(matches: RuleMatchResult[], conflicts: Conflict[]): void {
-    const increasingRules = matches.filter(match =>
-      match.rule.effects.some(e =>
-        e.type === 'fortune' &&
-        (e.action === 'add' || e.action === 'multiply') &&
-        typeof e.value === 'number' && e.value > 0
-      )
+  private detectFortuneConflicts(
+    matches: RuleMatchResult[],
+    conflicts: Conflict[],
+  ): void {
+    const increasingRules = matches.filter((match) =>
+      match.rule.effects.some(
+        (e) =>
+          e.type === "fortune" &&
+          (e.action === "add" || e.action === "multiply") &&
+          typeof e.value === "number" &&
+          e.value > 0,
+      ),
     );
 
-    const decreasingRules = matches.filter(match =>
-      match.rule.effects.some(e =>
-        e.type === 'fortune' &&
-        (e.action === 'subtract' ||
-          (e.action === 'multiply' && typeof e.value === 'number' && e.value < 1))
-      )
+    const decreasingRules = matches.filter((match) =>
+      match.rule.effects.some(
+        (e) =>
+          e.type === "fortune" &&
+          (e.action === "subtract" ||
+            (e.action === "multiply" &&
+              typeof e.value === "number" &&
+              e.value < 1)),
+      ),
     );
 
     if (increasingRules.length > 0 && decreasingRules.length > 0) {
       conflicts.push({
-        type: 'fortune_conflict',
-        rules: [...increasingRules.map(r => r.rule.metadata.id), ...decreasingRules.map(r => r.rule.metadata.id)],
-        description: '部分规则增加吉凶分，部分规则降低吉凶分',
-        severity: 'medium'
+        type: "fortune_conflict",
+        rules: [
+          ...increasingRules.map((r) => r.rule.metadata.id),
+          ...decreasingRules.map((r) => r.rule.metadata.id),
+        ],
+        description: "部分规则增加吉凶分，部分规则降低吉凶分",
+        severity: "medium",
       });
     }
   }
@@ -197,19 +232,24 @@ export class RuleConflictResolver {
   /**
    * 检测互斥规则
    */
-  private detectMutuallyExclusiveConflicts(matches: RuleMatchResult[], conflicts: Conflict[]): void {
-    const matchedRuleIds = new Set(matches.map(m => m.rule.metadata.id));
+  private detectMutuallyExclusiveConflicts(
+    matches: RuleMatchResult[],
+    conflicts: Conflict[],
+  ): void {
+    const matchedRuleIds = new Set(matches.map((m) => m.rule.metadata.id));
 
     for (const match of matches) {
       const rule = match.rule;
       if (rule.mutuallyExclusive && rule.mutuallyExclusive.length > 0) {
-        const conflictingIds = rule.mutuallyExclusive.filter(id => matchedRuleIds.has(id));
+        const conflictingIds = rule.mutuallyExclusive.filter((id) =>
+          matchedRuleIds.has(id),
+        );
         if (conflictingIds.length > 0) {
           conflicts.push({
-            type: 'mutually_exclusive',
+            type: "mutually_exclusive",
             rules: [rule.metadata.id, ...conflictingIds],
-            description: `规则 ${rule.metadata.name} 与规则 ${conflictingIds.join(', ')} 互斥`,
-            severity: 'high'
+            description: `规则 ${rule.metadata.name} 与规则 ${conflictingIds.join(", ")} 互斥`,
+            severity: "high",
           });
         }
       }
@@ -219,19 +259,24 @@ export class RuleConflictResolver {
   /**
    * 检测依赖问题
    */
-  private detectDependencyConflicts(matches: RuleMatchResult[], conflicts: Conflict[]): void {
-    const matchedRuleIds = new Set(matches.map(m => m.rule.metadata.id));
+  private detectDependencyConflicts(
+    matches: RuleMatchResult[],
+    conflicts: Conflict[],
+  ): void {
+    const matchedRuleIds = new Set(matches.map((m) => m.rule.metadata.id));
 
     for (const match of matches) {
       const rule = match.rule;
       if (rule.dependsOn && rule.dependsOn.length > 0) {
-        const missingDeps = rule.dependsOn.filter(id => !matchedRuleIds.has(id));
+        const missingDeps = rule.dependsOn.filter(
+          (id) => !matchedRuleIds.has(id),
+        );
         if (missingDeps.length > 0) {
           conflicts.push({
-            type: 'dependency_issue',
+            type: "dependency_issue",
             rules: [rule.metadata.id],
-            description: `规则 ${rule.metadata.name} 缺少依赖规则: ${missingDeps.join(', ')}`,
-            severity: 'low'
+            description: `规则 ${rule.metadata.name} 缺少依赖规则: ${missingDeps.join(", ")}`,
+            severity: "low",
           });
         }
       }
@@ -243,7 +288,7 @@ export class RuleConflictResolver {
    */
   resolveConflicts(
     matches: RuleMatchResult[],
-    strategy: ResolutionStrategy = 'priority_based'
+    strategy: ResolutionStrategy = "priority_based",
   ): ConflictResolutionResult {
     const conflicts = this.detectConflicts(matches);
     const resolvedConflicts: Conflict[] = [];
@@ -253,7 +298,11 @@ export class RuleConflictResolver {
     let resolvedMatches = [...matches];
 
     for (const conflict of conflicts) {
-      const resolution = this.resolveSingleConflict(conflict, resolvedMatches, strategy);
+      const resolution = this.resolveSingleConflict(
+        conflict,
+        resolvedMatches,
+        strategy,
+      );
       if (resolution) {
         resolvedConflicts.push(conflict);
         skippedRuleIds.push(...resolution.skippedRuleIds);
@@ -269,7 +318,7 @@ export class RuleConflictResolver {
       resolvedConflicts,
       skippedRuleIds,
       appliedStrategy: strategy,
-      resolutionDetails
+      resolutionDetails,
     };
   }
 
@@ -279,34 +328,48 @@ export class RuleConflictResolver {
   private resolveSingleConflict(
     conflict: Conflict,
     matches: RuleMatchResult[],
-    strategy: ResolutionStrategy
-  ): { skippedRuleIds: string[]; remainingMatches: RuleMatchResult[]; details: string } | null {
+    strategy: ResolutionStrategy,
+  ): {
+    skippedRuleIds: string[];
+    remainingMatches: RuleMatchResult[];
+    details: string;
+  } | null {
     const conflictRuleIds = new Set(conflict.rules);
-    const conflictMatches = matches.filter(m => conflictRuleIds.has(m.rule.metadata.id));
+    const conflictMatches = matches.filter((m) =>
+      conflictRuleIds.has(m.rule.metadata.id),
+    );
 
     if (conflictMatches.length === 0) return null;
 
     let skippedRuleIds: string[] = [];
     let remainingMatches = [...matches];
-    let details = '';
+    let details = "";
 
     switch (strategy) {
-      case 'priority_based':
-        ({ skippedRuleIds, remainingMatches, details } = this.resolveByPriority(conflictMatches, matches));
+      case "priority_based":
+        ({ skippedRuleIds, remainingMatches, details } = this.resolveByPriority(
+          conflictMatches,
+          matches,
+        ));
         break;
-      case 'source_weight_based':
-        ({ skippedRuleIds, remainingMatches, details } = this.resolveBySourceWeight(conflictMatches, matches));
+      case "source_weight_based":
+        ({ skippedRuleIds, remainingMatches, details } =
+          this.resolveBySourceWeight(conflictMatches, matches));
         break;
-      case 'confidence_based':
-        ({ skippedRuleIds, remainingMatches, details } = this.resolveByConfidence(conflictMatches, matches));
+      case "confidence_based":
+        ({ skippedRuleIds, remainingMatches, details } =
+          this.resolveByConfidence(conflictMatches, matches));
         break;
-      case 'consensus_based':
-        ({ skippedRuleIds, remainingMatches, details } = this.resolveByConsensus(conflictMatches, matches));
+      case "consensus_based":
+        ({ skippedRuleIds, remainingMatches, details } =
+          this.resolveByConsensus(conflictMatches, matches));
         break;
-      case 'cancel_all':
-        skippedRuleIds = conflictMatches.map(m => m.rule.metadata.id);
-        remainingMatches = matches.filter(m => !conflictRuleIds.has(m.rule.metadata.id));
-        details = '取消了所有冲突规则';
+      case "cancel_all":
+        skippedRuleIds = conflictMatches.map((m) => m.rule.metadata.id);
+        remainingMatches = matches.filter(
+          (m) => !conflictRuleIds.has(m.rule.metadata.id),
+        );
+        details = "取消了所有冲突规则";
         break;
       default:
         return null;
@@ -320,8 +383,12 @@ export class RuleConflictResolver {
    */
   private resolveByPriority(
     conflictMatches: RuleMatchResult[],
-    allMatches: RuleMatchResult[]
-  ): { skippedRuleIds: string[]; remainingMatches: RuleMatchResult[]; details: string } {
+    allMatches: RuleMatchResult[],
+  ): {
+    skippedRuleIds: string[];
+    remainingMatches: RuleMatchResult[];
+    details: string;
+  } {
     const sorted = [...conflictMatches].sort((a, b) => {
       const aWeight = RULE_PRIORITY_WEIGHTS[a.rule.metadata.priority];
       const bWeight = RULE_PRIORITY_WEIGHTS[b.rule.metadata.priority];
@@ -329,13 +396,15 @@ export class RuleConflictResolver {
     });
 
     const winner = sorted[0];
-    const skippedRuleIds = sorted.slice(1).map(m => m.rule.metadata.id);
-    const remainingMatches = allMatches.filter(m => !skippedRuleIds.includes(m.rule.metadata.id));
+    const skippedRuleIds = sorted.slice(1).map((m) => m.rule.metadata.id);
+    const remainingMatches = allMatches.filter(
+      (m) => !skippedRuleIds.includes(m.rule.metadata.id),
+    );
 
     return {
       skippedRuleIds,
       remainingMatches,
-      details: `保留优先级最高的规则: ${winner.rule.metadata.name} (${winner.rule.metadata.priority})，跳过: ${skippedRuleIds.join(', ')}`
+      details: `保留优先级最高的规则: ${winner.rule.metadata.name} (${winner.rule.metadata.priority})，跳过: ${skippedRuleIds.join(", ")}`,
     };
   }
 
@@ -344,8 +413,12 @@ export class RuleConflictResolver {
    */
   private resolveBySourceWeight(
     conflictMatches: RuleMatchResult[],
-    allMatches: RuleMatchResult[]
-  ): { skippedRuleIds: string[]; remainingMatches: RuleMatchResult[]; details: string } {
+    allMatches: RuleMatchResult[],
+  ): {
+    skippedRuleIds: string[];
+    remainingMatches: RuleMatchResult[];
+    details: string;
+  } {
     const sorted = [...conflictMatches].sort((a, b) => {
       const aWeight = this.getSourceWeight(a.rule);
       const bWeight = this.getSourceWeight(b.rule);
@@ -353,13 +426,15 @@ export class RuleConflictResolver {
     });
 
     const winner = sorted[0];
-    const skippedRuleIds = sorted.slice(1).map(m => m.rule.metadata.id);
-    const remainingMatches = allMatches.filter(m => !skippedRuleIds.includes(m.rule.metadata.id));
+    const skippedRuleIds = sorted.slice(1).map((m) => m.rule.metadata.id);
+    const remainingMatches = allMatches.filter(
+      (m) => !skippedRuleIds.includes(m.rule.metadata.id),
+    );
 
     return {
       skippedRuleIds,
       remainingMatches,
-      details: `保留来源权重最高的规则: ${winner.rule.metadata.name} (来源: ${winner.rule.metadata.source.name})，跳过: ${skippedRuleIds.join(', ')}`
+      details: `保留来源权重最高的规则: ${winner.rule.metadata.name} (来源: ${winner.rule.metadata.source.name})，跳过: ${skippedRuleIds.join(", ")}`,
     };
   }
 
@@ -368,8 +443,12 @@ export class RuleConflictResolver {
    */
   private resolveByConfidence(
     conflictMatches: RuleMatchResult[],
-    allMatches: RuleMatchResult[]
-  ): { skippedRuleIds: string[]; remainingMatches: RuleMatchResult[]; details: string } {
+    allMatches: RuleMatchResult[],
+  ): {
+    skippedRuleIds: string[];
+    remainingMatches: RuleMatchResult[];
+    details: string;
+  } {
     const sorted = [...conflictMatches].sort((a, b) => {
       const aConfidence = a.rule.confidence || this.config.defaultConfidence;
       const bConfidence = b.rule.confidence || this.config.defaultConfidence;
@@ -377,13 +456,15 @@ export class RuleConflictResolver {
     });
 
     const winner = sorted[0];
-    const skippedRuleIds = sorted.slice(1).map(m => m.rule.metadata.id);
-    const remainingMatches = allMatches.filter(m => !skippedRuleIds.includes(m.rule.metadata.id));
+    const skippedRuleIds = sorted.slice(1).map((m) => m.rule.metadata.id);
+    const remainingMatches = allMatches.filter(
+      (m) => !skippedRuleIds.includes(m.rule.metadata.id),
+    );
 
     return {
       skippedRuleIds,
       remainingMatches,
-      details: `保留置信度最高的规则: ${winner.rule.metadata.name} (${Math.round((winner.rule.confidence || 0.8) * 100)}%)，跳过: ${skippedRuleIds.join(', ')}`
+      details: `保留置信度最高的规则: ${winner.rule.metadata.name} (${Math.round((winner.rule.confidence || 0.8) * 100)}%)，跳过: ${skippedRuleIds.join(", ")}`,
     };
   }
 
@@ -392,25 +473,33 @@ export class RuleConflictResolver {
    */
   private resolveByConsensus(
     conflictMatches: RuleMatchResult[],
-    allMatches: RuleMatchResult[]
-  ): { skippedRuleIds: string[]; remainingMatches: RuleMatchResult[]; details: string } {
-    const ruleIds = conflictMatches.map(m => m.rule.metadata.id);
+    allMatches: RuleMatchResult[],
+  ): {
+    skippedRuleIds: string[];
+    remainingMatches: RuleMatchResult[];
+    details: string;
+  } {
+    const ruleIds = conflictMatches.map((m) => m.rule.metadata.id);
     const skippedRuleIds: string[] = [];
 
     for (const match of conflictMatches) {
       if (match.rule.overrides && match.rule.overrides.length > 0) {
-        const overriddenIds = match.rule.overrides.filter(id => ruleIds.includes(id));
+        const overriddenIds = match.rule.overrides.filter((id) =>
+          ruleIds.includes(id),
+        );
         skippedRuleIds.push(...overriddenIds);
       }
     }
 
     const uniqueSkippedIds = Array.from(new Set(skippedRuleIds));
-    const remainingMatches = allMatches.filter(m => !uniqueSkippedIds.includes(m.rule.metadata.id));
+    const remainingMatches = allMatches.filter(
+      (m) => !uniqueSkippedIds.includes(m.rule.metadata.id),
+    );
 
     return {
       skippedRuleIds: uniqueSkippedIds,
       remainingMatches,
-      details: `根据覆盖关系处理，跳过规则: ${uniqueSkippedIds.join(', ') || '无'}`
+      details: `根据覆盖关系处理，跳过规则: ${uniqueSkippedIds.join(", ") || "无"}`,
     };
   }
 
@@ -445,12 +534,35 @@ export class RuleConflictResolver {
   /**
    * 检查信号是否为积极
    */
-  private isSignalPositive(effect: { signalId?: string; value: number | string }): boolean {
+  private isSignalPositive(effect: {
+    signalId?: string;
+    value: number | string;
+  }): boolean {
     const signalId = effect.signalId || effect.value.toString();
     const lowerId = signalId.toLowerCase();
 
-    const positiveKeywords = ['good', 'great', 'best', 'fortune', 'lucky', 'success', 'win', 'positive', 'better'];
-    const negativeKeywords = ['bad', 'danger', 'worst', 'risk', 'warning', 'fail', 'lose', 'negative', 'worse'];
+    const positiveKeywords = [
+      "good",
+      "great",
+      "best",
+      "fortune",
+      "lucky",
+      "success",
+      "win",
+      "positive",
+      "better",
+    ];
+    const negativeKeywords = [
+      "bad",
+      "danger",
+      "worst",
+      "risk",
+      "warning",
+      "fail",
+      "lose",
+      "negative",
+      "worse",
+    ];
 
     for (const keyword of positiveKeywords) {
       if (lowerId.includes(keyword)) return true;

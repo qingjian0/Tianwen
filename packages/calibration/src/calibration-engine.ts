@@ -2,13 +2,17 @@
  * Calibration Engine - 概率校准引擎
  */
 
-import { RuleCalibrationData, CalibrationConfig, CalibrationResult } from './types';
+import {
+  RuleCalibrationData,
+  CalibrationConfig,
+  CalibrationResult,
+} from "./types";
 
 const DEFAULT_CONFIG: CalibrationConfig = {
   learningRate: 0.1,
   minConfidence: 0.1,
   maxConfidence: 0.99,
-  decayFactor: 0.99
+  decayFactor: 0.99,
 };
 
 export class CalibrationEngine {
@@ -28,7 +32,7 @@ export class CalibrationEngine {
         correctMatches: 0,
         incorrectMatches: 0,
         historicalConfidence: 0.5,
-        currentConfidence: 0.5
+        currentConfidence: 0.5,
       };
     }
 
@@ -53,22 +57,26 @@ export class CalibrationEngine {
 
     for (const data of this.calibrationData.values()) {
       const oldConfidence = data.currentConfidence;
-      const accuracy = data.totalMatches > 0 
-        ? data.correctMatches / data.totalMatches 
-        : 0.5;
+      const accuracy =
+        data.totalMatches > 0 ? data.correctMatches / data.totalMatches : 0.5;
 
       const adjustment = (accuracy - oldConfidence) * this.config.learningRate;
       let newConfidence = oldConfidence + adjustment;
 
-      newConfidence = Math.max(this.config.minConfidence, Math.min(this.config.maxConfidence, newConfidence));
-      
-      data.historicalConfidence = data.historicalConfidence * this.config.decayFactor + oldConfidence * (1 - this.config.decayFactor);
+      newConfidence = Math.max(
+        this.config.minConfidence,
+        Math.min(this.config.maxConfidence, newConfidence),
+      );
+
+      data.historicalConfidence =
+        data.historicalConfidence * this.config.decayFactor +
+        oldConfidence * (1 - this.config.decayFactor);
       data.currentConfidence = newConfidence;
 
       adjustedRules.push({
         ruleId: data.ruleId,
         oldConfidence,
-        newConfidence
+        newConfidence,
       });
 
       totalAccuracy += accuracy;
@@ -77,7 +85,7 @@ export class CalibrationEngine {
 
     return {
       overallAccuracy: count > 0 ? totalAccuracy / count : 0.5,
-      adjustedRules
+      adjustedRules,
     };
   }
 

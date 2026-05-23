@@ -13,7 +13,7 @@ import {
   ContradictionHandleResult,
   CognitiveExecutionResult,
   InferenceNodeType,
-} from './types';
+} from "./types";
 
 export class CognitiveEngine {
   private traces: Map<string, InferenceTrace> = new Map();
@@ -38,21 +38,32 @@ export class CognitiveEngine {
     const initialState = this.createInitialState(context);
     trace.nodes.set(initialState.stateId, {
       nodeId: initialState.stateId,
-      type: 'state_transition',
-      label: 'Initial State',
+      type: "state_transition",
+      label: "Initial State",
       content: context.input,
       sources: [],
       timestamp: Date.now(),
     });
 
     const signalNodes = await this.extractSignals(context, trace);
-    trace.rootSignals = signalNodes.map(n => n.nodeId);
+    trace.rootSignals = signalNodes.map((n) => n.nodeId);
 
-    const reasoningNodes = await this.performSymbolicReasoning(signalNodes, trace);
+    const reasoningNodes = await this.performSymbolicReasoning(
+      signalNodes,
+      trace,
+    );
 
-    const temporalNodes = await this.propagateTemporal(signalNodes, reasoningNodes, context, trace);
+    const temporalNodes = await this.propagateTemporal(
+      signalNodes,
+      reasoningNodes,
+      context,
+      trace,
+    );
 
-    const hypothesisNodes = await this.generateEventHypotheses(temporalNodes, trace);
+    const hypothesisNodes = await this.generateEventHypotheses(
+      temporalNodes,
+      trace,
+    );
 
     const conflictResults = await this.handleContradictions(trace);
 
@@ -60,7 +71,7 @@ export class CognitiveEngine {
 
     const conclusions = await this.deriveConclusions(trace);
 
-    trace.conclusions = conclusions.map(c => c.nodeId);
+    trace.conclusions = conclusions.map((c) => c.nodeId);
 
     this.traces.set(traceId, trace);
     this.states.set(initialState.stateId, initialState);
@@ -82,9 +93,9 @@ export class CognitiveEngine {
     const stateId = this.generateStateId();
     const properties = new Map<string, any>();
 
-    properties.set('input', context.input);
-    properties.set('signalCount', context.signals?.length || 0);
-    properties.set('ruleCount', context.rules?.length || 0);
+    properties.set("input", context.input);
+    properties.set("signalCount", context.signals?.length || 0);
+    properties.set("ruleCount", context.rules?.length || 0);
 
     return {
       stateId,
@@ -96,7 +107,7 @@ export class CognitiveEngine {
 
   private async extractSignals(
     context: ReasoningContext,
-    trace: InferenceTrace
+    trace: InferenceTrace,
   ): Promise<InferenceNode[]> {
     const signalNodes: InferenceNode[] = [];
     const signals = context.signals || [];
@@ -107,7 +118,7 @@ export class CognitiveEngine {
 
       const node: InferenceNode = {
         nodeId,
-        type: 'signal',
+        type: "signal",
         label: `Signal ${i + 1}`,
         content: signal,
         sources: [],
@@ -125,7 +136,7 @@ export class CognitiveEngine {
         edgeId: `edge_${nodeId}_to_state`,
         from: nodeId,
         to: Array.from(trace.nodes.keys())[0],
-        relation: 'causes',
+        relation: "causes",
         weight: signal.weight || 0.5,
       });
     }
@@ -135,7 +146,7 @@ export class CognitiveEngine {
 
   private async performSymbolicReasoning(
     signalNodes: InferenceNode[],
-    trace: InferenceTrace
+    trace: InferenceTrace,
   ): Promise<InferenceNode[]> {
     const reasoningNodes: InferenceNode[] = [];
 
@@ -145,14 +156,17 @@ export class CognitiveEngine {
       if (relatedSignals.length < 2) continue;
 
       const nodeId = `reasoning_${symbol}_${Date.now()}`;
-      const reasoningContent = this.deriveSymbolicRelation(symbol, relatedSignals);
+      const reasoningContent = this.deriveSymbolicRelation(
+        symbol,
+        relatedSignals,
+      );
 
       const node: InferenceNode = {
         nodeId,
-        type: 'symbolic_reasoning',
+        type: "symbolic_reasoning",
         label: `Symbolic reasoning: ${symbol}`,
         content: reasoningContent,
-        sources: relatedSignals.map(s => s.nodeId),
+        sources: relatedSignals.map((s) => s.nodeId),
         timestamp: Date.now(),
         metadata: {
           symbol,
@@ -169,7 +183,7 @@ export class CognitiveEngine {
           edgeId: `edge_${signal.nodeId}_to_${nodeId}`,
           from: signal.nodeId,
           to: nodeId,
-          relation: 'supports',
+          relation: "supports",
           weight: 0.8,
         });
       }
@@ -178,12 +192,14 @@ export class CognitiveEngine {
     return reasoningNodes;
   }
 
-  private buildSymbolicMap(signalNodes: InferenceNode[]): Map<string, InferenceNode[]> {
+  private buildSymbolicMap(
+    signalNodes: InferenceNode[],
+  ): Map<string, InferenceNode[]> {
     const symbolMap = new Map<string, InferenceNode[]>();
 
     for (const signal of signalNodes) {
       const symbols = this.extractSymbols(signal.content);
-      
+
       for (const symbol of symbols) {
         if (!symbolMap.has(symbol)) {
           symbolMap.set(symbol, []);
@@ -197,13 +213,13 @@ export class CognitiveEngine {
 
   private extractSymbols(content: any): string[] {
     const symbols: string[] = [];
-    
-    if (typeof content === 'string') {
+
+    if (typeof content === "string") {
       const matches = content.match(/[天干地支五行八卦]/g);
       if (matches) {
         symbols.push(...matches);
       }
-    } else if (typeof content === 'object' && content !== null) {
+    } else if (typeof content === "object" && content !== null) {
       if (content.type) symbols.push(content.type);
       if (content.element) symbols.push(content.element);
       if (content.wuxing) symbols.push(content.wuxing);
@@ -214,24 +230,24 @@ export class CognitiveEngine {
 
   private deriveSymbolicRelation(
     symbol: string,
-    signals: InferenceNode[]
+    signals: InferenceNode[],
   ): { relation: string; confidence: number; derived: any } {
-    const signalContents = signals.map(s => s.content);
-    
-    let relation = 'unknown';
+    const signalContents = signals.map((s) => s.content);
+
+    let relation = "unknown";
     let confidence = 0.5;
     let derived: any = {};
 
     if (symbol.match(/[木火土金水]/)) {
-      relation = 'wuxing_relation';
+      relation = "wuxing_relation";
       derived = { element: symbol, wuxing: true };
       confidence = this.calculateWuxingConfidence(signalContents);
     } else if (symbol.match(/[甲乙丙丁戊己庚辛壬癸]/)) {
-      relation = 'tiangan_relation';
+      relation = "tiangan_relation";
       derived = { tiangan: symbol };
       confidence = 0.7;
     } else if (symbol.match(/[子丑寅卯辰巳午未申酉戌亥]/)) {
-      relation = 'dizhi_relation';
+      relation = "dizhi_relation";
       derived = { dizhi: symbol };
       confidence = 0.7;
     }
@@ -241,7 +257,7 @@ export class CognitiveEngine {
 
   private calculateWuxingConfidence(contents: any[]): number {
     let supportiveCount = 0;
-    
+
     for (const content of contents) {
       if (content.wuxing || content.element) {
         supportiveCount++;
@@ -255,24 +271,25 @@ export class CognitiveEngine {
     signalNodes: InferenceNode[],
     reasoningNodes: InferenceNode[],
     context: ReasoningContext,
-    trace: InferenceTrace
+    trace: InferenceTrace,
   ): Promise<InferenceNode[]> {
     const temporalNodes: InferenceNode[] = [];
     const sourceNodes = [...signalNodes, ...reasoningNodes];
 
     const wuxingSequence = this.extractWuxingSequence(sourceNodes);
-    
+
     if (wuxingSequence.length > 0) {
       const nodeId = `temporal_${Date.now()}`;
-      
-      const temporalPropagation = this.propagateThroughWuxingCycle(wuxingSequence);
+
+      const temporalPropagation =
+        this.propagateThroughWuxingCycle(wuxingSequence);
 
       const node: InferenceNode = {
         nodeId,
-        type: 'temporal_propagation',
-        label: 'Temporal Propagation',
+        type: "temporal_propagation",
+        label: "Temporal Propagation",
         content: temporalPropagation,
-        sources: sourceNodes.map(n => n.nodeId),
+        sources: sourceNodes.map((n) => n.nodeId),
         timestamp: Date.now(),
         metadata: {
           sequence: wuxingSequence,
@@ -288,14 +305,18 @@ export class CognitiveEngine {
           edgeId: `edge_${sourceNode.nodeId}_to_${nodeId}`,
           from: sourceNode.nodeId,
           to: nodeId,
-          relation: 'temporal',
+          relation: "temporal",
           weight: 0.6,
         });
       }
     }
 
     if (context.temporal) {
-      const historicalNode = await this.inheritFromHistory(context.temporal, sourceNodes, trace);
+      const historicalNode = await this.inheritFromHistory(
+        context.temporal,
+        sourceNodes,
+        trace,
+      );
       if (historicalNode) {
         temporalNodes.push(historicalNode);
       }
@@ -310,7 +331,7 @@ export class CognitiveEngine {
     for (const node of nodes) {
       const symbols = this.extractSymbols(node.content);
       for (const symbol of symbols) {
-        if (['木', '火', '土', '金', '水'].includes(symbol)) {
+        if (["木", "火", "土", "金", "水"].includes(symbol)) {
           sequence.push(symbol);
         }
       }
@@ -324,14 +345,14 @@ export class CognitiveEngine {
     relationships: Array<{ from: string; to: string; type: string }>;
     propagatedState: any;
   } {
-    const wuxingCycle = ['木', '火', '土', '金', '水'];
+    const wuxingCycle = ["木", "火", "土", "金", "水"];
     const relationships: Array<{ from: string; to: string; type: string }> = [];
 
     for (let i = 0; i < sequence.length - 1; i++) {
       const current = sequence[i];
       const next = sequence[i + 1];
       const relationType = this.getWuxingRelation(current, next, wuxingCycle);
-      
+
       relationships.push({ from: current, to: next, type: relationType });
     }
 
@@ -351,12 +372,12 @@ export class CognitiveEngine {
     const toIdx = cycle.indexOf(to);
 
     const nextIdx = (fromIdx + 1) % cycle.length;
-    if (toIdx === nextIdx) return 'sheng';
+    if (toIdx === nextIdx) return "sheng";
 
     const prevIdx = (fromIdx - 1 + cycle.length) % cycle.length;
-    if (toIdx === prevIdx) return 'ke';
+    if (toIdx === prevIdx) return "ke";
 
-    return 'neutral';
+    return "neutral";
   }
 
   private calculateWuxingBalance(sequence: string[]): number {
@@ -373,9 +394,9 @@ export class CognitiveEngine {
   }
 
   private determineWuxingDirection(sequence: string[]): string {
-    if (sequence.length < 2) return 'neutral';
+    if (sequence.length < 2) return "neutral";
 
-    const wuxingCycle = ['木', '火', '土', '金', '水'];
+    const wuxingCycle = ["木", "火", "土", "金", "水"];
     let shengCount = 0;
 
     for (let i = 0; i < sequence.length - 1; i++) {
@@ -385,13 +406,13 @@ export class CognitiveEngine {
       if (wuxingCycle[nextIdx] === next) shengCount++;
     }
 
-    return shengCount > sequence.length / 2 ? 'expanding' : 'contracting';
+    return shengCount > sequence.length / 2 ? "expanding" : "contracting";
   }
 
   private async inheritFromHistory(
     temporal: any,
     sourceNodes: InferenceNode[],
-    trace: InferenceTrace
+    trace: InferenceTrace,
   ): Promise<InferenceNode | null> {
     if (!temporal.pastStates || temporal.pastStates.length === 0) {
       return null;
@@ -401,14 +422,19 @@ export class CognitiveEngine {
 
     const inheritance = {
       inheritedFrom: temporal.pastStates.length,
-      inheritedProperties: this.extractInheritableProperties(temporal.pastStates),
-      resonance: this.calculateHistoricalResonance(temporal.pastStates, sourceNodes),
+      inheritedProperties: this.extractInheritableProperties(
+        temporal.pastStates,
+      ),
+      resonance: this.calculateHistoricalResonance(
+        temporal.pastStates,
+        sourceNodes,
+      ),
     };
 
     const node: InferenceNode = {
       nodeId,
-      type: 'temporal_propagation',
-      label: 'Historical Inheritance',
+      type: "temporal_propagation",
+      label: "Historical Inheritance",
       content: inheritance,
       sources: temporal.pastStates.map((s: SymbolicState) => s.stateId),
       timestamp: Date.now(),
@@ -422,7 +448,7 @@ export class CognitiveEngine {
         edgeId: `edge_history_${sourceNode.nodeId}`,
         from: sourceNode.nodeId,
         to: nodeId,
-        relation: 'temporal',
+        relation: "temporal",
         weight: inheritance.resonance,
       });
     }
@@ -435,7 +461,7 @@ export class CognitiveEngine {
 
     for (const state of pastStates) {
       for (const key of state.properties.keys()) {
-        if (!['input', 'signalCount'].includes(key)) {
+        if (!["input", "signalCount"].includes(key)) {
           properties.add(key);
         }
       }
@@ -446,7 +472,7 @@ export class CognitiveEngine {
 
   private calculateHistoricalResonance(
     pastStates: SymbolicState[],
-    currentNodes: InferenceNode[]
+    currentNodes: InferenceNode[],
   ): number {
     let totalResonance = 0;
 
@@ -458,14 +484,17 @@ export class CognitiveEngine {
       }
     }
 
-    return pastStates.length > 0 
+    return pastStates.length > 0
       ? totalResonance / (pastStates.length * currentNodes.length)
       : 0;
   }
 
   private hasPropertyResonance(state: SymbolicState, content: any): boolean {
     for (const [key, value] of state.properties.entries()) {
-      if (typeof value === 'object' && JSON.stringify(value) === JSON.stringify(content)) {
+      if (
+        typeof value === "object" &&
+        JSON.stringify(value) === JSON.stringify(content)
+      ) {
         return true;
       }
     }
@@ -474,7 +503,7 @@ export class CognitiveEngine {
 
   private async generateEventHypotheses(
     temporalNodes: InferenceNode[],
-    trace: InferenceTrace
+    trace: InferenceTrace,
   ): Promise<InferenceNode[]> {
     const hypothesisNodes: InferenceNode[] = [];
 
@@ -482,14 +511,15 @@ export class CognitiveEngine {
       const content = temporalNode.content;
 
       if (content.propagatedState) {
-        const probabilityDistribution = this.generateProbabilityDistribution(content);
+        const probabilityDistribution =
+          this.generateProbabilityDistribution(content);
 
         const nodeId = `hypothesis_${temporalNode.nodeId}_${Date.now()}`;
 
         const node: InferenceNode = {
           nodeId,
-          type: 'event_hypothesis',
-          label: 'Event Hypothesis',
+          type: "event_hypothesis",
+          label: "Event Hypothesis",
           content: probabilityDistribution,
           sources: [temporalNode.nodeId],
           timestamp: Date.now(),
@@ -505,7 +535,7 @@ export class CognitiveEngine {
           edgeId: `edge_${temporalNode.nodeId}_to_${nodeId}`,
           from: temporalNode.nodeId,
           to: nodeId,
-          relation: 'derived',
+          relation: "derived",
           weight: 0.7,
         });
 
@@ -518,36 +548,45 @@ export class CognitiveEngine {
 
   private generateProbabilityDistribution(content: any): {
     baseProbability: number;
-    scenarios: Array<{ scenario: string; probability: number; conditions: string[] }>;
+    scenarios: Array<{
+      scenario: string;
+      probability: number;
+      conditions: string[];
+    }>;
     confidence: number;
   } {
-    const scenarios: Array<{ scenario: string; probability: number; conditions: string[] }> = [];
+    const scenarios: Array<{
+      scenario: string;
+      probability: number;
+      conditions: string[];
+    }> = [];
 
     if (content.propagatedState) {
       const { balance, direction, totalEnergy } = content.propagatedState;
 
       scenarios.push({
-        scenario: 'favorable',
+        scenario: "favorable",
         probability: balance * (totalEnergy / 100),
-        conditions: ['balance > 0.5', 'energy > 30'],
+        conditions: ["balance > 0.5", "energy > 30"],
       });
 
       scenarios.push({
-        scenario: 'challenging',
+        scenario: "challenging",
         probability: (1 - balance) * (1 - totalEnergy / 100),
-        conditions: ['balance < 0.5', 'energy < 30'],
+        conditions: ["balance < 0.5", "energy < 30"],
       });
 
       scenarios.push({
-        scenario: 'neutral',
+        scenario: "neutral",
         probability: Math.abs(balance - 0.5) * 0.5,
-        conditions: ['balance around 0.5'],
+        conditions: ["balance around 0.5"],
       });
     }
 
     const totalProb = scenarios.reduce((sum, s) => sum + s.probability, 0);
     for (const scenario of scenarios) {
-      scenario.probability = totalProb > 0 ? scenario.probability / totalProb : 1 / scenarios.length;
+      scenario.probability =
+        totalProb > 0 ? scenario.probability / totalProb : 1 / scenarios.length;
     }
 
     return {
@@ -557,11 +596,13 @@ export class CognitiveEngine {
     };
   }
 
-  private async handleContradictions(trace: InferenceTrace): Promise<ContradictionHandleResult> {
+  private async handleContradictions(
+    trace: InferenceTrace,
+  ): Promise<ContradictionHandleResult> {
     const contradictions: Array<{ nodeA: string; nodeB: string }> = [];
 
     const nodes = Array.from(trace.nodes.values());
-    
+
     for (let i = 0; i < nodes.length; i++) {
       for (let j = i + 1; j < nodes.length; j++) {
         if (this.areNodesContradictory(nodes[i], nodes[j])) {
@@ -574,10 +615,10 @@ export class CognitiveEngine {
     }
 
     if (contradictions.length === 0) {
-      return { resolved: true, strategy: 'none' };
+      return { resolved: true, strategy: "none" };
     }
 
-    trace.contradictions = contradictions.map(c => ({
+    trace.contradictions = contradictions.map((c) => ({
       ...c,
       resolution: this.resolveContradiction(c, trace),
     }));
@@ -587,17 +628,20 @@ export class CognitiveEngine {
       return hierarchical;
     }
 
-    return { resolved: false, strategy: 'none', ...contradictions[0] };
+    return { resolved: false, strategy: "none", ...contradictions[0] };
   }
 
-  private areNodesContradictory(nodeA: InferenceNode, nodeB: InferenceNode): boolean {
-    if (nodeA.type === 'signal' && nodeB.type === 'signal') {
+  private areNodesContradictory(
+    nodeA: InferenceNode,
+    nodeB: InferenceNode,
+  ): boolean {
+    if (nodeA.type === "signal" && nodeB.type === "signal") {
       const contentA = nodeA.content;
       const contentB = nodeB.content;
 
-      if (typeof contentA === 'object' && typeof contentB === 'object') {
+      if (typeof contentA === "object" && typeof contentB === "object") {
         if (contentA.wuxing && contentB.wuxing) {
-          const cycle = ['木', '火', '土', '金', '水'];
+          const cycle = ["木", "火", "土", "金", "水"];
           const idxA = cycle.indexOf(contentA.wuxing);
           const idxB = cycle.indexOf(contentB.wuxing);
 
@@ -615,12 +659,12 @@ export class CognitiveEngine {
 
   private resolveContradiction(
     contradiction: { nodeA: string; nodeB: string },
-    trace: InferenceTrace
+    trace: InferenceTrace,
   ): string {
     const nodeA = trace.nodes.get(contradiction.nodeA);
     const nodeB = trace.nodes.get(contradiction.nodeB);
 
-    if (!nodeA || !nodeB) return 'unknown';
+    if (!nodeA || !nodeB) return "unknown";
 
     if ((nodeA.metadata?.weight || 0.5) > (nodeB.metadata?.weight || 0.5)) {
       return `Node ${nodeA.nodeId} wins due to higher weight`;
@@ -634,22 +678,22 @@ export class CognitiveEngine {
       return `Node ${nodeA.nodeId} wins due to recency`;
     }
 
-    return 'No clear resolution';
+    return "No clear resolution";
   }
 
   private resolveByHierarchy(
     contradictions: Array<{ nodeA: string; nodeB: string }>,
-    trace: InferenceTrace
+    trace: InferenceTrace,
   ): ContradictionHandleResult {
     const priorityOrder: InferenceNodeType[] = [
-      'state_transition',
-      'temporal_propagation',
-      'symbolic_reasoning',
-      'event_hypothesis',
-      'signal',
-      'confidence_update',
-      'contradiction',
-      'conclusion',
+      "state_transition",
+      "temporal_propagation",
+      "symbolic_reasoning",
+      "event_hypothesis",
+      "signal",
+      "confidence_update",
+      "contradiction",
+      "conclusion",
     ];
 
     for (const contradiction of contradictions) {
@@ -664,7 +708,7 @@ export class CognitiveEngine {
       if (priorityA < priorityB) {
         return {
           resolved: true,
-          strategy: 'hierarchical',
+          strategy: "hierarchical",
           winner: nodeA.nodeId,
           loser: nodeB.nodeId,
           resolution: `Node ${nodeA.type} takes precedence over ${nodeB.type}`,
@@ -672,7 +716,7 @@ export class CognitiveEngine {
       } else if (priorityB < priorityA) {
         return {
           resolved: true,
-          strategy: 'hierarchical',
+          strategy: "hierarchical",
           winner: nodeB.nodeId,
           loser: nodeA.nodeId,
           resolution: `Node ${nodeB.type} takes precedence over ${nodeA.type}`,
@@ -680,10 +724,12 @@ export class CognitiveEngine {
       }
     }
 
-    return { resolved: false, strategy: 'hierarchical' };
+    return { resolved: false, strategy: "hierarchical" };
   }
 
-  private async updateConfidence(trace: InferenceTrace): Promise<ConfidenceUpdate[]> {
+  private async updateConfidence(
+    trace: InferenceTrace,
+  ): Promise<ConfidenceUpdate[]> {
     const updates: ConfidenceUpdate[] = [];
     const nodes = Array.from(trace.nodes.values());
 
@@ -691,7 +737,7 @@ export class CognitiveEngine {
       let newConfidence = node.metadata?.weight || 0.5;
 
       for (const edge of trace.edges) {
-        if (edge.to === node.nodeId && edge.relation === 'supports') {
+        if (edge.to === node.nodeId && edge.relation === "supports") {
           const sourceNode = trace.nodes.get(edge.from);
           if (sourceNode) {
             newConfidence *= sourceNode.metadata?.weight || 0.5;
@@ -705,7 +751,7 @@ export class CognitiveEngine {
         nodeId: node.nodeId,
         oldConfidence: node.metadata?.weight || 0.5,
         newConfidence,
-        reason: 'Propagation from supporting nodes',
+        reason: "Propagation from supporting nodes",
         propagation: true,
       });
 
@@ -715,10 +761,12 @@ export class CognitiveEngine {
     return updates;
   }
 
-  private async deriveConclusions(trace: InferenceTrace): Promise<InferenceNode[]> {
+  private async deriveConclusions(
+    trace: InferenceTrace,
+  ): Promise<InferenceNode[]> {
     const conclusions: InferenceNode[] = [];
     const hypothesisNodes = Array.from(trace.nodes.values()).filter(
-      n => n.type === 'event_hypothesis'
+      (n) => n.type === "event_hypothesis",
     );
 
     if (hypothesisNodes.length === 0) return conclusions;
@@ -729,10 +777,10 @@ export class CognitiveEngine {
 
     const conclusion: InferenceNode = {
       nodeId,
-      type: 'conclusion',
-      label: 'Final Conclusion',
+      type: "conclusion",
+      label: "Final Conclusion",
       content: aggregated,
-      sources: hypothesisNodes.map(n => n.nodeId),
+      sources: hypothesisNodes.map((n) => n.nodeId),
       timestamp: Date.now(),
       metadata: {
         aggregatedProbability: aggregated.probability,
@@ -749,7 +797,7 @@ export class CognitiveEngine {
         edgeId: `edge_${hypothesis.nodeId}_to_conclusion`,
         from: hypothesis.nodeId,
         to: nodeId,
-        relation: 'supports',
+        relation: "supports",
         weight: hypothesis.metadata?.weight || 0.5,
       });
     }
@@ -771,18 +819,22 @@ export class CognitiveEngine {
       const content = node.content;
       if (content.scenarios) {
         for (const scenario of content.scenarios) {
-          scenarios[scenario.scenario] = (scenarios[scenario.scenario] || 0) + scenario.probability;
+          scenarios[scenario.scenario] =
+            (scenarios[scenario.scenario] || 0) + scenario.probability;
         }
       }
 
-      totalConfidence += (node.metadata?.confidence || 0.5) * (node.metadata?.weight || 0.5);
+      totalConfidence +=
+        (node.metadata?.confidence || 0.5) * (node.metadata?.weight || 0.5);
       totalWeight += node.metadata?.weight || 0.5;
     }
 
     const avgConfidence = totalWeight > 0 ? totalConfidence / totalWeight : 0.5;
     const probability = Object.values(scenarios)[0] || 0.5;
 
-    const dominantScenario = Object.entries(scenarios).sort((a, b) => b[1] - a[1])[0];
+    const dominantScenario = Object.entries(scenarios).sort(
+      (a, b) => b[1] - a[1],
+    )[0];
 
     return {
       probability,
@@ -797,18 +849,21 @@ export class CognitiveEngine {
     const properties = new Map<string, any>();
 
     const conclusionNodes = Array.from(trace.nodes.values()).filter(
-      n => n.type === 'conclusion'
+      (n) => n.type === "conclusion",
     );
 
     if (conclusionNodes.length > 0) {
       const finalConclusion = conclusionNodes[conclusionNodes.length - 1];
-      properties.set('conclusion', finalConclusion.content);
-      properties.set('probability', finalConclusion.metadata?.aggregatedProbability);
+      properties.set("conclusion", finalConclusion.content);
+      properties.set(
+        "probability",
+        finalConclusion.metadata?.aggregatedProbability,
+      );
     }
 
-    properties.set('nodeCount', trace.nodes.size);
-    properties.set('edgeCount', trace.edges.length);
-    properties.set('contradictionCount', trace.contradictions.length);
+    properties.set("nodeCount", trace.nodes.size);
+    properties.set("edgeCount", trace.edges.length);
+    properties.set("contradictionCount", trace.contradictions.length);
 
     return {
       stateId,

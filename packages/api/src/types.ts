@@ -14,17 +14,17 @@ export interface ApiResponse<T = any> {
 
 export interface PredictionRequest {
   question: string;
-  category: 'wealth' | 'career' | 'love' | 'market' | string;
-  system: 'meihua' | 'liuyao' | 'bazi' | 'qimen' | 'ziwei' | 'fusion';
-  mode: 'single' | 'batch';
+  category: "wealth" | "career" | "love" | "market" | string;
+  system: "meihua" | "liuyao" | "bazi" | "qimen" | "ziwei" | "fusion";
+  mode: "single" | "batch";
   timestamp?: string;
   birthInfo?: {
     year: number;
     month: number;
     day: number;
     hour: number;
-    gender: 'male' | 'female';
-    calendar: 'solar' | 'lunar';
+    gender: "male" | "female";
+    calendar: "solar" | "lunar";
   };
   options?: {
     enableCache?: boolean;
@@ -35,7 +35,7 @@ export interface PredictionRequest {
 
 export interface PredictionResponse {
   id: string;
-  status: 'processing' | 'completed' | 'failed';
+  status: "processing" | "completed" | "failed";
   submittedAt: string;
   estimatedCompletion?: string;
   output?: PredictionOutput;
@@ -49,7 +49,7 @@ export interface PredictionOutput {
     confidence: number;
   };
   fortune: {
-    level: '大吉' | '吉' | '中吉' | '平' | '小凶' | '凶' | '大凶';
+    level: "大吉" | "吉" | "中吉" | "平" | "小凶" | "凶" | "大凶";
     score: number;
     description: string;
   };
@@ -69,7 +69,7 @@ export interface SignalData {
   name: string;
   value: string;
   confidence: number;
-  polarity?: 'positive' | 'negative' | 'neutral';
+  polarity?: "positive" | "negative" | "neutral";
 }
 
 export interface RuleData {
@@ -166,7 +166,7 @@ export interface EffectInfo {
 }
 
 export interface HealthCheckResponse {
-  status: 'healthy' | 'degraded' | 'unhealthy';
+  status: "healthy" | "degraded" | "unhealthy";
   version: string;
   uptime: number;
   services: {
@@ -190,7 +190,7 @@ export interface VersionResponse {
 
 // WebSocket 消息类型
 export interface WebSocketMessage {
-  channel: 'predictions' | 'rules' | 'system';
+  channel: "predictions" | "rules" | "system";
   event: string;
   data: any;
   timestamp: string;
@@ -205,7 +205,7 @@ export interface ProgressUpdate {
 
 export interface CompletedUpdate {
   id: string;
-  status: 'completed' | 'failed';
+  status: "completed" | "failed";
   outputUrl: string;
 }
 

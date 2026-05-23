@@ -2,9 +2,9 @@
  * Theme Store - 主题状态
  */
 
-import { create } from 'zustand';
+import { create } from "zustand";
 
-type ThemeMode = 'dark' | 'light';
+type ThemeMode = "dark" | "light";
 
 interface ThemeState {
   mode: ThemeMode;
@@ -13,7 +13,7 @@ interface ThemeState {
 }
 
 export const useThemeStore = create<ThemeState>((set, get) => ({
-  mode: 'dark',
+  mode: "dark",
   setMode: (mode) => set({ mode }),
-  toggleMode: () => set({ mode: get().mode === 'dark' ? 'light' : 'dark' }),
+  toggleMode: () => set({ mode: get().mode === "dark" ? "light" : "dark" }),
 }));

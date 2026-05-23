@@ -3,26 +3,26 @@
  * Phase 6: Pipeline 整合核心
  */
 
-import { RuleContext } from '@tianwen/rule-engine-core';
-import { Signal } from '@tianwen/signal-system';
-import { ProbabilityScore } from '@tianwen/probability-engine';
-import { FortuneLevel } from '@tianwen/fortune-engine';
+import { RuleContext } from "@tianwen/rule-engine-core";
+import { Signal } from "@tianwen/signal-system";
+import { ProbabilityScore } from "@tianwen/probability-engine";
+import { FortuneLevel } from "@tianwen/fortune-engine";
 
 // 推演系统类型
 export type DivinationSystem =
-  | 'meihua'
-  | 'liuyao'
-  | 'qimen'
-  | 'bazi'
-  | 'ziwei'
-  | 'liuren'
-  | 'huangji'
-  | 'xiaochengtu'
-  | 'cegui'
-  | 'huangli';
+  | "meihua"
+  | "liuyao"
+  | "qimen"
+  | "bazi"
+  | "ziwei"
+  | "liuren"
+  | "huangji"
+  | "xiaochengtu"
+  | "cegui"
+  | "huangli";
 
 // 随机数输入模式
-export type RandomSourceMode = 'manual' | 'auto' | 'timestamp' | 'digital';
+export type RandomSourceMode = "manual" | "auto" | "timestamp" | "digital";
 
 // 随机数来源配置
 export interface RandomSource {
@@ -57,7 +57,7 @@ export interface PredictionInput {
 }
 
 // 推演模式
-export type PredictionMode = 'single' | 'fusion' | 'compare' | 'timeline';
+export type PredictionMode = "single" | "fusion" | "compare" | "timeline";
 
 // 出生信息
 export interface BirthInfo {
@@ -66,8 +66,8 @@ export interface BirthInfo {
   day: number;
   hour: number;
   minute?: number;
-  gender: 'male' | 'female';
-  calendar: 'solar' | 'lunar';
+  gender: "male" | "female";
+  calendar: "solar" | "lunar";
 }
 
 // 位置信息
@@ -79,21 +79,26 @@ export interface Location {
 
 // 流水线阶段
 export type PipelineStage =
-  | 'input'
-  | 'random'
-  | 'chrono'
-  | 'divination'
-  | 'signal'
-  | 'rule'
-  | 'conflict'
-  | 'probability'
-  | 'fortune'
-  | 'timing'
-  | 'interpretation'
-  | 'output';
+  | "input"
+  | "random"
+  | "chrono"
+  | "divination"
+  | "signal"
+  | "rule"
+  | "conflict"
+  | "probability"
+  | "fortune"
+  | "timing"
+  | "interpretation"
+  | "output";
 
 // 阶段状态
-export type StageStatus = 'pending' | 'processing' | 'completed' | 'failed' | 'skipped';
+export type StageStatus =
+  | "pending"
+  | "processing"
+  | "completed"
+  | "failed"
+  | "skipped";
 
 // 阶段结果
 export interface StageResult<T = any> {
@@ -148,7 +153,7 @@ export interface PipelineConfig {
   };
   interpretation?: {
     enabled: boolean;
-    style?: 'formal' | 'casual' | 'detailed';
+    style?: "formal" | "casual" | "detailed";
     includeTrace?: boolean;
   };
 }
@@ -159,7 +164,7 @@ export interface StageConfig {
   enabled: boolean;
   timeout?: number;
   retries?: number;
-  onError?: 'skip' | 'fail' | 'continue';
+  onError?: "skip" | "fail" | "continue";
 }
 
 // 流水线结果
@@ -200,8 +205,8 @@ export interface PredictionOutput {
 export interface SignalOutput {
   id: string;
   description: string;
-  polarity: 'positive' | 'negative' | 'neutral' | 'unstable';
-  strength: 'high' | 'medium' | 'low';
+  polarity: "positive" | "negative" | "neutral" | "unstable";
+  strength: "high" | "medium" | "low";
   source: string;
   sourceRule?: string;
 }
@@ -240,14 +245,25 @@ export interface TraceStep {
 export interface ConflictItem {
   ruleA: string;
   ruleB: string;
-  conflictType: 'Signal' | 'Probability' | 'Fortune' | 'MutualExclusion' | 'Dependency' | 'Override';
+  conflictType:
+    | "Signal"
+    | "Probability"
+    | "Fortune"
+    | "MutualExclusion"
+    | "Dependency"
+    | "Override";
   severity: number;
 }
 
 // 冲突解决结果
 export interface ConflictResolutionResult {
   resolvedEffects: any[];
-  appliedStrategy: 'Priority' | 'SourceWeight' | 'Confidence' | 'Consensus' | 'UserOverride';
+  appliedStrategy:
+    | "Priority"
+    | "SourceWeight"
+    | "Confidence"
+    | "Consensus"
+    | "UserOverride";
   trace: string[];
   conflicts: ConflictItem[];
 }

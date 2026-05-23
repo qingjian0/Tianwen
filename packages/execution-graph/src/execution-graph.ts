@@ -9,7 +9,7 @@ import {
   GraphExecutionResult,
   GraphSnapshot,
   NodeStatus,
-} from './types';
+} from "./types";
 
 export class ExecutionGraph {
   private nodes: Map<string, ExecutionNode> = new Map();
@@ -29,7 +29,9 @@ export class ExecutionGraph {
     this.reverseAdjacencyList.get(toId)?.add(fromId);
   }
 
-  async execute(initialContext: ExecutionContext = {}): Promise<GraphExecutionResult> {
+  async execute(
+    initialContext: ExecutionContext = {},
+  ): Promise<GraphExecutionResult> {
     const startTime = performance.now();
     const results = new Map<string, ExecutionResult>();
     const context = { ...initialContext };
@@ -43,7 +45,7 @@ export class ExecutionGraph {
         if (node.shouldExecute && !node.shouldExecute(context)) {
           results.set(nodeId, {
             nodeId,
-            status: 'skipped',
+            status: "skipped",
             duration: 0,
             timestamp: Date.now(),
           });
@@ -52,10 +54,10 @@ export class ExecutionGraph {
 
         for (const depId of node.dependencies) {
           const depResult = results.get(depId);
-          if (!depResult || depResult.status !== 'completed') {
+          if (!depResult || depResult.status !== "completed") {
             results.set(nodeId, {
               nodeId,
-              status: 'skipped',
+              status: "skipped",
               error: `Dependency ${depId} not satisfied`,
               duration: 0,
               timestamp: Date.now(),
@@ -66,16 +68,16 @@ export class ExecutionGraph {
 
         results.set(nodeId, {
           nodeId,
-          status: 'running',
+          status: "running",
           duration: 0,
           timestamp: Date.now(),
         });
 
         const result = await node.execute(context);
-        
+
         results.set(nodeId, {
           nodeId,
-          status: 'completed',
+          status: "completed",
           result,
           duration: performance.now() - nodeStartTime,
           timestamp: Date.now(),
@@ -83,7 +85,7 @@ export class ExecutionGraph {
       } catch (error) {
         results.set(nodeId, {
           nodeId,
-          status: 'failed',
+          status: "failed",
           error: error instanceof Error ? error.message : String(error),
           duration: performance.now() - nodeStartTime,
           timestamp: Date.now(),
@@ -92,7 +94,7 @@ export class ExecutionGraph {
     }
 
     return {
-      success: Array.from(results.values()).every(r => r.status !== 'failed'),
+      success: Array.from(results.values()).every((r) => r.status !== "failed"),
       results,
       duration: performance.now() - startTime,
       finalContext: context,
@@ -129,9 +131,11 @@ export class ExecutionGraph {
     const dirty = new Set<string>();
     for (const nodeId of this.nodes.keys()) {
       const node = this.nodes.get(nodeId)!;
-      const prevResult = previousSnapshot.results.find(r => r.nodeId === nodeId);
-      
-      if (!prevResult || prevResult.status === 'failed') {
+      const prevResult = previousSnapshot.results.find(
+        (r) => r.nodeId === nodeId,
+      );
+
+      if (!prevResult || prevResult.status === "failed") {
         dirty.add(nodeId);
         continue;
       }
@@ -156,16 +160,18 @@ export class ExecutionGraph {
 
   async incrementalExecute(
     previousSnapshot?: GraphSnapshot,
-    initialContext: ExecutionContext = {}
+    initialContext: ExecutionContext = {},
   ): Promise<GraphExecutionResult> {
     const dirtyNodes = this.getDirtyNodes(previousSnapshot);
     const startTime = performance.now();
     const results = new Map<string, ExecutionResult>();
-    const context = previousSnapshot 
+    const context = previousSnapshot
       ? { ...previousSnapshot.context, ...initialContext }
       : { ...initialContext };
 
-    const executionOrder = this.topologicalSort().filter(id => dirtyNodes.has(id));
+    const executionOrder = this.topologicalSort().filter((id) =>
+      dirtyNodes.has(id),
+    );
 
     for (const nodeId of executionOrder) {
       const node = this.nodes.get(nodeId)!;
@@ -175,10 +181,10 @@ export class ExecutionGraph {
         for (const depId of node.dependencies) {
           if (dirtyNodes.has(depId)) {
             const depResult = results.get(depId);
-            if (!depResult || depResult.status !== 'completed') {
+            if (!depResult || depResult.status !== "completed") {
               results.set(nodeId, {
                 nodeId,
-                status: 'skipped',
+                status: "skipped",
                 error: `Dirty dependency ${depId} not satisfied`,
                 duration: 0,
                 timestamp: Date.now(),
@@ -190,7 +196,7 @@ export class ExecutionGraph {
 
         results.set(nodeId, {
           nodeId,
-          status: 'running',
+          status: "running",
           duration: 0,
           timestamp: Date.now(),
         });
@@ -199,7 +205,7 @@ export class ExecutionGraph {
 
         results.set(nodeId, {
           nodeId,
-          status: 'completed',
+          status: "completed",
           result,
           duration: performance.now() - nodeStartTime,
           timestamp: Date.now(),
@@ -207,7 +213,7 @@ export class ExecutionGraph {
       } catch (error) {
         results.set(nodeId, {
           nodeId,
-          status: 'failed',
+          status: "failed",
           error: error instanceof Error ? error.message : String(error),
           duration: performance.now() - nodeStartTime,
           timestamp: Date.now(),
@@ -216,14 +222,18 @@ export class ExecutionGraph {
     }
 
     return {
-      success: Array.from(results.values()).every(r => r.status !== 'failed'),
+      success: Array.from(results.values()).every((r) => r.status !== "failed"),
       results,
       duration: performance.now() - startTime,
       finalContext: context,
     };
   }
 
-  createSnapshot(executionId: string, results: Map<string, ExecutionResult>, context: ExecutionContext): GraphSnapshot {
+  createSnapshot(
+    executionId: string,
+    results: Map<string, ExecutionResult>,
+    context: ExecutionContext,
+  ): GraphSnapshot {
     return {
       executionId,
       timestamp: Date.now(),
@@ -245,7 +255,7 @@ export class ExecutionGraph {
 
   visualize(): { nodes: string[]; edges: Array<[string, string]> } {
     const edges: Array<[string, string]> = [];
-    
+
     for (const [fromId, toSet] of this.adjacencyList.entries()) {
       for (const toId of toSet) {
         edges.push([fromId, toId]);

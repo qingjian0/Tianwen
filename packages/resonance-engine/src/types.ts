@@ -2,7 +2,7 @@
  * Multi-System Resonance Engine v2 - 类型定义
  */
 
-export type SystemType = 'bazi' | 'liuyao' | 'meihua' | 'qimen' | 'ziwei';
+export type SystemType = "bazi" | "liuyao" | "meihua" | "qimen" | "ziwei";
 
 export interface SystemInput {
   system: SystemType;
@@ -32,7 +32,7 @@ export interface ConflictReasoning {
 }
 
 export interface ConflictResolution {
-  strategy: 'hierarchical' | 'temporal' | 'weighting' | 'contextual';
+  strategy: "hierarchical" | "temporal" | "weighting" | "contextual";
   winner: SystemType;
   loser: SystemType;
   confidence: number;

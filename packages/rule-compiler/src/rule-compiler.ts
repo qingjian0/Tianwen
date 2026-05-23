@@ -10,7 +10,7 @@ import {
   BinaryExpressionNode,
   IdentifierNode,
   CallExpressionNode,
-} from '@tianwen/rule-dsl';
+} from "@tianwen/rule-dsl";
 import {
   CompiledRule,
   CompiledProgram,
@@ -18,7 +18,7 @@ import {
   EffectFunction,
   CompilationStats,
   OptimizationResult,
-} from './types';
+} from "./types";
 
 export class RuleCompiler {
   private constantFoldingCache: Map<string, any> = new Map();
@@ -127,7 +127,11 @@ export class RuleCompiler {
 
       for (const thenStmt of ruleNode.effects) {
         const effectResult = this.evaluateExpression(thenStmt.effect, context);
-        if (effectResult && typeof effectResult === 'object' && !Array.isArray(effectResult)) {
+        if (
+          effectResult &&
+          typeof effectResult === "object" &&
+          !Array.isArray(effectResult)
+        ) {
           Object.assign(updates, effectResult);
         }
       }
@@ -136,19 +140,25 @@ export class RuleCompiler {
     };
   }
 
-  private evaluateExpression(expr: ExpressionNode, context: Record<string, any>): any {
+  private evaluateExpression(
+    expr: ExpressionNode,
+    context: Record<string, any>,
+  ): any {
     switch (expr.type) {
-      case 'BinaryExpression':
-        return this.evaluateBinaryExpression(expr as BinaryExpressionNode, context);
-      case 'Identifier':
+      case "BinaryExpression":
+        return this.evaluateBinaryExpression(
+          expr as BinaryExpressionNode,
+          context,
+        );
+      case "Identifier":
         return context[(expr as IdentifierNode).name];
-      case 'NumberLiteral':
+      case "NumberLiteral":
         return (expr as any).value;
-      case 'StringLiteral':
+      case "StringLiteral":
         return (expr as any).value;
-      case 'BooleanLiteral':
+      case "BooleanLiteral":
         return (expr as any).value;
-      case 'CallExpression':
+      case "CallExpression":
         return this.evaluateCallExpression(expr as CallExpressionNode, context);
       default:
         return null;
@@ -157,35 +167,35 @@ export class RuleCompiler {
 
   private evaluateBinaryExpression(
     expr: BinaryExpressionNode,
-    context: Record<string, any>
+    context: Record<string, any>,
   ): any {
     const left = this.evaluateExpression(expr.left, context);
     const right = this.evaluateExpression(expr.right, context);
 
     switch (expr.operator) {
-      case '==':
+      case "==":
         return left === right;
-      case '!=':
+      case "!=":
         return left !== right;
-      case '<':
+      case "<":
         return left < right;
-      case '>':
+      case ">":
         return left > right;
-      case '<=':
+      case "<=":
         return left <= right;
-      case '>=':
+      case ">=":
         return left >= right;
-      case '&&':
+      case "&&":
         return left && right;
-      case '||':
+      case "||":
         return left || right;
-      case '+':
+      case "+":
         return left + right;
-      case '-':
+      case "-":
         return left - right;
-      case '*':
+      case "*":
         return left * right;
-      case '/':
+      case "/":
         return left / right;
       default:
         return null;
@@ -194,19 +204,21 @@ export class RuleCompiler {
 
   private evaluateCallExpression(
     expr: CallExpressionNode,
-    context: Record<string, any>
+    context: Record<string, any>,
   ): any {
     const callee = expr.callee as IdentifierNode;
-    const args = expr.arguments.map(arg => this.evaluateExpression(arg, context));
+    const args = expr.arguments.map((arg) =>
+      this.evaluateExpression(arg, context),
+    );
 
     switch (callee.name) {
-      case 'wuxingSheng':
+      case "wuxingSheng":
         return this.wuxingSheng(args[0], args[1]);
-      case 'wuxingKe':
+      case "wuxingKe":
         return this.wuxingKe(args[0], args[1]);
-      case 'zhiHe':
+      case "zhiHe":
         return this.zhiHe(args[0], args[1]);
-      case 'zhiChong':
+      case "zhiChong":
         return this.zhiChong(args[0], args[1]);
       default:
         return null;
@@ -215,61 +227,73 @@ export class RuleCompiler {
 
   private wuxingSheng(wuxing: string, target: string): boolean {
     const relations: Record<string, string[]> = {
-      '木': ['火', '土'],
-      '火': ['土', '金'],
-      '土': ['金', '水'],
-      '金': ['水', '木'],
-      '水': ['木', '火'],
+      木: ["火", "土"],
+      火: ["土", "金"],
+      土: ["金", "水"],
+      金: ["水", "木"],
+      水: ["木", "火"],
     };
     return relations[wuxing]?.[0] === target;
   }
 
   private wuxingKe(wuxing: string, target: string): boolean {
     const relations: Record<string, string[]> = {
-      '木': ['火', '土'],
-      '火': ['土', '金'],
-      '土': ['金', '水'],
-      '金': ['水', '木'],
-      '水': ['木', '火'],
+      木: ["火", "土"],
+      火: ["土", "金"],
+      土: ["金", "水"],
+      金: ["水", "木"],
+      水: ["木", "火"],
     };
     return relations[wuxing]?.[1] === target;
   }
 
   private zhiHe(zhi1: string, zhi2: string): boolean {
     const he: Record<string, string> = {
-      '子': '丑', '丑': '子',
-      '寅': '亥', '亥': '寅',
-      '卯': '戌', '戌': '卯',
-      '辰': '酉', '酉': '辰',
-      '巳': '申', '申': '巳',
-      '午': '未', '未': '午',
+      子: "丑",
+      丑: "子",
+      寅: "亥",
+      亥: "寅",
+      卯: "戌",
+      戌: "卯",
+      辰: "酉",
+      酉: "辰",
+      巳: "申",
+      申: "巳",
+      午: "未",
+      未: "午",
     };
     return he[zhi1] === zhi2;
   }
 
   private zhiChong(zhi1: string, zhi2: string): boolean {
     const chong: Record<string, string> = {
-      '子': '午', '午': '子',
-      '丑': '未', '未': '丑',
-      '寅': '申', '申': '寅',
-      '卯': '酉', '酉': '卯',
-      '辰': '戌', '戌': '辰',
-      '巳': '亥', '亥': '巳',
+      子: "午",
+      午: "子",
+      丑: "未",
+      未: "丑",
+      寅: "申",
+      申: "寅",
+      卯: "酉",
+      酉: "卯",
+      辰: "戌",
+      戌: "辰",
+      巳: "亥",
+      亥: "巳",
     };
     return chong[zhi1] === zhi2;
   }
 
   private extractPriority(ruleNode: RuleDefinitionNode): number {
     for (const prop of ruleNode.properties) {
-      if (prop.key === 'priority') {
+      if (prop.key === "priority") {
         const value = this.evaluateExpression(prop.value, {});
-        if (typeof value === 'number') return value;
-        if (typeof value === 'string') {
+        if (typeof value === "number") return value;
+        if (typeof value === "string") {
           const priorityMap: Record<string, number> = {
-            'critical': 100,
-            'high': 80,
-            'medium': 50,
-            'low': 20,
+            critical: 100,
+            high: 80,
+            medium: 50,
+            low: 20,
           };
           return priorityMap[value] || 50;
         }
@@ -280,11 +304,11 @@ export class RuleCompiler {
 
   private extractCategory(ruleNode: RuleDefinitionNode): string {
     for (const prop of ruleNode.properties) {
-      if (prop.key === 'category') {
+      if (prop.key === "category") {
         return this.evaluateExpression(prop.value, {}) as string;
       }
     }
-    return 'general';
+    return "general";
   }
 
   getCompiledRule(name: string): CompiledRule | undefined {

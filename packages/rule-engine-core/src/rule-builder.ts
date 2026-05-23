@@ -7,9 +7,9 @@ import {
   RulePriority,
   RuleCategory,
   ConditionOperator,
-  RuleStatus
-} from './types';
-import { DEFAULT_RULE_ENGINE_CONFIG } from './constants';
+  RuleStatus,
+} from "./types";
+import { DEFAULT_RULE_ENGINE_CONFIG } from "./constants";
 
 // 规则构建器
 export class RuleBuilder {
@@ -23,7 +23,7 @@ export class RuleBuilder {
     this.rule = {
       effects: [],
       weight: 1.0,
-      confidence: DEFAULT_RULE_ENGINE_CONFIG.defaultConfidence
+      confidence: DEFAULT_RULE_ENGINE_CONFIG.defaultConfidence,
     };
     return this;
   }
@@ -33,21 +33,21 @@ export class RuleBuilder {
     this.rule.metadata = {
       ...(this.rule.metadata || {
         id: `rule_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        name: '',
-        description: '',
-        category: 'universal',
-        version: '1.0.0',
+        name: "",
+        description: "",
+        category: "universal",
+        version: "1.0.0",
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        status: 'active',
-        priority: 'medium',
+        status: "active",
+        priority: "medium",
         source: {
-          id: 'custom',
-          name: 'Custom',
-          type: 'custom'
-        }
+          id: "custom",
+          name: "Custom",
+          type: "custom",
+        },
       }),
-      ...metadata
+      ...metadata,
     };
     return this;
   }
@@ -117,15 +117,15 @@ export class RuleBuilder {
     field: string,
     operator: ConditionOperator,
     value: any,
-    description?: string
+    description?: string,
   ): RuleBuilder {
     const condition: RuleCondition = {
       id: `cond_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      type: 'simple',
+      type: "simple",
       field,
       operator,
       value,
-      description
+      description,
     };
     if (!this.rule.conditions) {
       this.rule.conditions = condition;
@@ -144,15 +144,15 @@ export class RuleBuilder {
       } else {
         this.rule.conditions = {
           id: `and_${Date.now()}`,
-          type: 'and',
-          conditions
+          type: "and",
+          conditions,
         };
       }
     } else {
       this.rule.conditions = {
         id: `and_${Date.now()}`,
-        type: 'and',
-        conditions: [this.rule.conditions, ...conditions]
+        type: "and",
+        conditions: [this.rule.conditions, ...conditions],
       };
     }
     return this;
@@ -166,15 +166,15 @@ export class RuleBuilder {
       } else {
         this.rule.conditions = {
           id: `or_${Date.now()}`,
-          type: 'or',
-          conditions
+          type: "or",
+          conditions,
         };
       }
     } else {
       this.rule.conditions = {
         id: `or_${Date.now()}`,
-        type: 'or',
-        conditions: [this.rule.conditions, ...conditions]
+        type: "or",
+        conditions: [this.rule.conditions, ...conditions],
       };
     }
     return this;
@@ -190,65 +190,65 @@ export class RuleBuilder {
   // 添加信号效果
   signalEffect(
     signalId: string,
-    action: 'add' | 'set',
-    description?: string
+    action: "add" | "set",
+    description?: string,
   ): RuleBuilder {
     return this.effect({
       id: `effect_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      type: 'signal',
+      type: "signal",
       action,
-      target: 'signals',
+      target: "signals",
       value: signalId,
       signalId,
-      description
+      description,
     });
   }
 
   // 添加概率效果
   probabilityEffect(
-    action: 'add' | 'subtract' | 'multiply' | 'divide' | 'set',
+    action: "add" | "subtract" | "multiply" | "divide" | "set",
     value: number,
-    description?: string
+    description?: string,
   ): RuleBuilder {
     return this.effect({
       id: `effect_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      type: 'probability',
+      type: "probability",
       action,
-      target: 'probability',
+      target: "probability",
       value,
-      description
+      description,
     });
   }
 
   // 添加吉凶效果
   fortuneEffect(
-    action: 'add' | 'subtract' | 'multiply' | 'divide' | 'set',
+    action: "add" | "subtract" | "multiply" | "divide" | "set",
     value: number,
-    description?: string
+    description?: string,
   ): RuleBuilder {
     return this.effect({
       id: `effect_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      type: 'fortune',
+      type: "fortune",
       action,
-      target: 'fortune',
+      target: "fortune",
       value,
-      description
+      description,
     });
   }
 
   // 添加置信度效果
   confidenceEffect(
-    action: 'add' | 'subtract' | 'multiply' | 'divide' | 'set',
+    action: "add" | "subtract" | "multiply" | "divide" | "set",
     value: number,
-    description?: string
+    description?: string,
   ): RuleBuilder {
     return this.effect({
       id: `effect_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      type: 'confidence',
+      type: "confidence",
       action,
-      target: 'confidence',
+      target: "confidence",
       value,
-      description
+      description,
     });
   }
 
@@ -288,10 +288,10 @@ export class RuleBuilder {
       this.metadata({});
     }
     if (!this.rule.conditions) {
-      throw new Error('Rule must have conditions');
+      throw new Error("Rule must have conditions");
     }
     if (!this.rule.effects || this.rule.effects.length === 0) {
-      throw new Error('Rule must have at least one effect');
+      throw new Error("Rule must have at least one effect");
     }
     return this.rule as Rule;
   }

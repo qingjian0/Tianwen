@@ -2,12 +2,12 @@
  * 融合引擎类型定义
  */
 
-import { z } from 'zod';
-import { FusionStrategy } from './constants';
-import { Signal, SignalSource } from '@tianwen/signal-system';
-import { WeightConfig } from '@tianwen/weight-system';
-import { ProbabilityScore } from '@tianwen/probability-engine';
-import { ResonanceAnalysis } from '@tianwen/resonance-engine';
+import { z } from "zod";
+import { FusionStrategy } from "./constants";
+import { Signal, SignalSource } from "@tianwen/signal-system";
+import { WeightConfig } from "@tianwen/weight-system";
+import { ProbabilityScore } from "@tianwen/probability-engine";
+import { ResonanceAnalysis } from "@tianwen/resonance-engine";
 
 export interface SystemResult {
   source: SignalSource;
@@ -22,7 +22,7 @@ export const SystemResultSchema = z.object({
   signals: z.array(z.any()),
   probability: z.any().optional(),
   weight: z.number(),
-  confidence: z.number()
+  confidence: z.number(),
 });
 
 export interface FusionResult {
@@ -44,5 +44,5 @@ export const FusionResultSchema = z.object({
   contributions: z.record(z.number()),
   resonanceAnalysis: z.any().optional(),
   timestamp: z.date(),
-  metadata: z.record(z.unknown()).optional()
+  metadata: z.record(z.unknown()).optional(),
 });

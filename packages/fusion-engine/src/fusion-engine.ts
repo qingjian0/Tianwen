@@ -2,12 +2,15 @@
  * 融合引擎主类
  */
 
-import { SystemResult, FusionResult } from './types';
-import { FusionStrategy, FUSION_STRATEGY_LABELS } from './constants';
-import { FusionStrategies } from './fusion-strategies';
-import { Signal, SignalSource } from '@tianwen/signal-system';
-import { WeightConfig, WeightCalculator } from '@tianwen/weight-system';
-import { ProbabilityCalculator, ProbabilityAnalyzer } from '@tianwen/probability-engine';
+import { SystemResult, FusionResult } from "./types";
+import { FusionStrategy, FUSION_STRATEGY_LABELS } from "./constants";
+import { FusionStrategies } from "./fusion-strategies";
+import { Signal, SignalSource } from "@tianwen/signal-system";
+import { WeightConfig, WeightCalculator } from "@tianwen/weight-system";
+import {
+  ProbabilityCalculator,
+  ProbabilityAnalyzer,
+} from "@tianwen/probability-engine";
 
 export class FusionEngine {
   private weightConfig: WeightConfig;
@@ -15,7 +18,7 @@ export class FusionEngine {
 
   constructor(
     weightConfig?: WeightConfig,
-    defaultStrategy: FusionStrategy = FusionStrategy.WEIGHTED_AVERAGE
+    defaultStrategy: FusionStrategy = FusionStrategy.WEIGHTED_AVERAGE,
   ) {
     this.weightConfig = weightConfig || WeightCalculator.createDefaultConfig();
     this.defaultStrategy = defaultStrategy;
@@ -26,7 +29,7 @@ export class FusionEngine {
    */
   async fuse(
     systemResults: SystemResult[],
-    strategy?: FusionStrategy
+    strategy?: FusionStrategy,
   ): Promise<FusionResult> {
     const useStrategy = strategy || this.defaultStrategy;
     let result: FusionResult;
@@ -48,7 +51,9 @@ export class FusionEngine {
         result = FusionStrategies.weightedAverage(systemResults);
     }
 
-    const probabilityScore = ProbabilityCalculator.calculateFromSignals(result.fusedSignals);
+    const probabilityScore = ProbabilityCalculator.calculateFromSignals(
+      result.fusedSignals,
+    );
     result.overallProbability = probabilityScore;
 
     return result;
@@ -59,17 +64,17 @@ export class FusionEngine {
    */
   async fuseWithMultipleStrategies(
     systemResults: SystemResult[],
-    strategies: FusionStrategy[] = Object.values(FusionStrategy)
+    strategies: FusionStrategy[] = Object.values(FusionStrategy),
   ): Promise<{
     results: FusionResult[];
     best: FusionResult;
   }> {
     const results = await Promise.all(
-      strategies.map(strategy => this.fuse(systemResults, strategy))
+      strategies.map((strategy) => this.fuse(systemResults, strategy)),
     );
 
     const best = results.reduce((currentBest, result) =>
-      result.confidence > currentBest.confidence ? result : currentBest
+      result.confidence > currentBest.confidence ? result : currentBest,
     );
 
     return { results, best };

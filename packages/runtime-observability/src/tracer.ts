@@ -2,7 +2,7 @@
  * Execution Tracer - 执行追踪器
  */
 
-import { ExecutionTrace, NodeTiming } from './types';
+import { ExecutionTrace, NodeTiming } from "./types";
 
 export class ExecutionTracer {
   private traces: Map<string, ExecutionTrace> = new Map();
@@ -13,13 +13,17 @@ export class ExecutionTracer {
   }
 
   recordNode(timing: NodeTiming): void {
-    const activeTimings = this.activeTraces.get(timing.nodeId.split('-')[0]);
+    const activeTimings = this.activeTraces.get(timing.nodeId.split("-")[0]);
     if (activeTimings) {
       activeTimings.push(timing);
     }
   }
 
-  endTrace(traceId: string, result: any, context: Record<string, any>): ExecutionTrace {
+  endTrace(
+    traceId: string,
+    result: any,
+    context: Record<string, any>,
+  ): ExecutionTrace {
     const timings = this.activeTraces.get(traceId) || [];
     this.activeTraces.delete(traceId);
 

@@ -2,8 +2,8 @@
  * 信号系统类型定义
  */
 
-import { z } from 'zod';
-import { SignalPolarity, SignalStrength, SignalSource } from './constants';
+import { z } from "zod";
+import { SignalPolarity, SignalStrength, SignalSource } from "./constants";
 
 export interface Signal {
   id: string;
@@ -27,12 +27,12 @@ export const SignalSchema = z.object({
   strength: z.number().min(0).max(1),
   timing: z.object({
     start: z.date().optional(),
-    end: z.date().optional()
+    end: z.date().optional(),
   }),
   confidence: z.number().min(0).max(1),
   description: z.string().optional(),
   tags: z.array(z.string()).optional(),
-  metadata: z.record(z.unknown()).optional()
+  metadata: z.record(z.unknown()).optional(),
 });
 
 export interface SignalBatch {

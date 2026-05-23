@@ -1,10 +1,10 @@
-import { Wuxing, Bagua } from '@tianwen/metaphysics-types';
+import { Wuxing, Bagua } from "@tianwen/metaphysics-types";
 
 // 规则来源类型
 export interface RuleSource {
   id: string;
   name: string;
-  type: 'classic' | 'modern' | 'school' | 'custom';
+  type: "classic" | "modern" | "school" | "custom";
   school?: string;
   classic?: string;
   chapter?: string;
@@ -17,36 +17,36 @@ export interface RuleSource {
 
 // 规则条件操作符
 export type ConditionOperator =
-  | 'equals'
-  | 'notEquals'
-  | 'greaterThan'
-  | 'lessThan'
-  | 'greaterOrEqual'
-  | 'lessOrEqual'
-  | 'contains'
-  | 'notContains'
-  | 'in'
-  | 'notIn'
-  | 'startsWith'
-  | 'endsWith'
-  | 'matches'
-  | 'isTrue'
-  | 'isFalse'
-  | 'isNull'
-  | 'isNotNull'
-  | 'exists'
-  | 'notExists'
-  | 'wuxingSheng'
-  | 'wuxingKe'
-  | 'wuxingBihe'
-  | 'ganzhiHe'
-  | 'ganzhiChong'
-  | 'ganzhiXing';
+  | "equals"
+  | "notEquals"
+  | "greaterThan"
+  | "lessThan"
+  | "greaterOrEqual"
+  | "lessOrEqual"
+  | "contains"
+  | "notContains"
+  | "in"
+  | "notIn"
+  | "startsWith"
+  | "endsWith"
+  | "matches"
+  | "isTrue"
+  | "isFalse"
+  | "isNull"
+  | "isNotNull"
+  | "exists"
+  | "notExists"
+  | "wuxingSheng"
+  | "wuxingKe"
+  | "wuxingBihe"
+  | "ganzhiHe"
+  | "ganzhiChong"
+  | "ganzhiXing";
 
 // 规则条件
 export interface RuleCondition {
   id: string;
-  type: 'simple' | 'and' | 'or' | 'not' | 'nested';
+  type: "simple" | "and" | "or" | "not" | "nested";
   field?: string;
   operator?: ConditionOperator;
   value?: any;
@@ -56,18 +56,18 @@ export interface RuleCondition {
 
 // 规则效果类型
 export type EffectType =
-  | 'signal'
-  | 'probability'
-  | 'fortune'
-  | 'timing'
-  | 'confidence'
-  | 'priority';
+  | "signal"
+  | "probability"
+  | "fortune"
+  | "timing"
+  | "confidence"
+  | "priority";
 
 // 规则效果
 export interface RuleEffect {
   id: string;
   type: EffectType;
-  action: 'add' | 'subtract' | 'multiply' | 'divide' | 'set';
+  action: "add" | "subtract" | "multiply" | "divide" | "set";
   target: string;
   value: number | string;
   description?: string;
@@ -76,24 +76,24 @@ export interface RuleEffect {
 
 // 规则类别
 export type RuleCategory =
-  | 'meihua'
-  | 'liuyao'
-  | 'qimen'
-  | 'bazi'
-  | 'ziwei'
-  | 'universal'
-  | 'custom';
+  | "meihua"
+  | "liuyao"
+  | "qimen"
+  | "bazi"
+  | "ziwei"
+  | "universal"
+  | "custom";
 
 // 规则优先级
 export type RulePriority =
-  | 'critical'
-  | 'high'
-  | 'medium'
-  | 'low'
-  | 'informational';
+  | "critical"
+  | "high"
+  | "medium"
+  | "low"
+  | "informational";
 
 // 规则状态
-export type RuleStatus = 'active' | 'inactive' | 'deprecated' | 'testing';
+export type RuleStatus = "active" | "inactive" | "deprecated" | "testing";
 
 // 规则元数据
 export interface RuleMetadata {
@@ -127,7 +127,7 @@ export interface RuleExample {
 // 规则引用
 export interface RuleReference {
   id: string;
-  type: 'classic' | 'modern' | 'commentary';
+  type: "classic" | "modern" | "commentary";
   title: string;
   author?: string;
   chapter?: string;

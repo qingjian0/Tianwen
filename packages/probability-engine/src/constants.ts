@@ -3,11 +3,11 @@
  */
 
 export enum ProbabilityLevel {
-  VERY_LOW = 'very_low',
-  LOW = 'low',
-  MEDIUM = 'medium',
-  HIGH = 'high',
-  VERY_HIGH = 'very_high'
+  VERY_LOW = "very_low",
+  LOW = "low",
+  MEDIUM = "medium",
+  HIGH = "high",
+  VERY_HIGH = "very_high",
 }
 
 export const PROBABILITY_THRESHOLDS = {
@@ -15,7 +15,7 @@ export const PROBABILITY_THRESHOLDS = {
   LOW: 0.4,
   MEDIUM: 0.6,
   HIGH: 0.8,
-  VERY_HIGH: 1.0
+  VERY_HIGH: 1.0,
 };
 
 export const MIN_PROBABILITY = 0;

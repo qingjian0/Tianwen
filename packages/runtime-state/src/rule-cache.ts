@@ -2,7 +2,7 @@
  * Rule Cache - 规则缓存
  */
 
-import { StorageAdapter, RuleCache } from './types';
+import { StorageAdapter, RuleCache } from "./types";
 
 export class RuleCacheImpl implements RuleCache {
   private storage: StorageAdapter;
@@ -10,7 +10,7 @@ export class RuleCacheImpl implements RuleCache {
   private hits: number = 0;
   private misses: number = 0;
 
-  constructor(storage: StorageAdapter, prefix: string = 'rule:') {
+  constructor(storage: StorageAdapter, prefix: string = "rule:") {
     this.storage = storage;
     this.prefix = prefix;
   }
@@ -18,7 +18,7 @@ export class RuleCacheImpl implements RuleCache {
   async get(ruleId: string): Promise<any | null> {
     const key = `${this.prefix}${ruleId}`;
     const result = await this.storage.get(key);
-    
+
     if (result) {
       this.hits++;
       return result;

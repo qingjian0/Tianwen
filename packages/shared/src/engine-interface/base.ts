@@ -4,8 +4,8 @@
  * 包括：梅花、六爻、奇门、八字、紫微等
  */
 
-import { PredictionInput, PredictionResult } from '../prediction-schema';
-import { EngineConfig, EngineState, CalculationResult } from './types';
+import { PredictionInput, PredictionResult } from "../prediction-schema";
+import { EngineConfig, EngineState, CalculationResult } from "./types";
 
 export abstract class MetaphysicsEngine {
   protected config: EngineConfig;
@@ -34,7 +34,9 @@ export abstract class MetaphysicsEngine {
    * 分析计算结果
    * 生成详细分析
    */
-  abstract analyze(calculationResult: CalculationResult): Promise<PredictionResult>;
+  abstract analyze(
+    calculationResult: CalculationResult,
+  ): Promise<PredictionResult>;
 
   /**
    * 生成解读

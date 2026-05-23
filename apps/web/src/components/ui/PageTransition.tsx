@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { ReactNode } from 'react';
-import { motion } from 'framer-motion';
+import { ReactNode } from "react";
+import { motion } from "framer-motion";
 
 interface PageTransitionProps {
   children: ReactNode;
@@ -21,7 +21,10 @@ const pageTransition = {
   transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const },
 };
 
-export const PageTransition = ({ children, className }: PageTransitionProps) => {
+export const PageTransition = ({
+  children,
+  className,
+}: PageTransitionProps) => {
   return (
     <motion.div className={className} {...pageTransition}>
       {children}

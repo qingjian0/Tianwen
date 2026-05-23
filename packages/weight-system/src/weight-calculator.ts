@@ -2,9 +2,9 @@
  * 权重计算器
  */
 
-import { Weight, WeightConfig, WeightedScore } from './types';
-import { SystemType, DEFAULT_SYSTEM_WEIGHTS } from './constants';
-import { WeightValidator } from './weight-validator';
+import { Weight, WeightConfig, WeightedScore } from "./types";
+import { SystemType, DEFAULT_SYSTEM_WEIGHTS } from "./constants";
+import { WeightValidator } from "./weight-validator";
 
 export class WeightCalculator {
   /**
@@ -15,7 +15,7 @@ export class WeightCalculator {
       systemWeights: { ...DEFAULT_SYSTEM_WEIGHTS },
       contextWeights: {},
       timingWeights: {},
-      dynamicWeights: {}
+      dynamicWeights: {},
     };
   }
 
@@ -24,10 +24,10 @@ export class WeightCalculator {
    */
   static calculateWeightedScore(
     values: number[],
-    weights: number[]
+    weights: number[],
   ): WeightedScore {
     if (values.length !== weights.length) {
-      throw new Error('Values and weights length mismatch');
+      throw new Error("Values and weights length mismatch");
     }
 
     const validWeights = weights.map((w) => WeightValidator.normalize(w));
@@ -38,7 +38,7 @@ export class WeightCalculator {
         value: 0,
         weights: [],
         totalWeight: 0,
-        normalizedScore: 0
+        normalizedScore: 0,
       };
     }
 
@@ -49,16 +49,16 @@ export class WeightCalculator {
     const weightedScore = weightedSum / totalWeight;
 
     const weightObjects: Weight[] = validWeights.map((weight, index) => ({
-      type: 'dynamic',
+      type: "dynamic",
       key: `weight_${index}`,
-      value: weight
+      value: weight,
     }));
 
     return {
       value: weightedScore,
       weights: weightObjects,
       totalWeight,
-      normalizedScore: weightedScore
+      normalizedScore: weightedScore,
     };
   }
 
@@ -67,17 +67,20 @@ export class WeightCalculator {
    */
   static mergeSystemWeights(
     baseConfig: WeightConfig,
-    overrides: Partial<Record<SystemType, number>>
+    overrides: Partial<Record<SystemType, number>>,
   ): WeightConfig {
     return {
       ...baseConfig,
       systemWeights: {
         ...baseConfig.systemWeights,
-        ...Object.entries(overrides).reduce((acc, [key, value]) => {
-          acc[key as SystemType] = WeightValidator.normalize(value);
-          return acc;
-        }, {} as Record<SystemType, number>)
-      }
+        ...Object.entries(overrides).reduce(
+          (acc, [key, value]) => {
+            acc[key as SystemType] = WeightValidator.normalize(value);
+            return acc;
+          },
+          {} as Record<SystemType, number>,
+        ),
+      },
     };
   }
 
@@ -86,7 +89,7 @@ export class WeightCalculator {
    */
   static computeCombinedWeight(
     baseWeight: number,
-    modifiers: number[]
+    modifiers: number[],
   ): number {
     let combined = baseWeight;
     modifiers.forEach((mod) => {

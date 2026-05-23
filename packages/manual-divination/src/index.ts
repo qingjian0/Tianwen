@@ -1,2 +1,2 @@
-export * from './types';
-export { ManualDivinationEngine } from './manual-divination-engine';
+export * from "./types";
+export { ManualDivinationEngine } from "./manual-divination-engine";

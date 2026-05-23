@@ -2,19 +2,19 @@
  * Prompt Builder - 流式API
  */
 
-import { PromptDSL, PromptStyle, OutputMode } from './types';
+import { PromptDSL, PromptStyle, OutputMode } from "./types";
 
 export class PromptBuilder {
   private prompt: Partial<PromptDSL>;
 
   constructor() {
     this.prompt = {
-      question: '',
+      question: "",
       systems: [],
       weights: {},
       focus: [],
-      style: 'balanced',
-      outputMode: 'detailed',
+      style: "balanced",
+      outputMode: "detailed",
     };
   }
 
@@ -50,10 +50,10 @@ export class PromptBuilder {
 
   build(): PromptDSL {
     if (!this.prompt.question) {
-      throw new Error('Question is required');
+      throw new Error("Question is required");
     }
     if (this.prompt.systems.length === 0) {
-      throw new Error('At least one system is required');
+      throw new Error("At least one system is required");
     }
     return this.prompt as PromptDSL;
   }

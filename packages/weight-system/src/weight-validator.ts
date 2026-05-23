@@ -2,9 +2,14 @@
  * 权重验证器
  */
 
-import { z } from 'zod';
-import { Weight, WeightSchema, WeightConfig, WeightConfigSchema } from './types';
-import { MIN_WEIGHT, MAX_WEIGHT, DEFAULT_WEIGHT } from './constants';
+import { z } from "zod";
+import {
+  Weight,
+  WeightSchema,
+  WeightConfig,
+  WeightConfigSchema,
+} from "./types";
+import { MIN_WEIGHT, MAX_WEIGHT, DEFAULT_WEIGHT } from "./constants";
 
 export class WeightValidator {
   /**

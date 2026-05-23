@@ -1,16 +1,16 @@
-export * from './meihua/rules';
-export * from './liuyao/rules';
-export * from './universal/rules';
-export * from './bazi/rules';
-export * from './qimen/rules';
-export * from './ziwei/rules';
+export * from "./meihua/rules";
+export * from "./liuyao/rules";
+export * from "./universal/rules";
+export * from "./bazi/rules";
+export * from "./qimen/rules";
+export * from "./ziwei/rules";
 
-import { meihuaRules } from './meihua/rules';
-import { liuyaoRules } from './liuyao/rules';
-import { universalRules } from './universal/rules';
-import { baziRules } from './bazi/rules';
-import { qimenRules } from './qimen/rules';
-import { ziweiRules } from './ziwei/rules';
+import { meihuaRules } from "./meihua/rules";
+import { liuyaoRules } from "./liuyao/rules";
+import { universalRules } from "./universal/rules";
+import { baziRules } from "./bazi/rules";
+import { qimenRules } from "./qimen/rules";
+import { ziweiRules } from "./ziwei/rules";
 
 export const allRules = [
   ...meihuaRules,
@@ -18,7 +18,7 @@ export const allRules = [
   ...universalRules,
   ...baziRules,
   ...qimenRules,
-  ...ziweiRules
+  ...ziweiRules,
 ];
 
 export const rulesByCategory = {
@@ -27,7 +27,7 @@ export const rulesByCategory = {
   universal: universalRules,
   bazi: baziRules,
   qimen: qimenRules,
-  ziwei: ziweiRules
+  ziwei: ziweiRules,
 };
 
 export const getRulesByCategory = (category: string) => {
@@ -42,6 +42,6 @@ export const getRuleCount = () => {
     universal: universalRules.length,
     bazi: baziRules.length,
     qimen: qimenRules.length,
-    ziwei: ziweiRules.length
+    ziwei: ziweiRules.length,
   };
 };

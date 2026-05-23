@@ -6,7 +6,7 @@ export interface CaseMetadata {
   id: string;
   name: string;
   description?: string;
-  system: 'meihua' | 'liuyao' | 'bazi' | 'qimen';
+  system: "meihua" | "liuyao" | "bazi" | "qimen";
   createdAt: number;
   tags?: string[];
 }

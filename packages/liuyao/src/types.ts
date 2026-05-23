@@ -1,7 +1,13 @@
-import { Tiangan, Dizhi, Wuxing, Bagua, ChronoData } from '@tianwen/chrono-engine';
+import {
+  Tiangan,
+  Dizhi,
+  Wuxing,
+  Bagua,
+  ChronoData,
+} from "@tianwen/chrono-engine";
 
 // 六爻爻位状态
-export type YaoState = 'oldYang' | 'youngYang' | 'oldYin' | 'youngYin';
+export type YaoState = "oldYang" | "youngYang" | "oldYin" | "youngYin";
 
 // 六爻单爻
 export interface LiuYaoYao {
@@ -22,7 +28,7 @@ export interface LiuYaoYao {
 
 // 六爻完整结果
 export interface LiuYaoResult {
-  method: 'coin' | 'number' | 'time' | 'manual';
+  method: "coin" | "number" | "time" | "manual";
   benGua: {
     name: string;
     shangGua: Bagua;
@@ -47,6 +53,6 @@ export interface LiuYaoResult {
 export interface LiuYaoAnalysis {
   mainSignals: string[];
   timeline: { period: string; signal: string }[];
-  fortune: 'great' | 'good' | 'neutral' | 'warning' | 'danger';
+  fortune: "great" | "good" | "neutral" | "warning" | "danger";
   suggestions: string[];
 }
