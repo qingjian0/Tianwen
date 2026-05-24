@@ -4,8 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { MeihuaEngine } from "@tianwen/meihua";
-import { BAGUA_INFO } from "@tianwen/meihua";
+import { MeihuaEngine, BAGUA_INFO } from "@/packages/astro-divination/src";
 
 const TRIGRAMS = [
   { name: "乾", symbol: "☰", element: "金", palace: "乾" },
@@ -74,7 +73,6 @@ const HexagramDisplay = ({ binary, title, changingPositions = [] }: {
 export default function MeihuaPage() {
   const [step, setStep] = useState<"intro" | "form" | "result">("intro");
   const [method, setMethod] = useState<string>("");
-  const [engine] = useState(() => new MeihuaEngine());
   const [result, setResult] = useState<any>(null);
   
   const [selectedUpperTrigram, setSelectedUpperTrigram] = useState<number>(0);
@@ -97,36 +95,36 @@ export default function MeihuaPage() {
     
     switch (method) {
       case "time":
-        divinationResult = engine.divinateByTime();
+        divinationResult = MeihuaEngine.divinateByTime();
         break;
       case "number":
-        divinationResult = engine.divinateBySingleNumber(parseInt(upperNum) || 1);
+        divinationResult = MeihuaEngine.divinateBySingleNumber(parseInt(upperNum) || 1);
         break;
       case "number2":
-        divinationResult = engine.divinateByDoubleNumber(
+        divinationResult = MeihuaEngine.divinateByDoubleNumber(
           parseInt(upperNum) || 1,
           parseInt(lowerNum) || 1
         );
         break;
       case "number3":
-        divinationResult = engine.divinateByTripleNumber(
+        divinationResult = MeihuaEngine.divinateByTripleNumber(
           parseInt(upperNum) || 1,
           parseInt(lowerNum) || 1,
           parseInt(changingNum) || 1
         );
         break;
       case "random":
-        divinationResult = engine.divinateByRandom();
+        divinationResult = MeihuaEngine.divinateByRandom();
         break;
       case "manual":
-        divinationResult = engine.divinateByManual(
+        divinationResult = MeihuaEngine.divinateByManual(
           TRIGRAMS[selectedUpperTrigram].name as any,
           TRIGRAMS[selectedLowerTrigram].name as any,
           selectedChangingLine ? parseInt(selectedChangingLine) : undefined
         );
         break;
       default:
-        divinationResult = engine.divinateByRandom();
+        divinationResult = MeihuaEngine.divinateByRandom();
     }
     
     setResult(divinationResult);
@@ -452,12 +450,48 @@ export default function MeihuaPage() {
                 <p className="text-yellow-700">
                   体用关系：{getRelationText[result.tiYong.relation as keyof typeof getRelationText]}
                 </p>
+                {result.interpretation && (
+                  <div className="pt-4 border-t border-gray-200">
+                    <pre className="whitespace-pre-wrap text-sm font-serif text-gray-700">
+                      {result.interpretation}
+                    </pre>
+                  </div>
+                )}
                 <p className="text-gray-500 pt-4 border-t border-gray-200 mt-6">
                   易曰：「寂然不动，感而遂通天下之故。」
                   占卜之道，重在诚心正意，方可感应天地之机。
                 </p>
               </div>
             </Card>
+
+            {result.dateInfo && (
+              <Card>
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="text-yellow-600 text-2xl">📅</span>
+                  <h3 className="text-2xl font-serif font-bold text-gray-800">
+                    起卦时间
+                  </h3>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                  <div>
+                    <span className="text-gray-500">公历</span>
+                    <div className="font-serif">{result.dateInfo.year}年{result.dateInfo.month}月{result.dateInfo.day}日{result.dateInfo.hour}时</div>
+                  </div>
+                  <div>
+                    <span className="text-gray-500">农历</span>
+                    <div className="font-serif">{result.dateInfo.lunarYear}年{result.dateInfo.lunarMonth}月{result.dateInfo.lunarDay}日</div>
+                  </div>
+                  <div>
+                    <span className="text-gray-500">干支</span>
+                    <div className="font-serif">{result.dateInfo.yearGanZhi} {result.dateInfo.monthGanZhi} {result.dateInfo.hourGanZhi}</div>
+                  </div>
+                  <div>
+                    <span className="text-gray-500">时辰</span>
+                    <div className="font-serif">{result.dateInfo.shichen}时</div>
+                  </div>
+                </div>
+              </Card>
+            )}
 
             <div className="flex justify-center gap-4 pt-6">
               <Button variant="secondary" size="lg" onClick={reset}>
