@@ -69,10 +69,12 @@ export const Header = () => {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [ganZhi, setGanZhi] = useState(getGanZhi());
+  const [ganZhi, setGanZhi] = useState<{ year: string; month: string; day: string; hour: string } | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
+    setGanZhi(getGanZhi());
+    
     const timer = setInterval(() => {
       setCurrentTime(new Date());
       setGanZhi(getGanZhi());
@@ -117,14 +119,16 @@ export const Header = () => {
         {/* Right Section */}
         <div className="flex items-center gap-3">
           {/* Time Display (Desktop) */}
-          <div className="hidden lg:flex items-center gap-3 px-4 py-2 bg-bg-secondary/50 border border-border/30 rounded-md">
-            <div className="flex items-center gap-2 text-xs">
-              <span className="text-text-muted">干支</span>
-              <span className="text-imperial-gold font-mono font-medium">
-                {ganZhi.year} {ganZhi.month} {ganZhi.day} {ganZhi.hour}
-              </span>
+          {ganZhi && (
+            <div className="hidden lg:flex items-center gap-3 px-4 py-2 bg-bg-secondary/50 border border-border/30 rounded-md">
+              <div className="flex items-center gap-2 text-xs">
+                <span className="text-text-muted">干支</span>
+                <span className="text-imperial-gold font-mono font-medium">
+                  {ganZhi.year} {ganZhi.month} {ganZhi.day} {ganZhi.hour}
+                </span>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Settings Button */}
           <div className="relative">
