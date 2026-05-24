@@ -20,22 +20,22 @@
     --color-jade-light: #32CD32;
     --color-jade-dark: #006400;
 
-    --color-text-primary: #E8E6E3;
-    --color-text-secondary: #A8A5A0;
-    --color-text-muted: #6B6966;
+    --color-text-primary: #1A1A1A;
+    --color-text-secondary: #6B6966;
+    --color-text-muted: #9A9A95;
 
-    --color-bg-primary: #0A0A0A;
-    --color-bg-secondary: #141414;
-    --color-bg-tertiary: #1A1A1A;
-    --color-bg-card: #141414;
-    --color-bg-elevated: #1F1F1F;
+    --color-bg-primary: #FFFEF7;
+    --color-bg-secondary: #FFF9E6;
+    --color-bg-tertiary: #FFF6D7;
+    --color-bg-card: #FFFFFF;
+    --color-bg-elevated: #FFFFFF;
 
-    --color-border: #2A2A2A;
-    --color-border-light: #333333;
+    --color-border: #E5E5E5;
+    --color-border-light: #D0D0D0;
 
     --gradient-imperial-gold: linear-gradient(135deg, #F4D03F 0%, #D4AF37 50%, #B8860B 100%);
-    --gradient-deep-space: linear-gradient(180deg, #0A0A0A 0%, #111111 50%, #141414 100%);
-    --gradient-card: linear-gradient(145deg, #1A1A1A 0%, #141414 100%);
+    --gradient-deep-space: linear-gradient(180deg, #FFFEF7 0%, #FFF9E6 50%, #FFF6D7 100%);
+    --gradient-card: linear-gradient(145deg, #FFFFFF 0%, #FFF9E6 100%);
 
     --space-1: 0.25rem;
     --space-2: 0.5rem;
