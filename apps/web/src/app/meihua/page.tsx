@@ -37,7 +37,7 @@ const HexagramDisplay = ({ binary, title, changingPositions = [] }: {
   return (
     <div className="flex flex-col items-center">
       <h4 className="text-sm font-serif text-gray-600 mb-4 tracking-widest">{title}</h4>
-      <div className="flex gap-2">
+      <div className="flex flex-col-reverse gap-1">
         {yaos.map((yao, idx) => {
           const position = idx + 1;
           const isChanging = changingPositions.includes(position);
@@ -46,22 +46,22 @@ const HexagramDisplay = ({ binary, title, changingPositions = [] }: {
           return (
             <motion.div
               key={idx}
-              className="relative flex flex-col items-center transition-all duration-300"
-              initial={{ opacity: 0, scaleY: 0 }}
-              animate={{ opacity: 1, scaleY: 1 }}
+              className="relative flex items-center justify-center transition-all duration-300"
+              initial={{ opacity: 0, scaleX: 0 }}
+              animate={{ opacity: 1, scaleX: 1 }}
               transition={{ delay: idx * 0.1, duration: 0.4 }}
             >
               {isYang ? (
-                <div className={`w-6 h-20 rounded-sm ${isChanging ? 'bg-red-500' : 'bg-yellow-600'}`} />
+                <div className={`h-2.5 w-20 rounded-sm ${isChanging ? 'bg-red-500' : 'bg-yellow-600'}`} />
               ) : (
-                <div className="flex flex-col gap-4 w-6">
-                  <div className={`w-full h-8 rounded-sm ${isChanging ? 'bg-red-500' : 'bg-yellow-600'}`} />
-                  <div className={`w-full h-8 rounded-sm ${isChanging ? 'bg-red-500' : 'bg-yellow-600'}`} />
+                <div className="flex gap-3">
+                  <div className={`h-2.5 w-8 rounded-sm ${isChanging ? 'bg-red-500' : 'bg-yellow-600'}`} />
+                  <div className={`h-2.5 w-8 rounded-sm ${isChanging ? 'bg-red-500' : 'bg-yellow-600'}`} />
                 </div>
               )}
-              <span className="absolute -bottom-6 text-xs text-gray-500 font-serif">{position}</span>
+              <span className="absolute -left-10 text-xs text-gray-500 font-serif w-8 text-right">{position}</span>
               {isChanging && (
-                <span className="absolute -top-5 text-xs text-red-500 font-serif">变</span>
+                <span className="absolute -right-8 text-xs text-red-500 font-serif w-6">变</span>
               )}
             </motion.div>
           );
