@@ -17,6 +17,8 @@ import {
   calculateZongGua,
   calculateTiYong,
   findLiuShiSiGua,
+  generateLiuShiSiGua,
+  parseBinaryToGua,
 } from "./utils";
 
 /**
@@ -272,52 +274,30 @@ export class MeihuaEngine {
       ChronoEngine.now(this.config.coordinates, this.config.useTrueSun);
 
     // 本卦
-    const benGuaYao = generateYao(binary, dongYaoPositions);
-    const benGua = {
-      ...BAGUA_INFO[shangGua],
-      yao: benGuaYao,
-    };
+    const benGua = generateLiuShiSiGua(binary, dongYaoPositions);
+    if (!benGua) {
+      throw new Error("无法生成本卦");
+    }
 
     // 互卦
     let huGua;
     const huInfo = calculateHuGua(binary);
     if (huInfo) {
       const huBinary = generateBinary(huInfo.shangGua, huInfo.xiaGua);
-      huGua = {
-        ...BAGUA_INFO[huInfo.shangGua],
-        yao: generateYao(huBinary),
-      };
+      huGua = generateLiuShiSiGua(huBinary, []);
     }
 
     // 变卦
     const bianBinary = calculateBianGua(binary, dongYaoPositions);
-    const bianShang = this.findBaguaByBinary(bianBinary.substring(0, 3));
-    const bianXia = this.findBaguaByBinary(bianBinary.substring(3, 6));
-    let bianGua;
-    if (bianShang && bianXia) {
-      bianGua = {
-        ...BAGUA_INFO[bianShang],
-        yao: generateYao(bianBinary),
-      };
-    }
+    const bianGua = generateLiuShiSiGua(bianBinary, []);
 
     // 错卦
     const cuoBinary = calculateCuoGua(binary);
-    const cuoShang = this.findBaguaByBinary(cuoBinary.substring(0, 3));
-    const cuoXia = this.findBaguaByBinary(cuoBinary.substring(3, 6));
-    let cuoGua;
-    if (cuoShang && cuoXia) {
-      cuoGua = BAGUA_INFO[cuoShang];
-    }
+    const cuoGua = generateLiuShiSiGua(cuoBinary, []);
 
     // 综卦
     const zongBinary = calculateZongGua(binary);
-    const zongShang = this.findBaguaByBinary(zongBinary.substring(0, 3));
-    const zongXia = this.findBaguaByBinary(zongBinary.substring(3, 6));
-    let zongGua;
-    if (zongShang && zongXia) {
-      zongGua = BAGUA_INFO[zongShang];
-    }
+    const zongGua = generateLiuShiSiGua(zongBinary, []);
 
     // 体用
     const tiYong = calculateTiYong(shangGua, xiaGua, dongYaoPositions);
@@ -326,9 +306,9 @@ export class MeihuaEngine {
       method,
       config: this.config,
       chronoData: chrono,
-      benGua: benGua as any,
-      huGua: huGua as any,
-      bianGua: bianGua as any,
+      benGua,
+      huGua,
+      bianGua,
       cuoGua,
       zongGua,
       dongYaoPositions,

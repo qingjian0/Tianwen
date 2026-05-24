@@ -7,7 +7,7 @@ import {
   WUXING_KE,
   LIUSHISIGUA,
 } from "./constants";
-import { Yao, Guaxiang, DivinationMethod, MeihuaResult } from "./types";
+import { Yao, Guaxiang, DivinationMethod, MeihuaResult, LiuShiSiGuaFull } from "./types";
 
 /**
  * 根据数字获取八卦
@@ -41,6 +41,45 @@ export function generateYao(
  */
 export function generateBinary(shangGua: Bagua, xiaGua: Bagua): string {
   return BAGUA_INFO[shangGua].binary + BAGUA_INFO[xiaGua].binary;
+}
+
+/**
+ * 根据二进制字符串解析出上卦和下卦
+ */
+export function parseBinaryToGua(binary: string): { shangGua: Bagua; xiaGua: Bagua } | null {
+  if (binary.length !== 6) return null;
+  const shangBinary = binary.substring(0, 3);
+  const xiaBinary = binary.substring(3, 6);
+  const shangGua = findBaguaByBinary(shangBinary);
+  const xiaGua = findBaguaByBinary(xiaBinary);
+  if (shangGua && xiaGua) {
+    return { shangGua, xiaGua };
+  }
+  return null;
+}
+
+/**
+ * 从二进制生成完整的六十四卦对象
+ */
+export function generateLiuShiSiGua(
+  binary: string,
+  changingPositions: number[] = [],
+): LiuShiSiGuaFull | null {
+  if (binary.length !== 6) return null;
+
+  const guaInfo = parseBinaryToGua(binary);
+  if (!guaInfo) return null;
+
+  const liuShiSiGuaInfo = LIUSHISIGUA.find((g) => g.binary === binary);
+  
+  return {
+    index: liuShiSiGuaInfo?.index || 0,
+    name: liuShiSiGuaInfo?.name || `${guaInfo.shangGua}${guaInfo.xiaGua}`,
+    shangGua: guaInfo.shangGua,
+    xiaGua: guaInfo.xiaGua,
+    binary: binary,
+    yao: generateYao(binary, changingPositions),
+  };
 }
 
 /**

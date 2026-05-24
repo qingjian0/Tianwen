@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { PageLayout } from "@/components/layout/PageLayout";
-import { MeihuaEngine } from "@tianwen/meihua";
+import { MeihuaEngine, MeihuaResult } from "@tianwen/meihua";
 
 // 初始化引擎
 const meihuaEngine = new MeihuaEngine();

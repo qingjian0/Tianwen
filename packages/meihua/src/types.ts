@@ -9,6 +9,16 @@ export interface Guaxiang {
   yao: Yao[]; // 爻列表
 }
 
+// 六十四卦完整信息
+export interface LiuShiSiGuaFull {
+  index: number;
+  name: string;
+  shangGua: Bagua; // 上卦
+  xiaGua: Bagua; // 下卦
+  binary: string; // 完整六爻二进制
+  yao: Yao[]; // 完整爻列表
+}
+
 // 爻
 export interface Yao {
   position: number; // 爻位 1-6（1为初爻，6为上爻）
@@ -39,11 +49,11 @@ export interface MeihuaResult {
   method: DivinationMethod;
   config: MeihuaConfig;
   chronoData?: ChronoData;
-  benGua: Guaxiang & { yao: Yao[] }; // 本卦
-  huGua?: Guaxiang & { yao: Yao[] }; // 互卦
-  bianGua?: Guaxiang & { yao: Yao[] }; // 变卦
-  cuoGua?: Guaxiang; // 错卦
-  zongGua?: Guaxiang; // 综卦
+  benGua: LiuShiSiGuaFull; // 本卦（完整六十四卦）
+  huGua?: LiuShiSiGuaFull; // 互卦（完整六十四卦）
+  bianGua?: LiuShiSiGuaFull; // 变卦（完整六十四卦）
+  cuoGua?: LiuShiSiGuaFull; // 错卦
+  zongGua?: LiuShiSiGuaFull; // 综卦
   dongYaoPositions: number[]; // 动爻位置数组
   tiYong: {
     ti: Bagua; // 体卦
