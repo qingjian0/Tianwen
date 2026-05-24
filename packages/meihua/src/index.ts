@@ -1,5 +1,6 @@
 // 梅花易数主入口
 export { MeihuaEngine, default } from "./meihua";
+export { MeihuaEngineOptimized } from "./meihuaOptimized";
 
 // 类型导出
 export * from "./types";

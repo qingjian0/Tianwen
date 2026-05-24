@@ -1,5 +1,6 @@
 // Chrono Engine 主入口
 export { ChronoEngine, default } from "./chronoEngine";
+export { ChronoEngineOptimized } from "./chronoEngineOptimized";
 
 // 类型导出
 export * from "./types";
