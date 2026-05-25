@@ -3,13 +3,9 @@ import { ChronoData, Coordinates } from "@tianwen/chrono-engine";
 export interface LiuRenConfig {
   useTrueSun?: boolean;
   coordinates?: Coordinates;
-  // 换将方式：月将/时将
   jiangMethod?: "yue" | "shi";
-  // 起课方式：天盘/地盘
   keMethod?: "tian" | "di";
-  // 涉害方法：孟仲季/深浅
   shehaiMethod?: "mengzhongji" | "shenqian";
-  // 昼夜选择
   dayNight?: "day" | "night";
 }
 
@@ -40,6 +36,9 @@ export interface LiuRenResult {
   dunGan: Record<string, string>;
   tianJiang: Record<string, string>;
   liuQin: Record<string, string>;
+  keTi: string;
+  shiShen: Record<string, string>;
+  yongShen: string;
 }
 
 export interface LiuRenAnalysis {
@@ -47,4 +46,19 @@ export interface LiuRenAnalysis {
   yongShen: string;
   jiXiong: string;
   detailedAnalysis: string;
+  patterns: string[];
+}
+
+export interface Ke {
+  tianGan: string;
+  tianJiang: string;
+  diGan: string;
+  diZhi: string;
+}
+
+export interface SiKeFull {
+  ke1: Ke;
+  ke2: Ke;
+  ke3: Ke;
+  ke4: Ke;
 }
