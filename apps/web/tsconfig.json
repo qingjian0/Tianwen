@@ -19,9 +19,7 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"],
-      "@tianwen/astro-divination": ["../../packages/astro-divination/src"],
-      "@tianwen/astro-divination/*": ["../../packages/astro-divination/src/*"]
+      "@/*": ["./src/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

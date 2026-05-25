@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { MeihuaEngine, BAGUA_INFO } from "@tianwen/astro-divination";
+import { MeihuaEngine, BAGUA_INFO } from "@tianwen/meihua";
 
 const TRIGRAMS = [
   { name: "乾", symbol: "☰", element: "金", palace: "乾" },
